@@ -7,7 +7,6 @@ Bundler.require
 require 'motion-prime'
 
 Motion::Project::App.setup do |app|
-  env = ENV['adhoc'] == '1' ? 'adhoc' : 'dev'
   # Use `rake config' to see complete project settings.
   app.name = 'MotionPrimeProject'
 

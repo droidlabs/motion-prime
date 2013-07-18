@@ -3,6 +3,7 @@ $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project/template/ios'
 require "rubygems"
 require "bundler"
+require "bundler/gem_tasks"
 require 'motion-cocoapods'
 Bundler.setup
 Bundler.require
