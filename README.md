@@ -3,20 +3,21 @@
 ![Prime](https://s3-us-west-2.amazonaws.com/webmate/assets/prime.jpg)
 
 MotionPrime is yet another framework written on RubyMotion.
+
 The main feature of MotionPrime is one more level on UI elements: Section.
 "Section" is something like "Partial" in Ruby On Rails, but it's smarter and will help you build application UI.
 
-## Installation
+## Getting Started
 
 Add this line to your application's Gemfile:
 
     gem 'motion-prime'
 
-And then execute:
+Or create MotionPrime project:
 
-    $ bundle
+    $ motion create --template=git@github.com:droidlabs/motion-prime.git myapp
 
-## Getting Started
+## Hello World (Sample)
 
     # app/app_delegate.rb
     class AppDelegate < MotionPrime::BaseAppDelegate
@@ -35,15 +36,9 @@ And then execute:
       end
     end
 
-    # app/models/user.rb
-    class User < MotionPrime::BaseModel
-      attribute :id
-      attribute :email
-    end
-
     # app/sections/my_profile.rb
     class MyProfileSection < MotionPrime::BaseSection
-      element :title, text: proc { model.email }
+      element :title, text: proc { Hello World }
       element :avatar, image: "images/avatar.png", type: :image
     end
 
@@ -64,3 +59,9 @@ And then execute:
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Thanks for using MotionPrime!
+
+Hope, you'll enjoy MotionPrime!
+
+Cheers, [Droid Labs](http://droidlabs.pro).
