@@ -2,8 +2,10 @@
 $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project/template/ios'
 require "rubygems"
+require 'motion-cocoapods'
 require 'bundler'
 Bundler.require
+require 'sugarcube-568'
 require 'motion-prime'
 
 Motion::Project::App.setup do |app|

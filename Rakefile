@@ -15,7 +15,7 @@ Motion::Project::App.setup do |app|
   app.name = 'MotionPrime'
   app.pods do
     pod 'PKRevealController'
-    pod 'NanoStore', '~> 2.6.0'
+    pod 'NanoStore', '~> 2.7.7'
     pod 'SDWebImage'
     pod 'SVPullToRefresh'
     pod 'MBAlertView'

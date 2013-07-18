@@ -9,13 +9,17 @@ The main feature of MotionPrime is one more level on UI elements: Section.
 
 ## Getting Started
 
-Add this line to your application's Gemfile:
-
-    gem 'motion-prime'
-
-Or create MotionPrime project:
+### 1. Create MotionPrime project:
 
     $ motion create --template=git@github.com:droidlabs/motion-prime.git myapp
+
+### 2. Install gems
+
+    $ bundle
+
+### 3. Run application
+
+    $ rake
 
 ## Hello World (Sample)
 
@@ -38,7 +42,7 @@ Or create MotionPrime project:
 
     # app/sections/my_profile.rb
     class MyProfileSection < MotionPrime::BaseSection
-      element :title, text: proc { Hello World }
+      element :title, text: "Hello World"
       element :avatar, image: "images/avatar.png", type: :image
     end
 

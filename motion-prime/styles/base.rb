@@ -1,5 +1,9 @@
 motion_require '../views/styles.rb'
 MotionPrime::Styles.define :base do
+  # basic screen styles
+  style :screen,
+    background_color: :white
+
   # basic table styles
   # ----------
   style :table,
