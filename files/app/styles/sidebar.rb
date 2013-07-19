@@ -27,7 +27,7 @@ MotionPrime::Styles.define :sidebar do
     font: proc { :system.uifont(20) },
     size_to_fit: true,
     left: 20,
-    color: :white
+    text_color: :white
 
   style :action_arrow,
     width: 9,
