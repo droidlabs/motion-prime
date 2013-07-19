@@ -4,7 +4,7 @@
 
 MotionPrime is yet another framework written on RubyMotion.
 
-The main feature of MotionPrime is one more level on UI elements: Section.
+The main feature of MotionPrime is one more layer on UI elements: Section.
 "Section" is something like "Partial" in Ruby On Rails, but it's smarter and will help you build application UI.
 
 ## Getting Started
