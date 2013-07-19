@@ -17,6 +17,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "rake"
+  spec.add_development_dependency("motion-stump")
+
   spec.add_dependency "cocoapods"
   spec.add_dependency "motion-cocoapods"
   spec.add_dependency "motion-require"

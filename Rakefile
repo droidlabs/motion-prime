@@ -10,6 +10,7 @@ Bundler.require
 require 'motion-support'
 require 'nano-store'
 require 'motion-prime'
+require 'motion-stump'
 
 Motion::Project::App.setup do |app|
   app.name = 'MotionPrime'

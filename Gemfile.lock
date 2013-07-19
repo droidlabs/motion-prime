@@ -48,6 +48,7 @@ GEM
     motion-cocoapods (1.3.2)
       cocoapods (>= 0.17.0)
     motion-require (0.0.7)
+    motion-stump (0.3.0)
     motion-support (0.2.4)
       motion-require (>= 0.0.6)
     multi_json (1.7.7)
@@ -73,11 +74,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bubble-wrap (= 1.3.0)
-  cocoapods (= 0.19.1)
-  motion-cocoapods (= 1.3.2)
+  bubble-wrap (~> 1.3.0)
+  cocoapods (~> 0.19.1)
+  motion-cocoapods (~> 1.3.2)
   motion-prime!
-  motion-support (= 0.2.4)
-  nano-store (= 0.6.3)
+  motion-stump
+  motion-support (~> 0.2.4)
+  nano-store (~> 0.6.3)
   rake
-  sugarcube (= 0.20.23)
+  sugarcube (~> 0.20.23)

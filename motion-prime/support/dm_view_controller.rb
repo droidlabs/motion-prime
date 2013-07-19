@@ -1,6 +1,6 @@
 class DMViewController < UIViewController
   def self.new(args = {})
-    s = self.alloc.initWithNibName(nil, bundle:nil)
+    s = self.alloc.initWithNibName(nil, bundle: nil)
     s.on_create(args) if s.respond_to?(:on_create)
     s
   end
