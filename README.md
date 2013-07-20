@@ -1,4 +1,4 @@
-# MotionPrime
+# MotionPrime [![Build Status](https://travis-ci.org/droidlans/motion-prime.png)](https://travis-ci.org/clearsightstudio/ProMotion)
 
 ![Prime](https://s3-us-west-2.amazonaws.com/webmate/assets/prime.jpg)
 
@@ -17,7 +17,11 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 
     $ bundle
 
-### 3. Run application
+### 3. Setup application
+
+    # edit Rakefile
+
+### $. Run application
 
     $ rake
 
