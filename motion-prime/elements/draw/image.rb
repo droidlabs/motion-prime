@@ -3,6 +3,7 @@ module MotionPrime
   class ImageDrawElement < DrawElement
     attr_accessor :image_data
     def draw_in(rect)
+      return if computed_options[:hidden]
       image_rect = CGRectMake(
         computed_left,
         computed_top,
