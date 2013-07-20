@@ -1,4 +1,4 @@
-describe "base screen" do
+describe "BaseScreen" do
 
   before do
     @screen = BaseScreen.new()

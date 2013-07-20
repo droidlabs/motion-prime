@@ -8,9 +8,9 @@ require 'motion-cocoapods'
 Bundler.setup
 Bundler.require
 require 'motion-support'
-require 'nano-store'
 require 'motion-prime'
 require 'motion-stump'
+require 'motion-redgreen'
 
 Motion::Project::App.setup do |app|
   app.name = 'MotionPrime'

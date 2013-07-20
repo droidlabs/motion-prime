@@ -1,11 +1,24 @@
 motion_require '../helpers/has_authorization'
+motion_require './bag.rb'
+motion_require './finder.rb'
+motion_require './model.rb'
+motion_require './store.rb'
+motion_require './store_extension.rb'
 module MotionPrime
-  class BaseModel < NanoStore::Model
+  class BaseModel < NSFNanoObject
     class_attribute :sync_url
     class_attribute :sync_attributes
     class_attribute :_associations
     alias_method :attributes, :info
     include MotionPrime::HasAuthorization
+
+    include MotionPrime::ModelMethods
+    extend MotionPrime::ModelClassMethods
+
+    extend MotionPrime::ModelFinderMethods
+    include MotionPrime::ModelAssociationMethods
+
+    extend MotionPrime::ModelAssociationClassMethods
 
     def sync_url
       self.class.sync_url.to_s.gsub(':id', id.to_s)
@@ -134,15 +147,7 @@ module MotionPrime
     end
 
     def inspect
-      "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + BW::JSON.generate(attributes)
-    end
-
-    # NOTE: .clear method doesn't work, using removeArray hack for now
-    def _clear_bag(bag_name)
-      bag = self.send(bag_name.to_sym)
-      bag_copy = bag.to_a.clone
-      bag - bag.to_a # this removes association from model
-      bag_copy.each(&:delete) # this removes collection from db
+      "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + MotionPrime::JSON.generate(attributes)
     end
 
     def filtered_sync_attributes
@@ -159,61 +164,6 @@ module MotionPrime
 
       def sync_attributes(*attrs)
         attrs ? self.sync_attributes = attrs : super
-      end
-
-      def has_one(association_name, options = {})
-        bag_name = "#{association_name.pluralize}_bag"
-        self.bag bag_name.to_sym
-
-        self._associations ||= {}
-        self._associations[association_name] = options.merge(type: :one)
-
-        define_method("#{association_name}=") do |value|
-          self._clear_bag(bag_name)
-
-          self.send(:"#{bag_name}") << value
-          value
-        end
-        define_method("#{association_name}_attributes=") do |value|
-          self._clear_bag(bag_name)
-
-          association = association_name.classify.constantize.new
-          association.sync_with_attributes(value)
-          association.save
-          self.send(:"#{bag_name}") << association
-          association
-        end
-        define_method("#{association_name}") do
-          self.send(:"#{bag_name}").to_a.first
-        end
-      end
-
-      def has_many(association_name, options = {})
-        bag_name = "#{association_name}_bag"
-        self.bag bag_name.to_sym
-
-        self._associations ||= {}
-        self._associations[association_name] = options.merge(type: :many)
-
-        define_method("#{association_name}_attributes=") do |value|
-          self._clear_bag(bag_name)
-
-          association = []
-          value.each do |attrs|
-            model = association_name.classify.constantize.new
-            model.sync_with_attributes(attrs)
-            association << model
-          end
-          self.send(:"#{bag_name}=", association)
-          association
-        end
-        define_method("#{association_name}=") do |value|
-          self._clear_bag(bag_name)
-          self.send(:"#{bag_name}=", value)
-        end
-        define_method("#{association_name}") do
-          self.send(:"#{bag_name}").to_a
-        end
       end
     end
   end

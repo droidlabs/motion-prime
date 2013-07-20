@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "rake"
   spec.add_development_dependency("motion-stump")
+  spec.add_development_dependency("motion-redgreen")
 
   spec.add_dependency "cocoapods"
   spec.add_dependency "motion-cocoapods"
