@@ -27,38 +27,38 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 
 ## Hello World (Sample)
 ```ruby
-    # app/app_delegate.rb
-    class AppDelegate < MotionPrime::BaseAppDelegate
-      def on_load(app, options)
-        open_root_screen MainScreen.new
-      end
+  # app/app_delegate.rb
+  class AppDelegate < MotionPrime::BaseAppDelegate
+    def on_load(app, options)
+      open_root_screen MainScreen.new
     end
+  end
 
-    # app/screens/main_screen.rb
-    class MainScreen < ApplicationScreen
-      title 'Main screen'
+  # app/screens/main_screen.rb
+  class MainScreen < ApplicationScreen
+    title 'Main screen'
 
-      def render
-        @main_section = MyProfileSection.new(model: User.first)
-        @main_section.render(to: self)
-      end
+    def render
+      @main_section = MyProfileSection.new(model: User.first)
+      @main_section.render(to: self)
     end
+  end
 
-    # app/sections/my_profile.rb
-    class MyProfileSection < MotionPrime::BaseSection
-      element :title, text: "Hello World"
-      element :avatar, image: "images/avatar.png", type: :image
-    end
+  # app/sections/my_profile.rb
+  class MyProfileSection < MotionPrime::BaseSection
+    element :title, text: "Hello World"
+    element :avatar, image: "images/avatar.png", type: :image
+  end
 
-    # app/styles/my_profile.rb
-    MotionPrime::Styles.define :my_profile do
-      style :title,
-        width: 300, height: 20, color: :black,
-        top: 10, left: 5, background_color: :white
+  # app/styles/my_profile.rb
+  MotionPrime::Styles.define :my_profile do
+    style :title,
+      width: 300, height: 20, color: :black,
+      top: 10, left: 5, background_color: :white
 
-      style :avatar,
-        width: 90, height: 90, top: 40, left: 5
-    end
+    style :avatar,
+      width: 90, height: 90, top: 40, left: 5
+  end
 ```
 
 ## Contributing
