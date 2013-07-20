@@ -21,12 +21,12 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 
     # edit Rakefile
 
-### $. Run application
+### 4. Run application
 
     $ rake
 
 ## Hello World (Sample)
-
+```ruby
     # app/app_delegate.rb
     class AppDelegate < MotionPrime::BaseAppDelegate
       def on_load(app, options)
@@ -59,6 +59,7 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
       style :avatar,
         width: 90, height: 90, top: 40, left: 5
     end
+```
 
 ## Contributing
 
