@@ -24,7 +24,7 @@ module MotionPrime
 
     def render_input
       view(:input).on :editing_did_begin do |view|
-        scroll_to_and_make_visible
+        focus
         form.on_edit(self)
       end
     end

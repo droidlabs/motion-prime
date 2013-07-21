@@ -21,7 +21,7 @@ module MotionPrime
     KEYBOARD_HEIGHT_LANDSCAPE = 162
 
     class_attribute :fields_options
-    attr_accessor :table, :fields, :keyboard_visible
+    attr_accessor :table, :fields, :field_indexes, :keyboard_visible
 
     after_render :bind_keyboard_events
 
@@ -42,11 +42,43 @@ module MotionPrime
       end
     end
 
-    # accepts following syntax to find field element:
-    # element("fieldname:elementname"), e.g. element("email:input")
+    # Returns element based on field name and element name
+    #
+    # Examples:
+    #   form.element("email:input")
+    #
+    # @param String name with format "fieldname:elementname"
+    # @return MotionPrime::BaseElement element
     def element(name)
       field_name, element_name = name.split(':')
-      self.fields[field_name.to_sym].element(element_name.to_sym)
+      field(field_name).element(element_name.to_sym)
+    end
+
+    # Returns field by name
+    #
+    # Examples:
+    #   form.field(:email)
+    #
+    # @param String field name
+    # @return MotionPrime::BaseFieldSection field
+    def field(field_name)
+      self.fields[field_name.to_sym]
+    end
+
+    # Set focus on field cell
+    #
+    # Examples:
+    #   form.focus_on(:title)
+    #
+    # @param String field name
+    # @return MotionPrime::BaseFieldSection field
+    def focus_on(field_name, animated = true)
+      # unfocus other field
+      data.each do |item|
+        item.blur
+      end
+      # focus on field
+      field(field_name).focus
     end
 
     def on_edit(field); end
@@ -94,9 +126,13 @@ module MotionPrime
 
       def init_form_fields
         self.fields = {}
+        self.field_indexes = {}
+        index = 0
         (self.class.fields_options || []).each do |key, field|
           klass = "MotionPrime::#{field[:type].classify}FieldSection".constantize
           self.fields[key] = klass.new(field.merge(form: self))
+          self.field_indexes[key] = index
+          index += 1
         end
       end
   end
