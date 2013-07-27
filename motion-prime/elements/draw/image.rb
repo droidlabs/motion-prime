@@ -16,11 +16,12 @@ module MotionPrime
       # draw image from resources
       elsif computed_options[:image]
         self.image_data = computed_options[:image].uiimage
-        image_data.drawInRect(image_rect)
+        draw_with_layer(image_data, image_rect)
       # show default image and download image from url
       elsif computed_options[:url]
         if computed_options[:default]
-          computed_options[:default].uiimage.drawInRect(image_rect)
+          self.image_data = computed_options[:default].uiimage
+          draw_with_layer(image_data, image_rect)
         end
         manager = SDWebImageManager.sharedManager
         manager.downloadWithURL(computed_options[:url],
@@ -34,10 +35,32 @@ module MotionPrime
                 section.container_view.setNeedsDisplay
               else
                 # if it's second call, we should just draw image
-                self.image_data.drawInRect(image_rect)
+                draw_with_layer(image_data, image_rect)
               end
             end
           } )
+      end
+    end
+
+    def draw_with_layer(image, rect)
+      puts computed_options.inspect
+      if computed_options[:layer]
+        layer = CALayer.layer
+        layer.frame = CGRectMake(0, 0, image.size.width, image.size.height)
+        layer.contents = image.CGImage
+
+        if radius = computed_options[:layer][:corner_radius]
+          layer.masksToBounds = true
+          layer.cornerRadius = radius
+        end
+
+        UIGraphicsBeginImageContext(image.size);
+        layer.renderInContext(UIGraphicsGetCurrentContext())
+        image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        image.drawInRect(rect)
+      else
+        image.drawInRect(rect)
       end
     end
   end
