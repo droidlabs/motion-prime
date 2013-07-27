@@ -23,8 +23,8 @@ module MotionPrime
 
     def focus(begin_editing = true)
       # scroll to cell
-      path = form.table.indexPathForCell cell
-      form.table.scrollToRowAtIndexPath path,
+      path = form.table_view.indexPathForCell cell
+      form.table_view.scrollToRowAtIndexPath path,
         atScrollPosition: UITableViewScrollPositionTop, animated: true
       # focus on text field
       return unless begin_editing
@@ -34,6 +34,8 @@ module MotionPrime
         end
       end
       self
+    rescue
+      puts "can't focus on element #{self.class.name}"
     end
 
     def blur
@@ -43,6 +45,8 @@ module MotionPrime
         end
       end
       self
+    rescue
+      puts "can't blur on element #{self.class.name}"
     end
   end
 end

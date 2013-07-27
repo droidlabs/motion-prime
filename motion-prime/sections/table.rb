@@ -25,7 +25,9 @@ module MotionPrime
 
     def render_table
       @data_stamp = Time.now.to_i
-      self.table_view = screen.table_view(styles: [:base_table, name.to_sym], delegate: self, data_source: self).view
+      self.table_view = screen.table_view(
+        styles: [:base_table, name.to_sym], delegate: self, data_source: self
+      ).view
     end
 
     def render_cell(index, table)

@@ -21,7 +21,7 @@ module MotionPrime
     KEYBOARD_HEIGHT_LANDSCAPE = 162
 
     class_attribute :fields_options
-    attr_accessor :table, :fields, :field_indexes, :keyboard_visible
+    attr_accessor :fields, :field_indexes, :keyboard_visible
 
     after_render :bind_keyboard_events
 
@@ -30,15 +30,20 @@ module MotionPrime
     end
 
     def render_table
+      @data_stamp = Time.now.to_i
       init_form_fields
-      screen.table_view styles: [:base_form, name.to_sym], delegate: self, dataSource: self do |table|
-        self.table = table
-      end
+      self.table_view = screen.table_view(
+        styles: [:base_form, name.to_sym], delegate: self, dataSource: self
+      ).view
     end
 
     def render_cell(index, table)
+      cell = cached_cell(index)
+      return cell if cell
+      item = data[index.row]
+
       screen.table_view_cell styles: [:base_form_field, :"#{name}_field"], reuse_identifier: cell_name(table, index) do
-        data[index.row].render(to: screen)
+        item.render(to: screen)
       end
     end
 
@@ -95,13 +100,13 @@ module MotionPrime
 
     def set_height_with_keyboard
       return if keyboard_visible
-      self.table.height -= KEYBOARD_HEIGHT_PORTRAIT
+      self.table_view.height -= KEYBOARD_HEIGHT_PORTRAIT
       self.keyboard_visible = true
     end
 
     def set_height_without_keyboard
       return unless keyboard_visible
-      self.table.height += KEYBOARD_HEIGHT_PORTRAIT
+      self.table_view.height += KEYBOARD_HEIGHT_PORTRAIT
       self.keyboard_visible = false
     end
 

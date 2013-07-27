@@ -6,6 +6,8 @@ module MotionPrime
       search_bar.delegate = self
       self.table_view.tableHeaderView = search_bar if is_a?(TableSection)
       @search_callback = block
+    rescue
+      puts "can't add search bar to #{self.class.name}"
     end
 
     def create_search_bar

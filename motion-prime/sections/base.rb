@@ -22,7 +22,7 @@ module MotionPrime
     def initialize(options = {})
       @options = options
       @model = options[:model]
-      @name = options[:name] ||= self.class.name.underscore.gsub(/\_section$/, '')
+      @name = options[:name] ||= self.class.name.demodulize.underscore.gsub(/\_section$/, '')
       create_elements
     end
 
