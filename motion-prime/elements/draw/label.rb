@@ -1,6 +1,8 @@
 motion_require '../draw.rb'
 module MotionPrime
   class LabelDrawElement < DrawElement
+    include MotionPrime::ElementTextHeightMixin
+
     def draw_in(rect)
       options = computed_options
       return if options[:hidden]
