@@ -24,9 +24,9 @@ module MotionPrime
 
       # calculate width if width is relative, e.g 0.7
       if width > 0 && width <= 1
-        computed_max_width * width
+        width * computed_max_width
       else
-        computed_max_width < width ? width : computed_max_width
+        width > computed_max_width ? computed_max_width : width
       end
     end
 
@@ -36,9 +36,9 @@ module MotionPrime
 
       # calculate height if height is relative, e.g 0.7
       if height > 0 && height <= 1
-        computed_max_height * height
+        height * computed_max_height
       else
-        computed_max_height < height ? height : computed_max_height
+        height > computed_max_height ? computed_max_height : height
       end
     end
 
