@@ -1,5 +1,16 @@
 module MotionPrime
   class TabbedSection < BaseSection
+    # MotionPrime::TabbedSection is base class for building tabbed views.
+
+    # == Basic Sample
+    # class MySection < MotionPrime::TabbedSection
+    #   tab :info, default: true, page_section: :info_tab
+    #   tab :map, page_section: :map_tab
+    #   # page_section options will be converted to section class and added to section.
+    #   # e.g. in this sample: InfoTabSection.new(model: model).render(to: screen)
+    # end
+    #
+
     class_attribute :tabs_options, :tabs_default
     attr_accessor :tab_pages
 
