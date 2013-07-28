@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
-bundle install &&
+sudo gem install bundler &&
+sudo bundle install &&
 sudo bundle exec rake clean &&
 sudo bundle exec rake spec &&
 sudo bundle exec rake clean &&

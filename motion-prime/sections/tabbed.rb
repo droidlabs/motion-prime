@@ -6,34 +6,40 @@ module MotionPrime
     element :control, type: :segmented_control,
       styles: [:base_segmented_control], items: proc { tab_control_items }
 
-    before_render :render_tab_pages
+    after_render :render_tab_pages
     after_render :render_tab_controls
 
     def tab_options
-      self.class.tabs_options
+      @tab_options ||= self.class.tabs_options
     end
 
     def tab_control_items
-      tab_options.values.map{ |o| o[:name] }
+      @tab_control_items ||= tab_options.values.map{ |o| o[:name] }
+    end
+
+    def tab_default
+      @tab_default ||= self.class.tabs_default || 0
     end
 
     def render_tab_pages
       @tab_pages = []
+      index = 0
       tab_options.each do |key, options|
         section_class = options[:page_section].classify
         page = "::#{section_class}Section".constantize.new(model: model)
         page.render(to: screen)
+        page.hide if index != tab_default
         @tab_pages << page
+        index += 1
       end
     end
 
     def render_tab_controls
-      default = self.class.tabs_default || 0
       control = element(:control).view
       control.addTarget(
         self, action: :on_click, forControlEvents: UIControlEventValueChanged
       )
-      control.setSelectedSegmentIndex(default)
+      control.setSelectedSegmentIndex(tab_default)
     end
 
     # on clicn to control

@@ -24,6 +24,7 @@ module MotionPrime
       @model = options[:model]
       @name = options[:name] ||= self.class.name.demodulize.underscore.gsub(/\_section$/, '')
       create_elements
+      self.hide if container_options[:hidden]
     end
 
     def elements_options
