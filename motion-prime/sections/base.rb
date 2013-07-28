@@ -26,9 +26,13 @@ module MotionPrime
       create_elements
     end
 
+    def elements_options
+      self.class.elements_options || {}
+    end
+
     def create_elements
       self.elements = {}
-      (self.class.elements_options || {}).each do |key, opts|
+      elements_options.each do |key, opts|
         # we should clone options to prevent overriding options
         # in next element with same name in another class
         options = opts.clone
@@ -39,7 +43,7 @@ module MotionPrime
 
     def render(container_options = {})
       self.container_options.merge!(container_options)
-      self.screen = WeakRef.new(container_options.delete(:to))
+      self.screen = container_options.delete(:to)
       run_callbacks :render do
         render!
       end
@@ -59,6 +63,18 @@ module MotionPrime
       element(name).view
     end
 
+    def hide
+      elements.values.each do |element|
+        element.view.hidden = true
+      end
+    end
+
+    def show
+      elements.values.each do |element|
+        element.view.hidden = false
+      end
+    end
+
     def container_options
       @container_options ||= self.class.container_options.try(:clone) || {}
     end
@@ -69,13 +85,6 @@ module MotionPrime
 
     def container_styles
       container_options[:styles]
-    end
-
-    def benchmark(name, &block)
-      Benchmark.bm do |x|
-        puts "Benchmark: #{name}"
-        x.report(&block)
-      end
     end
 
     class << self

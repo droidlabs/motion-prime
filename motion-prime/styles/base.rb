@@ -94,4 +94,7 @@ MotionPrime::Styles.define :base do
     right: 5,
     width: 9,
     height: 14
+
+  style :segmented_control,
+    height: 40, width: 320, top: 0
 end

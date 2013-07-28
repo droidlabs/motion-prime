@@ -43,7 +43,6 @@ module MotionPrime
     end
 
     def draw_with_layer(image, rect)
-      puts computed_options.inspect
       if computed_options[:layer]
         layer = CALayer.layer
         layer.frame = CGRectMake(0, 0, image.size.width, image.size.height)

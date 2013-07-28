@@ -41,6 +41,15 @@ module MotionPrime
       end
     end
 
+    def hide
+      container_view.hidden = true
+    end
+
+    def show
+      container_view.hidden = false
+    end
+
+    # @container_view (DMViewWithSection) will call this method on draw
     def draw_in(rect)
       draw_background(rect)
       draw_elements(rect)
