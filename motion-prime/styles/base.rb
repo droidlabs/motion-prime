@@ -97,4 +97,7 @@ MotionPrime::Styles.define :base do
 
   style :segmented_control,
     height: 40, width: 320, top: 0
+
+  style :google_map,
+    top: 0, left: 0, right: 0, bottom: 0
 end
