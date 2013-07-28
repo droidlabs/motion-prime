@@ -11,7 +11,7 @@ module MotionPrime
     # end
     #
 
-    class_attribute :tabs_options, :tabs_default
+    class_attribute :tabs_options, :tabs_default, :tabs_indexes
     attr_accessor :tab_pages
 
     element :control, type: :segmented_control,
@@ -32,28 +32,30 @@ module MotionPrime
       @tab_default ||= self.class.tabs_default || 0
     end
 
-    def render_tab_pages
-      @tab_pages = []
-      index = 0
-      tab_options.each do |key, options|
-        section_class = options[:page_section].classify
-        page = "::#{section_class}Section".constantize.new(model: model)
-        page.render(to: screen)
-        page.hide if index != tab_default
-        @tab_pages << page
-        index += 1
+
+    # Make tab button disabled by index
+    # @param Fixnum index
+    def disable_at(index)
+      toggle_at(index, false)
+    end
+
+    # Make tab button enabled by index
+    # @param Fixnum index
+    def enable_at(index)
+      toggle_at(index, true)
+    end
+
+    # Toggle tab button activity by index
+    # @param [Fixnum, String] index or tab id
+    # @param Boolean value
+    def toggle_at(index, value)
+      if index.is_a?(Symbol)
+        index = self.class.tabs_indexes[index]
       end
+      view(:control).setEnabled value, forSegmentAtIndex: index
     end
 
-    def render_tab_controls
-      control = element(:control).view
-      control.addTarget(
-        self, action: :on_click, forControlEvents: UIControlEventValueChanged
-      )
-      control.setSelectedSegmentIndex(tab_default)
-    end
-
-    # on clicn to control
+    # on click to segment tab
     # @param UISegemtedControl control
     def on_click(*control)
       @tab_pages.each_with_index do |page, i|
@@ -67,10 +69,35 @@ module MotionPrime
         options[:name] = id.to_s.titleize
         options[:id] = id
 
+        self.tabs_indexes ||= {}
+        self.tabs_indexes[id] = tabs_indexes.length
+        self.tabs_default = tabs_indexes.length - 1 if options[:default]
+
         self.tabs_options ||= {}
-        self.tabs_default = tabs_options.length if options[:default]
         self.tabs_options[id] = options
       end
     end
+
+    private
+      def render_tab_pages
+        self.tab_pages = []
+        index = 0
+        tab_options.each do |key, options|
+          section_class = options[:page_section].classify
+          page = "::#{section_class}Section".constantize.new(model: model)
+          page.render(to: screen)
+          page.hide if index != tab_default
+          self.tab_pages << page
+          index += 1
+        end
+      end
+
+      def render_tab_controls
+        control = element(:control).view
+        control.addTarget(
+          self, action: :on_click, forControlEvents: UIControlEventValueChanged
+        )
+        control.setSelectedSegmentIndex(tab_default)
+      end
   end
 end

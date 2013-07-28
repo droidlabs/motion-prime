@@ -1,3 +1,7 @@
+=== 0.1.3
+* added google map element support
+* fixes for tabbed section
+
 === 0.1.2
 * added tabbed section
 * draw image element now supports layer. e.g. you can pass layer: {corner_radius: 50} now.
