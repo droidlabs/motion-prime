@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
+require "bundler/gem_tasks"
+namespace :gem do
+  task :release do
+    helper = Bundler::GemHelper.new
+    helper.release_gem(helper.send :built_gem_path)
+  end
+end
+
 $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project/template/ios'
 require "rubygems"
 require "bundler"
-require "bundler/gem_tasks"
 require 'motion-cocoapods'
 Bundler.setup
 Bundler.require
