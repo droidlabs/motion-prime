@@ -31,8 +31,6 @@ module MotionPrime
     end
 
     def render_cell(index, table)
-      cell = cached_cell(index)
-      return cell if cell
       item = data[index.row]
 
       # define default styles for cell

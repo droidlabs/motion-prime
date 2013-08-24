@@ -38,8 +38,6 @@ module MotionPrime
     end
 
     def render_cell(index, table)
-      cell = cached_cell(index)
-      return cell if cell
       item = data[index.row]
 
       screen.table_view_cell styles: [:base_form_field, :"#{name}_field"], reuse_identifier: cell_name(table, index) do
