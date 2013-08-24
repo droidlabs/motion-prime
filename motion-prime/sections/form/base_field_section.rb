@@ -4,7 +4,7 @@ module MotionPrime
 
     def initialize(options = {})
       super
-      @form = WeakRef.new(options.delete(:form))
+      @form = options.delete(:form)
       @container_options = options.delete(:container)
     end
 

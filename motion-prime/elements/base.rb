@@ -11,7 +11,7 @@ module MotionPrime
 
     def initialize(options = {})
       @options = options
-      @section = WeakRef.new(options.delete(:section))
+      @section = options.delete(:section)
       @name = options[:name]
       @block = options.delete(:block)
       @view_class = options.delete(:view_class) || "UIView"
@@ -19,7 +19,7 @@ module MotionPrime
     end
 
     def render(options = {}, &block)
-      self.screen = options[:to]
+      @screen = options[:to]
       run_callbacks :render do
         render!(&block)
       end

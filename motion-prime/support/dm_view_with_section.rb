@@ -2,7 +2,7 @@ class DMViewWithSection < UIView
   attr_accessor :section
 
   def setSection(section)
-    @section = WeakRef.new(section)
+    @section = section
   end
 
   def drawRect(rect)

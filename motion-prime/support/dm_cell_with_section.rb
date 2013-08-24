@@ -2,7 +2,7 @@ class DMCellWithSection < UITableViewCell
   attr_accessor :section
 
   def setSection(section)
-    @section = WeakRef.new(section)
+    @section = section
   end
 
   def drawRect(rect)
