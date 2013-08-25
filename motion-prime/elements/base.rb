@@ -1,9 +1,12 @@
+motion_require '../helpers/has_normalizer'
 module MotionPrime
   class BaseElement
     # MotionPrime::BaseElement is container for UIView class elements with options.
     # Elements are located inside Sections
 
     include ::MotionSupport::Callbacks
+    include HasNormalizer
+
     attr_accessor :options, :section, :name,
                   :view_class, :view, :styles, :screen
 
@@ -39,7 +42,7 @@ module MotionPrime
       @computed_options = options
       compute_block_options
       compute_style_options
-      @computed_options = normalize_options(@computed_options)
+      @computed_options = normalize_options(@computed_options, section)
     end
 
     # Compute options sent inside block, e.g.
@@ -61,16 +64,6 @@ module MotionPrime
 
     def style_options
       Styles.for(styles)
-    end
-
-    def normalize_options(options)
-      options.each do |key, option|
-        options[key] = if option.is_a?(Proc) && key != :block
-          section.send :instance_eval, &option
-        else
-          option
-        end
-      end
     end
 
     class << self

@@ -14,6 +14,7 @@ module MotionPrime
     DEFAULT_CONTENT_HEIGHT = 65
     include ::MotionSupport::Callbacks
     include MotionPrime::HasAuthorization
+    include MotionPrime::HasNormalizer
 
     attr_accessor :screen, :model, :name, :options, :elements
     class_attribute :elements_options, :container_options
@@ -77,7 +78,9 @@ module MotionPrime
     end
 
     def container_options
-      @container_options ||= self.class.container_options.try(:clone) || {}
+      @container_options ||= normalize_options(
+        self.class.container_options.try(:clone) || {}
+      )
     end
 
     def container_height

@@ -1,3 +1,4 @@
+motion_require '../helpers/has_normalizer'
 module MotionPrime
   class Styles
     @@repo = {}
@@ -17,6 +18,8 @@ module MotionPrime
     end
 
     class << self
+      include HasNormalizer
+
       def define(namespace = nil, &block)
         self.new(namespace).instance_eval(&block)
       end
@@ -32,12 +35,6 @@ module MotionPrime
       def extend_and_normalize_options(options = {})
         style_options = self.for(options.delete(:styles))
         normalize_options(style_options.merge(options))
-      end
-
-      def normalize_options(options)
-        options.each do |key, option|
-          options[key] = option.is_a?(Proc) && key != :block ? instance_eval(&option) : option
-        end
       end
     end
   end

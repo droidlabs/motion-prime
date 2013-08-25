@@ -1,3 +1,6 @@
+=== 0.1.6
+* Section container options now support proc values
+
 === 0.1.5
 * MP::FormSection#on_edit renamed to on_input_edit
 * MP::FormSection#on_input_change callback added
