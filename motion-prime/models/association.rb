@@ -70,7 +70,7 @@ module MotionPrime
         self.send(bag_name).clear
 
         association = association_name.classify.constantize.new
-        association.sync_with_attributes(value)
+        association.fetch_with_attributes(value)
         association.save
         self.send(:"#{bag_name}") << association
         association
@@ -97,7 +97,7 @@ module MotionPrime
         association = []
         value.each do |attrs|
           model = association_name.classify.constantize.new
-          model.sync_with_attributes(attrs)
+          model.fetch_with_attributes(attrs)
           association << model
         end
         self.send(:"#{bag_name}=", association)
