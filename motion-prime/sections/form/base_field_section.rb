@@ -48,5 +48,13 @@ module MotionPrime
     rescue
       puts "can't blur on element #{self.class.name}"
     end
+
+    def bind_text_input
+      view(:input).on :change do |view|
+        focus
+        form.on_input_change(view(:input))
+      end
+      view(:input).delegate = self.form
+    end
   end
 end

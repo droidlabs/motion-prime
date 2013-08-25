@@ -54,7 +54,11 @@ module MotionPrime
     # @return MotionPrime::BaseElement element
     def element(name)
       field_name, element_name = name.split(':')
-      field(field_name).element(element_name.to_sym)
+      if element_name.present?
+        field(field_name).element(element_name.to_sym)
+      else
+        super(field_name)
+      end
     end
 
     # Returns field by name
@@ -84,8 +88,6 @@ module MotionPrime
       field(field_name).focus
     end
 
-    def on_edit(field); end
-
     class << self
       def field(name, options = {})
         options[:name] = name
@@ -108,11 +110,12 @@ module MotionPrime
       self.keyboard_visible = false
     end
 
-    def on_keyboard_show
-    end
 
-    def on_keyboard_hide
-    end
+
+    def on_keyboard_show; end
+    def on_keyboard_hide; end
+    def keyboard_will_show; end
+    def keyboard_will_hide; end
 
     def bind_keyboard_events
       NSNotificationCenter.defaultCenter.addObserver self,
@@ -123,6 +126,26 @@ module MotionPrime
                                          selector: :on_keyboard_hide,
                                              name: UIKeyboardDidHideNotification,
                                            object: nil
+      NSNotificationCenter.defaultCenter.addObserver self,
+                                         selector: :keyboard_will_show,
+                                             name: UIKeyboardWillShowNotification,
+                                           object: nil
+      NSNotificationCenter.defaultCenter.addObserver self,
+                                         selector: :keyboard_will_hide,
+                                             name: UIKeyboardWillHideNotification,
+                                           object: nil
+    end
+    # ALIASES
+    def on_input_change(text_field); end
+    def on_input_edit(text_field); end
+    def on_input_return(text_field)
+      text_field.resignFirstResponder
+    end;
+    def textFieldShouldReturn(text_field)
+      on_input_return(text_field)
+    end
+    def textFieldDidBeginEditing(text_field)
+      on_input_edit(text_field)
     end
 
     private

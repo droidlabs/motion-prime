@@ -9,9 +9,9 @@ module MotionPrime
         ]
       }.merge(title: options[:title])
     end
-    after_render :render_submit
+    after_render :bind_submit
 
-    def render_submit
+    def bind_submit
       view(:submit).on :touch do
         form.send(options[:action]) if options[:action]
       end

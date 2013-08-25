@@ -29,9 +29,9 @@ module MotionPrime
       }.merge(options[:arrow] || {})
     end
 
-    after_render :render_button
+    after_render :bind_select_button
 
-    def render_button
+    def bind_select_button
       view(:button).on :touch do
         form.send(options[:action]) if options[:action]
       end

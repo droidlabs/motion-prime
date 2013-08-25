@@ -4,7 +4,7 @@ module MotionPrime
     include TableSectionRefreshMixin
     include HasSearchBar
 
-    attr_accessor :table_view
+    attr_accessor :table_view, :did_appear
     before_render :render_table
 
     def table_data
@@ -18,6 +18,7 @@ module MotionPrime
     end
 
     def reload_data
+      @did_appear = false
       @data = nil
       @data_stamp = Time.now.to_i
       table_view.reloadData
@@ -59,6 +60,9 @@ module MotionPrime
     def on_click(table, index)
     end
 
+    def on_appear
+    end
+
     def cell_name(table, index)
       record = data[index.row]
       if record && record.model &&
@@ -79,6 +83,13 @@ module MotionPrime
 
     def tableView(table, cellForRowAtIndexPath:index)
       cell = cached_cell(index, table) || render_cell(index, table)
+
+      # run table view is appeared callback if needed
+      if index.row == data.size - 1 && !@did_appear
+        @did_appear = true
+        on_appear
+      end
+
       cell.is_a?(UIView) ? cell : cell.view
     end
 

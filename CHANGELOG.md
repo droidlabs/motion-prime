@@ -1,3 +1,11 @@
+=== 0.1.5
+* MP::FormSection#on_edit renamed to on_input_edit
+* MP::FormSection#on_input_change callback added
+* MP::FormSection#on_input_return callback added, hides keyboard by default
+* MP::FormSection#keyboard_will_show callback added
+* MP::FormSection#keyboard_will_hide callback added
+* MP::TableSection#on_appear callback added
+
 === 0.1.4 (Breaking changes)
 * MotionPrime::BaseModel#sync_with_url renamed to fetch_with_url
 * MotionPrime::BaseModel#sync_with_attributes renamed to fetch_with_attributes

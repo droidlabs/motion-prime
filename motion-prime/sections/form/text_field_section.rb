@@ -21,13 +21,6 @@ module MotionPrime
         editable: true
       }.merge(options[:input] || {})
     end
-    after_render :render_input
-
-    def render_input
-      view(:input).on :editing_did_begin do |view|
-        focus
-        form.on_edit(self)
-      end
-    end
+    after_render :bind_text_input
   end
 end
