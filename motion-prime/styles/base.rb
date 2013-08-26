@@ -104,5 +104,5 @@ MotionPrime::Styles.define :base do
   style :date_picker,
     width: 300,
     height: 150,
-    top: 10, left: 0
+    top: 30, left: 0
 end
