@@ -53,19 +53,27 @@ module MotionPrime
       should_fetch = sync_options[:fetch]
       should_update = sync_options[:update]
 
+      should_fetch = false if sync_url.blank?
+      should_update = false if sync_url.blank?
+
       should_fetch = !new_record? if should_fetch.nil?
       should_update = new_record? if should_update.nil?
 
       fetch_with_url self.sync_url do
         save if sync_options[:save]
         block.call if use_callback
-      end if should_fetch && sync_url.present?
+      end if should_fetch
       update_with_url self.sync_url do
         save if sync_options[:save]
-        block.call if use_callback
-      end if should_update && sync_url.present?
 
-      fetch_associations(sync_options)
+        # run callback only if it wasn't run on fetch
+        block.call if use_callback && !should_fetch
+      end if should_update
+
+      fetch_associations(sync_options) do
+        # run callback only if it wasn't run on fetch or update
+        block.call if use_callback && !should_fetch && !should_update
+      end
     end
 
     # fetch from server using url
@@ -99,9 +107,16 @@ module MotionPrime
       block.call(self) if block_given?
     end
 
-    def fetch_associations(sync_options = {})
-      (self.class._associations || []).each do |key, options|
-        fetch_association(key, sync_options)
+    def fetch_associations(sync_options = {}, &block)
+      use_callback = block_given?
+      associations = self.class._associations || {}
+
+      associations.keys.each_with_index do |key, index|
+        if use_callback && associations.count - 1 == index
+          fetch_association(key, sync_options, &block)
+        else
+          fetch_association(key, sync_options)
+        end
       end
     end
 

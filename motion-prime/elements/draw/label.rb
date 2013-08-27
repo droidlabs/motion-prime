@@ -6,12 +6,18 @@ module MotionPrime
     def draw_in(rect)
       options = computed_options
       return if options[:hidden]
+
+      if options[:size_to_fit]
+        @computed_options[:height] = outer_height
+      end
+
       color = options[:text_color]
       color.uicolor.set if color
+      font = options[:font] || :system
       if options[:number_of_lines] != 0
         options[:text].to_s.drawAtPoint(
           CGPointMake(computed_left, computed_top),
-          withFont: options[:font].uifont
+          withFont: font.uifont
         )
       else
         rect = CGRectMake(
@@ -20,7 +26,7 @@ module MotionPrime
         line_break = options.has_key?(:line_break_mode) ? options[:line_break_mode] : :wordwrap
         alignment = options.has_key?(:text_alignment) ? options[:text_alignment] : :left
         options[:text].to_s.drawInRect(
-          rect, withFont: options[:font].uifont,
+          rect, withFont: font.uifont,
           lineBreakMode: line_break.uilinebreakmode,
           alignment: alignment.uitextalignment
         )
