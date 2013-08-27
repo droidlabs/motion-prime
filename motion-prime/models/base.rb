@@ -6,7 +6,7 @@ motion_require './store.rb'
 motion_require './store_extension.rb'
 module MotionPrime
   class BaseModel < NSFNanoObject
-    class_attribute :sync_url
+    class_attribute :_sync_url
     class_attribute :_updatable_attributes
     class_attribute :_associations
     alias_method :attributes, :info
@@ -21,7 +21,7 @@ module MotionPrime
     extend MotionPrime::ModelAssociationClassMethods
 
     def sync_url
-      self.class.sync_url.to_s.gsub(':id', id.to_s)
+      normalize_sync_url(self.class.sync_url)
     end
 
     def model_name
@@ -59,11 +59,11 @@ module MotionPrime
       fetch_with_url self.sync_url do
         save if sync_options[:save]
         block.call if use_callback
-      end if should_fetch
+      end if should_fetch && sync_url.present?
       update_with_url self.sync_url do
         save if sync_options[:save]
         block.call if use_callback
-      end if should_update
+      end if should_update && sync_url.present?
 
       fetch_associations(sync_options)
     end
@@ -117,7 +117,8 @@ module MotionPrime
       old_collection = self.send(key)
       use_callback = block_given?
       puts "SYNC: started sync for #{key} in #{self.class.name}"
-      api_client.get(options[:sync_url]) do |data|
+      api_client.get normalize_sync_url(options[:sync_url]) do |data|
+        data = data[options[:sync_key]] if options[:sync_key]
         if data.present?
           # Update/Create existing records
           data.each do |attributes|
@@ -167,9 +168,13 @@ module MotionPrime
       end
     end
 
+    def normalize_sync_url(url)
+      url.to_s.gsub(':id', id.to_s)
+    end
+
     class << self
       def sync_url(url = nil)
-        url ? self.sync_url = url : super
+        url ? self._sync_url = url : self._sync_url
       end
 
       def updatable_attributes(*attrs)
