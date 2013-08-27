@@ -1,3 +1,7 @@
+=== 0.1.7
+* MP::BaseModel#fetch_associations now supports callback option
+* MP::LabelDrawElement now supports `size_to_fit` option
+
 === 0.1.6
 * Section container options now support proc values
 
