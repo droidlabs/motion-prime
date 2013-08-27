@@ -1,6 +1,6 @@
 module MotionPrime
   module ElementTextHeightMixin
-    def height
+    def content_height
       width = computed_options[:width]
       font = computed_options[:font] || :system.uifont
       raise "Please set element width for height calculation" unless width
@@ -9,9 +9,8 @@ module MotionPrime
             lineBreakMode: UILineBreakModeWordWrap).height
     end
 
-    def outer_height
-      height + computed_options[:top].to_i +
-      computed_options[:bottom].to_i
+    def content_outer_height
+      content_height + computed_inner_top + computed_inner_bottom
     end
   end
 end

@@ -7,10 +7,19 @@ module MotionPrime
       options = computed_options
       return if options[:hidden]
 
-      if options[:size_to_fit]
-        @computed_options[:height] = outer_height
+      size_to_fit_if_needed
+
+      # render background
+      bg_color = options[:background_color]
+      if bg_color
+        rect = CGRectMake(
+          computed_left, computed_top, computed_outer_width, computed_outer_height
+        )
+        bg_color.uicolor.setFill
+        UIRectFill(rect)
       end
 
+      # render text
       color = options[:text_color]
       color.uicolor.set if color
       font = options[:font] || :system
@@ -21,7 +30,8 @@ module MotionPrime
         )
       else
         rect = CGRectMake(
-          computed_left, computed_top, computed_width, computed_height
+          computed_inner_left, computed_inner_top,
+          computed_width, computed_height
         )
         line_break = options.has_key?(:line_break_mode) ? options[:line_break_mode] : :wordwrap
         alignment = options.has_key?(:text_alignment) ? options[:text_alignment] : :left
@@ -30,6 +40,13 @@ module MotionPrime
           lineBreakMode: line_break.uilinebreakmode,
           alignment: alignment.uitextalignment
         )
+      end
+    end
+
+    def size_to_fit_if_needed
+      if computed_options[:size_to_fit]
+        @computed_options[:height] = content_height
+        reset_computed_values
       end
     end
   end

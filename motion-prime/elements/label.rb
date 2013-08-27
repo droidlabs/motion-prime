@@ -9,5 +9,13 @@ module MotionPrime
         view.sizeToFit
       end
     end
+
+    def computed_inner_top
+      computed_options[:top].to_i
+    end
+
+    def computed_inner_bottom
+      computed_options[:bottom].to_i
+    end
   end
 end

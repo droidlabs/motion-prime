@@ -13,7 +13,6 @@ module MotionPrime
     end
   end
   module ModelAssociationClassMethods
-
     # Defines bag associated with model, creates accessor for bag
     #
     # @param [String] name - the name of bag

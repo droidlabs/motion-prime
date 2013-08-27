@@ -47,7 +47,7 @@ module MotionPrime
     end
 
     # sync with with server
-    # TODO: order of fetch/update should be based on updated time
+    # TODO: order of fetch/update should be based on updated time?
     def sync(sync_options = {}, &block)
       use_callback = block_given?
       should_fetch = sync_options[:fetch]
@@ -162,7 +162,24 @@ module MotionPrime
     end
 
     def fetch_has_one(key, options = {}, &block)
-      # TODO: add implementation
+      use_callback = block_given?
+      puts "SYNC: started sync for #{key} in #{self.class.name}"
+      api_client.get normalize_sync_url(options[:sync_url]) do |data|
+        data = data[options[:sync_key]] if options[:sync_key]
+        if data.present?
+          model = self.send(key)
+          unless model
+            model = key.singularize.to_s.classify.constantize.new
+            self.send(:"#{key}_bag") << model
+          end
+          model.fetch_with_attributes(data)
+          model.save if sync_options[:save]
+          block.call if use_callback
+        else
+          puts "SYNC ERROR: failed sync for #{key} in #{self.class.name}"
+          block.call if use_callback
+        end
+      end
     end
 
     def inspect

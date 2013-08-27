@@ -39,7 +39,7 @@ module MotionPrime
     end
 
     def compute_options!
-      @computed_options = options
+      @computed_options = normalize_options(options, section)
       compute_block_options
       compute_style_options
       @computed_options = normalize_options(@computed_options, section)
