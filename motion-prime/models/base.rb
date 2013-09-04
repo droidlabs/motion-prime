@@ -10,6 +10,7 @@ module MotionPrime
     class_attribute :_updatable_attributes
     class_attribute :_associations
     alias_method :attributes, :info
+
     include MotionPrime::HasAuthorization
 
     include MotionPrime::ModelMethods
@@ -20,8 +21,17 @@ module MotionPrime
 
     extend MotionPrime::ModelAssociationClassMethods
 
-    def sync_url
-      normalize_sync_url(self.class.sync_url)
+    def errors
+      @errors ||= Errors.new(self)
+    end
+
+    def sync_url(method = :get)
+      url = self.class.sync_url
+      if url.is_a?(Proc)
+        raise StandardError, "no method given" unless method.present?
+        url = url.call(method)
+      end
+      normalize_sync_url(url)
     end
 
     def model_name
@@ -35,7 +45,7 @@ module MotionPrime
     # destroy on server and delete on local
     def destroy(&block)
       use_callback = block_given?
-      api_client.delete(sync_url) do
+      api_client.delete(sync_url(:delete)) do
         block.call() if use_callback
       end
       delete
@@ -52,28 +62,42 @@ module MotionPrime
       use_callback = block_given?
       should_fetch = sync_options[:fetch]
       should_update = sync_options[:update]
+      should_fetch_associations = if sync_options.has_key?(:fetch_associations)
+        sync_options[:fetch_associations]
+      else # do not need to fetch unless this is a GET request
+        should_fetch
+      end
 
-      should_fetch = false if sync_url.blank?
-      should_update = false if sync_url.blank?
+      method = if should_update
+        persisted? ? :put : :post
+      else
+        :get
+      end
+      url = sync_url(method)
+
+      if url.blank?
+        should_fetch = false
+        should_update = false
+      end
 
       should_fetch = !new_record? if should_fetch.nil?
       should_update = new_record? if should_update.nil?
 
-      fetch_with_url self.sync_url do
+      fetch_with_url url do
         save if sync_options[:save]
         block.call if use_callback
       end if should_fetch
-      update_with_url self.sync_url do
-        save if sync_options[:save]
 
+      update_with_url url, sync_options do |data, status_code|
+        save if sync_options[:save] && status_code.to_s =~ /20\d/
         # run callback only if it wasn't run on fetch
-        block.call if use_callback && !should_fetch
+        block.call(data, status_code) if use_callback && !should_fetch
       end if should_update
 
       fetch_associations(sync_options) do
         # run callback only if it wasn't run on fetch or update
         block.call if use_callback && !should_fetch && !should_update
-      end
+      end if should_fetch_associations
     end
 
     # fetch from server using url
@@ -86,12 +110,17 @@ module MotionPrime
     end
 
     # update on server using url
-    def update_with_url(url, &block)
+    def update_with_url(url, sync_options = nil, &block)
       use_callback = block_given?
-      post_data = { model_name => filtered_updatable_attributes}
-      api_client.send(id ? :put : :post, url, post_data) do |data|
-        self.id ||= data['id']
-        block.call() if use_callback
+      post_data = { model_name => filtered_updatable_attributes(sync_options)}
+      api_client.send(id ? :put : :post, url, post_data) do |data, status_code|
+        if status_code.to_s =~ /20\d/ && data.is_a?(Hash)
+          self.id ||= data['id']
+          accessible_attributes = self.class.attributes.map(&:to_sym) - [:id]
+          attrs = data.symbolize_keys.slice(*accessible_attributes)
+          fetch_with_attributes(attrs)
+        end
+        block.call(data, status_code) if use_callback
       end
     end
 
@@ -186,9 +215,17 @@ module MotionPrime
       "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + MotionPrime::JSON.generate(attributes)
     end
 
-    def filtered_updatable_attributes
-      return attributes if self.class.updatable_attributes.blank?
-      self.class.updatable_attributes.to_a.inject({}) do |hash, attribute|
+    def filtered_updatable_attributes(options = {})
+      slice_attributes = options[:updatable_attributes].map(&:to_sym) if options.has_key?(:updatable_attributes)
+      updatable_attributes = self.class.updatable_attributes
+
+      if updatable_attributes.blank?
+        attrs = attributes_hash.slice(*slice_attributes) if slice_attributes
+        return attrs
+      end
+
+      updatable_attributes = updatable_attributes.slice(*slice_attributes) if slice_attributes
+      updatable_attributes.to_a.inject({}) do |hash, attribute|
         key, options = *attribute
         return hash if options[:if] && !send(options[:if])
         if block = options[:block]
@@ -196,7 +233,7 @@ module MotionPrime
         else
           value = attributes[key]
         end
-        hash.merge!(key => value)
+        hash.merge(key => value)
       end
     end
 
@@ -204,9 +241,17 @@ module MotionPrime
       url.to_s.gsub(':id', id.to_s)
     end
 
+    def attributes_hash
+      self.attributes.to_hash.symbolize_keys
+    end
+
     class << self
-      def sync_url(url = nil)
-        url ? self._sync_url = url : self._sync_url
+      def sync_url(url = nil, &block)
+        if url || block_given?
+          self._sync_url = url || block
+        else
+          self._sync_url
+        end
       end
 
       def updatable_attributes(*attrs)

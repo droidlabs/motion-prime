@@ -21,6 +21,21 @@ module MotionPrime
     def store
       super || self.class.store
     end
+
+    def assign_attributes(new_attributes)
+      attributes = new_attributes.symbolize_keys
+      attributes.each do |k, v|
+        if respond_to?("#{k}=")
+          send("#{k}=", v)
+        else
+          raise(NoMethodError, "unknown attribute: #{k}")
+        end
+      end
+    end
+
+    def persisted?
+      self.id.present?
+    end
   end
 
   module ModelClassMethods

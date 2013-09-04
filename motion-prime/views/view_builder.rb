@@ -16,6 +16,12 @@ module MotionPrime
     end
 
     VIEWS_MAP = {
+      'ONRDatePicker' => Proc.new {|klass, options|
+        format = options.delete(:format)
+        klass.alloc.initWithFrame(CGRectZero).tap do |picker|
+          picker.set_format format
+        end
+      },
       'UIView' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
       'UIControl' => Proc.new {|klass, options| klass.alloc.init },
       'UIActionSheet' => Proc.new {|klass, options|

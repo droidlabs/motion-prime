@@ -14,8 +14,8 @@ module MotionPrime
       options = builder.options.merge(calculate_frame: true, bounds: bounds)
       view = builder.view
       view_stack.last.addSubview(view) unless view_stack.empty?
-
       setup(view, options, &block)
+      view.on_added if view.respond_to?(:on_added)
 
       view
     end

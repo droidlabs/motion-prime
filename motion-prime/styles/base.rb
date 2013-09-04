@@ -59,6 +59,12 @@ MotionPrime::Styles.define :base do
     bottom: 0,
     padding_top: 4
 
+  style :field_input_with_errors,
+    layer: {
+      border_color: proc { APP_CONFIG[:css_color_red] }
+    },
+    text_color: proc { APP_CONFIG[:css_color_red] }
+
   # available options for submit button:
   # @button_type: :rounded, :custom
   # @background_color: COLOR
@@ -105,4 +111,24 @@ MotionPrime::Styles.define :base do
     width: 300,
     height: 150,
     top: 30, left: 0
+
+  style :error_message,
+    top: nil,
+    bottom: 0,
+    width: 300,
+    line_break_mode: :wordwrap,
+    number_of_lines: 0,
+    text_color: proc { APP_CONFIG[:css_color_red] }
+
+  style :field_switch,
+    top: 10,
+    width: 79,
+    height: 27,
+    right: 0
+
+  style :switch_label,
+    top: 12
+
+  style :switch_hint,
+    top: 40
 end

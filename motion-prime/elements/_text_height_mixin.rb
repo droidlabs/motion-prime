@@ -1,6 +1,7 @@
 module MotionPrime
   module ElementTextHeightMixin
     def content_height
+      return 0 if computed_options[:text].blank?
       width = computed_options[:width]
       font = computed_options[:font] || :system.uifont
       raise "Please set element width for height calculation" unless width

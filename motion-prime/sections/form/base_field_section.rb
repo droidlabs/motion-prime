@@ -1,11 +1,53 @@
 module MotionPrime
   class BaseFieldSection < BaseSection
+    include BW::KVO
     attr_accessor :form
 
+    after_render :on_section_render
+
     def initialize(options = {})
-      super
       @form = options.delete(:form)
+      if options[:observe_errors_for]
+        @observe_errors_for = self.send(:instance_eval, &options.delete(:observe_errors_for))
+      end
+      super
       @container_options = options.delete(:container)
+      observe_model_errors
+    end
+
+    def render_element?(element_name)
+      case element_name.to_sym
+      when :error_message
+        @observe_errors_for && @observe_errors_for.errors[name].present?
+      when :label
+        not @options[:label] === false
+      else true
+      end
+    end
+
+    def on_section_render
+      @status_for_updated = :rendered
+    end
+
+    def observe_model_errors
+      return unless @observe_errors_for
+      observe @observe_errors_for.errors, name do |old_value, new_value|
+        if @status_for_updated == :rendered
+          clear_observer_and_reload
+        else
+          create_elements
+          form.table_view.reloadData
+        end
+      end
+    end
+
+    def clear_observer_and_reload
+      unobserve @observe_errors_for.errors, name
+      reload_section
+    end
+
+    def build_options_for_element(opts)
+      super.merge(observe_errors_for: @observe_errors_for)
     end
 
     def form_name
@@ -55,6 +97,15 @@ module MotionPrime
         form.on_input_change(view(:input))
       end
       view(:input).delegate = self.form
+    end
+
+    def reload_section
+      form.reload_cell(self)
+    end
+
+    def container_height
+      error_height = element(:error_message).try(:content_height)
+      super + error_height.to_i
     end
   end
 end

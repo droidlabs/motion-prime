@@ -28,6 +28,19 @@ module MotionPrime
         ],
       }.merge(options[:arrow] || {})
     end
+    element :error_message, type: :error_message do
+      {
+        styles: [
+          :base_field_label,
+          :base_string_field_label,
+          :"#{form_name}_field_label",
+          :"#{form_name}_#{name}_field_label",
+          :base_error_message
+        ],
+        hidden: proc { form.model && form.model.errors[name].blank? },
+        text: proc { form.model and form.model.errors[name].join("\n") }
+      }
+    end
 
     after_render :bind_select_button
 

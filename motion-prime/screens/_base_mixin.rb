@@ -37,7 +37,10 @@ module MotionPrime
         self.send("#{k}=", v) if self.respond_to?("#{k}=")
       end
 
-      self.add_navigation_controller if args[:navigation]
+      if @wrap_in_navigation = args[:navigation]
+        self.add_navigation_controller
+      end
+
       self.on_init if respond_to?(:on_init)
       self
     end
