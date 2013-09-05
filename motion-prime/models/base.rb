@@ -228,10 +228,10 @@ module MotionPrime
       updatable_attributes.to_a.inject({}) do |hash, attribute|
         key, options = *attribute
         return hash if options[:if] && !send(options[:if])
-        if block = options[:block]
-          value = instance_eval(&block)
+        value = if block = options[:block]
+          block.call(self)
         else
-          value = attributes[key]
+          attributes[key]
         end
         hash.merge(key => value)
       end

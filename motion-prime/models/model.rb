@@ -2,7 +2,6 @@ module MotionPrime
   module ModelMethods
     def save
       raise StoreError, 'No store provided' unless self.store
-
       error_ptr = Pointer.new(:id)
       self.store.addObject(self, error: error_ptr)
       raise StoreError, error_ptr[0].description if error_ptr[0]
