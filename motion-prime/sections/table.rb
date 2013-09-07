@@ -31,10 +31,17 @@ module MotionPrime
       table_view.reloadData
     end
 
+    def table_styles
+      styles = [:base_table, name.to_sym]
+      styles += @styles if @styles.present?
+      styles
+    end
+
     def render_table
       set_data_stamp((0..elements_options.count-1))
+
       self.table_view = screen.table_view(
-        styles: [:base_table, name.to_sym], delegate: self, data_source: self
+        styles: table_styles, delegate: self, data_source: self
       ).view
     end
 
@@ -43,6 +50,9 @@ module MotionPrime
 
       # define default styles for cell
       styles = [:"#{name}_cell"]
+      Array.wrap(@styles).each do |table_style|
+        styles << :"#{table_style}_cell"
+      end
       if item.respond_to?(:container_styles) && item.container_styles.present?
         styles += Array.wrap(item.container_styles)
       end

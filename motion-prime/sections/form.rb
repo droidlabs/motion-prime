@@ -44,7 +44,8 @@ module MotionPrime
       if item.respond_to?(:container_styles) && item.container_styles.present?
         styles += Array.wrap(item.container_styles)
       end
-      screen.table_view_cell styles: styles, reuse_identifier: cell_name(table, index) do
+      screen.table_view_cell styles: styles, reuse_identifier: cell_name(table, index) do |cell_element|
+        item.cell_element = cell_element if item.respond_to?(:cell_element)
         item.render(to: screen)
       end
     end
@@ -184,6 +185,10 @@ module MotionPrime
       klass.new(field.merge(form: self))
     end
 
+    def render_field?(name)
+      true
+    end
+
     class << self
       def field(name, options = {})
         options[:name] = name
@@ -209,6 +214,7 @@ module MotionPrime
         self.field_indexes = {}
         index = 0
         (self.class.fields_options || []).each do |key, field|
+          next unless render_field?(key)
           self.fields[key] = load_field(field)
           self.field_indexes[key] = index
           index += 1

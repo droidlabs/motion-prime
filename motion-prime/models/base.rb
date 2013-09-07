@@ -9,7 +9,6 @@ module MotionPrime
     class_attribute :_sync_url
     class_attribute :_updatable_attributes
     class_attribute :_associations
-    alias_method :attributes, :info
 
     include MotionPrime::HasAuthorization
 
@@ -212,7 +211,7 @@ module MotionPrime
     end
 
     def inspect
-      "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + MotionPrime::JSON.generate(attributes)
+      "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + MotionPrime::JSON.generate(info)
     end
 
     def filtered_updatable_attributes(options = {})
@@ -231,7 +230,7 @@ module MotionPrime
         value = if block = options[:block]
           block.call(self)
         else
-          attributes[key]
+          info[key]
         end
         hash.merge(key => value)
       end
@@ -242,7 +241,7 @@ module MotionPrime
     end
 
     def attributes_hash
-      self.attributes.to_hash.symbolize_keys
+      self.info.to_hash.symbolize_keys
     end
 
     class << self

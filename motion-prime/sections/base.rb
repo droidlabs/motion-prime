@@ -16,14 +16,13 @@ module MotionPrime
     include MotionPrime::HasAuthorization
     include MotionPrime::HasNormalizer
 
-    attr_accessor :screen, :model, :name, :options, :elements, :attributes_collector
+    attr_accessor :screen, :model, :name, :options, :elements
     class_attribute :elements_options, :container_options
     define_callbacks :render
 
     def initialize(options = {})
       @options = options
       @model = options[:model]
-      @attributes_collector = options[:attributes_collector]
       @name = options[:name] ||= default_name
       create_elements
       self.hide if container_options[:hidden]

@@ -21,11 +21,13 @@ module MotionPrime
       super || self.class.store
     end
 
-    def assign_attributes(new_attributes)
+    def assign_attributes(new_attributes, options = {})
       attributes = new_attributes.symbolize_keys
       attributes.each do |k, v|
         if respond_to?("#{k}=")
-          send("#{k}=", v)
+          send("#{k}=", v) unless options[:skip_nil_values] && v.nil?
+        elsif options[:check_attribute_presence]
+          puts "unknown attribute: #{k}"
         else
           raise(NoMethodError, "unknown attribute: #{k}")
         end
