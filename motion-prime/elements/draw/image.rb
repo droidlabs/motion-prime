@@ -7,8 +7,8 @@ module MotionPrime
       image_rect = CGRectMake(
         computed_left,
         computed_top,
-        computed_options[:width],
-        computed_options[:height]
+        computed_width,
+        computed_height
       )
       # draw already initialized image
       if image_data
