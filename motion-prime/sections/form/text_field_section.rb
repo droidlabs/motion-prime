@@ -11,17 +11,16 @@ module MotionPrime
       }.merge(options[:label] || {})
     end
     element :input, type: :text_view do
+      styles = [
+        :base_field_input,
+        :base_text_field_input,
+        :"#{form_name}_field_input",
+        :"#{form_name}_#{name}_field_input"
+      ]
+      styles << :base_field_input_with_errors if form.model && form.model.errors[name].present?
+
       {
-        styles: proc {
-          styles = [
-            :base_field_input,
-            :base_text_field_input,
-            :"#{form_name}_field_input",
-            :"#{form_name}_#{name}_field_input"
-          ]
-          styles << :base_field_input_with_errors if form.model && form.model.errors[name].present?
-          styles
-        },
+        styles: styles,
         editable: true
       }.merge(options[:input] || {})
     end

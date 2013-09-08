@@ -64,7 +64,6 @@ module MotionPrime
         @styles << :"base_#{name}_with_errors"
       end
       custom_styles = @computed_options.delete(:styles)
-      custom_styles = section.send :instance_eval, &custom_styles if custom_styles.is_a?(Proc)
       @styles += [*custom_styles]
       @computed_options.merge!(style_options)
     end

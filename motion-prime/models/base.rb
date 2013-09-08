@@ -26,10 +26,7 @@ module MotionPrime
 
     def sync_url(method = :get)
       url = self.class.sync_url
-      if url.is_a?(Proc)
-        raise StandardError, "no method given" unless method.present?
-        url = url.call(method)
-      end
+      url = url.call(method) if url.is_a?(Proc)
       normalize_sync_url(url)
     end
 
