@@ -127,7 +127,8 @@ MotionPrime::Styles.define :base do
     right: 0
 
   style :switch_label,
-    top: 12
+    top: 10,
+    font: proc { APP_CONFIG[:css_font_base].uifont(16) }
 
   style :switch_hint,
     top: 40
