@@ -37,7 +37,7 @@ MotionPrime::Styles.define :base do
     height: 20,
     left: 0,
     right: 0,
-    font: proc { APP_CONFIG[:css_font_base].uifont(12) },
+    font: proc { MotionPrime::Config.font.name.uifont(12) },
     size_to_fit: true
 
   # available options for input:
@@ -50,8 +50,8 @@ MotionPrime::Styles.define :base do
       border_width: 1,
       border_color: :gray
     },
-    font: proc { APP_CONFIG[:css_font_base].uifont(16) },
-    placeholder_font: proc { APP_CONFIG[:css_font_base].uifont(16) },
+    font: proc { MotionPrime::Config.font.name.uifont(16) },
+    placeholder_font: proc { MotionPrime::Config.font.name.uifont(16) },
     background_color: :white,
     left: 0,
     right: 0,
@@ -61,9 +61,9 @@ MotionPrime::Styles.define :base do
 
   style :field_input_with_errors,
     layer: {
-      border_color: proc { APP_CONFIG[:css_color_red] }
+      border_color: proc { MotionPrime::Config.color.error }
     },
-    text_color: proc { APP_CONFIG[:css_color_red] }
+    text_color: proc { MotionPrime::Config.color.error }
 
   # available options for submit button:
   # @button_type: :rounded, :custom
@@ -92,7 +92,7 @@ MotionPrime::Styles.define :base do
     },
     title_color: :gray,
     title_label: {
-      font: proc { APP_CONFIG[:css_font_base].uifont(16) }
+      font: proc { MotionPrime::Config.font.name.uifont(16) }
     }
   style :select_field_arrow,
     image: "images/forms/select_arrow.png",
@@ -118,7 +118,7 @@ MotionPrime::Styles.define :base do
     width: 300,
     line_break_mode: :wordwrap,
     number_of_lines: 0,
-    text_color: proc { APP_CONFIG[:css_color_red] }
+    text_color: proc { MotionPrime::Config.color.error }
 
   style :field_switch,
     top: 10,
@@ -128,7 +128,7 @@ MotionPrime::Styles.define :base do
 
   style :switch_label,
     top: 10,
-    font: proc { APP_CONFIG[:css_font_base].uifont(16) }
+    font: proc { MotionPrime::Config.font.name.uifont(16) }
 
   style :switch_hint,
     top: 40
