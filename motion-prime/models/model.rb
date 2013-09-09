@@ -34,8 +34,24 @@ module MotionPrime
       end
     end
 
+    def attributes_hash
+      self.info.to_hash.symbolize_keys
+    end
+
+    def new_record?
+      id.blank?
+    end
+
     def persisted?
-      self.id.present?
+      !new_record?
+    end
+
+    def model_name
+      self.class.name.underscore
+    end
+
+    def inspect
+      "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + MotionPrime::JSON.generate(info)
     end
   end
 

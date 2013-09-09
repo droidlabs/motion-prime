@@ -1,4 +1,4 @@
-describe "Associations" do
+describe "Model Associations" do
    before do
     MotionPrime::Store.connect
   end

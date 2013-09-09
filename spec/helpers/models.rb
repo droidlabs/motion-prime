@@ -1,5 +1,5 @@
 class User < MotionPrime::BaseModel
-  attributes :name, :age, :created_at
+  attributes :id, :name, :age, :created_at
 end
 
 class Plane < MotionPrime::BaseModel

@@ -1,4 +1,4 @@
-describe "Store" do
+describe "Model Store" do
   before do
     MotionPrime::Store.disconnect
   end

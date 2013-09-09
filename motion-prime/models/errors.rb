@@ -1,41 +1,64 @@
 module MotionPrime
-  class StoreError < StandardError; end
   class Errors
-    class_attribute :fields
-    self.fields = []
+    attr_accessor :keys
+    attr_accessor :errors
 
     def initialize(model)
+      @keys = []
+      @errors = {}
       model.class.attributes.map(&:to_sym).each do |key|
-        initialize_for_field key
+        initialize_for_key key
       end
     end
 
-    def initialize_for_field(name)
-      self.class.fields << name.to_sym
-      self.class.send :attr_accessor, name
+    def initialize_for_key(key)
+      @keys << key.to_sym unless @keys.include?(key.to_sym)
+      @errors[key.to_sym] ||= []
     end
 
     def get(key)
-      self.send(key) if respond_to?(key)
+      initialize_for_key(key)
+      @errors[key.to_sym]
     end
 
-    def set(key, value)
-      initialize_for_field(key) unless respond_to?("#{key}=")
-      self.send("#{key}=", value)
+    def set(key, errors)
+      initialize_for_key(key)
+      @errors[key.to_sym] = Array.wrap(errors)
     end
 
-    def [](attribute)
-      get(attribute) || set(attribute.to_sym, [])
+    def add(key, error)
+      initialize_for_key(key)
+      @errors[key.to_sym] << error
     end
 
-    def []=(attribute, errors)
-      set(attribute, errors)
+    def [](key)
+      get(key)
+    end
+
+    def []=(key, errors)
+      set(key, errors)
     end
 
     def reset
-      self.class.fields.each do |field|
-        set(field, []) unless send(field).blank?
+      @keys.each do |key|
+        set(key, [])
       end
+    end
+
+    def messages
+      errors.values.compact.flatten
+    end
+
+    def blank?
+      messages.blank?
+    end
+
+    def present?
+      !blank?
+    end
+
+    def to_s
+      messages.join(';')
     end
   end
 end
