@@ -23,7 +23,7 @@ describe "Model Errors" do
 
     it "should be convertable to string" do
       @user.errors.add(:foo, 'bar')
-      @user.errors.to_s.match(/foo/).should != nil
+      @user.errors.to_s.match(/bar/).should != nil
     end
   end
 end

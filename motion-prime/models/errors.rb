@@ -1,34 +1,35 @@
 module MotionPrime
   class Errors
     attr_accessor :keys
-    attr_accessor :errors
 
     def initialize(model)
       @keys = []
-      @errors = {}
       model.class.attributes.map(&:to_sym).each do |key|
         initialize_for_key key
       end
     end
 
     def initialize_for_key(key)
+      return if @keys.include?(key.to_sym)
       @keys << key.to_sym unless @keys.include?(key.to_sym)
-      @errors[key.to_sym] ||= []
+      unless instance_variable_get("@#{key}")
+        instance_variable_set("@#{key}", [])
+      end
+      self.class.send :attr_accessor, key.to_sym
     end
 
     def get(key)
       initialize_for_key(key)
-      @errors[key.to_sym]
+      send(:"#{key.to_sym}")
     end
 
     def set(key, errors)
       initialize_for_key(key)
-      @errors[key.to_sym] = Array.wrap(errors)
+      send :"#{key.to_sym}=", Array.wrap(errors)
     end
 
     def add(key, error)
-      initialize_for_key(key)
-      @errors[key.to_sym] << error
+      get(key) << error
     end
 
     def [](key)
@@ -46,7 +47,7 @@ module MotionPrime
     end
 
     def messages
-      errors.values.compact.flatten
+      @keys.map{ |k| get(k)}.compact.flatten
     end
 
     def blank?
