@@ -17,14 +17,9 @@ module MotionPrime
     # end
     #
 
-    KEYBOARD_HEIGHT_PORTRAIT = 216
-    KEYBOARD_HEIGHT_LANDSCAPE = 162
-
     class_attribute :text_field_limits, :text_view_limits
     class_attribute :fields_options
     attr_accessor :fields, :field_indexes, :keyboard_visible
-
-    after_render :bind_keyboard_events
 
     def table_data
       fields.values
@@ -90,6 +85,10 @@ module MotionPrime
       self.fields[field_name.to_sym]
     end
 
+    def fields_hash
+      fields.to_hash
+    end
+
     # Set focus on field cell
     #
     # Examples:
@@ -118,31 +117,6 @@ module MotionPrime
       self.keyboard_visible = false
     end
 
-
-
-    def on_keyboard_show; end
-    def on_keyboard_hide; end
-    def keyboard_will_show; end
-    def keyboard_will_hide; end
-
-    def bind_keyboard_events
-      NSNotificationCenter.defaultCenter.addObserver self,
-                                         selector: :on_keyboard_show,
-                                             name: UIKeyboardDidShowNotification,
-                                           object: nil
-      NSNotificationCenter.defaultCenter.addObserver self,
-                                         selector: :on_keyboard_hide,
-                                             name: UIKeyboardDidHideNotification,
-                                           object: nil
-      NSNotificationCenter.defaultCenter.addObserver self,
-                                         selector: :keyboard_will_show,
-                                             name: UIKeyboardWillShowNotification,
-                                           object: nil
-      NSNotificationCenter.defaultCenter.addObserver self,
-                                         selector: :keyboard_will_hide,
-                                             name: UIKeyboardWillHideNotification,
-                                           object: nil
-    end
     # ALIASES
     def on_input_change(text_field); end
     def on_input_edit(text_field); end

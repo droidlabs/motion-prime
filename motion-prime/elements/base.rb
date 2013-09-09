@@ -31,6 +31,8 @@ module MotionPrime
 
     def render!(&block)
       @view = screen.add_view view_class.constantize, computed_options, &block
+      puts @view.to_s + " " + styles.inspect
+      @view
     end
 
     # Lazy-computing options

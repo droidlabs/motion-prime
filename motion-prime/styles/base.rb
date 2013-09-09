@@ -61,9 +61,9 @@ MotionPrime::Styles.define :base do
 
   style :field_input_with_errors,
     layer: {
-      border_color: proc { MotionPrime::Config.color.error }
+      border_color: :onr_red
     },
-    text_color: proc { MotionPrime::Config.color.error }
+    text_color: :onr_red
 
   # available options for submit button:
   # @button_type: :rounded, :custom
@@ -71,11 +71,11 @@ MotionPrime::Styles.define :base do
   # @background_image: PATH_TO_FILE
   style :submit_button,
     background_color: :gray,
+    title_color: :white,
     left: 0,
     right: 0,
     top: 10,
-    height: 44,
-    title_color: :white
+    height: 44
 
   style :select_field_button,
     background_color: :white,
@@ -118,7 +118,11 @@ MotionPrime::Styles.define :base do
     width: 300,
     line_break_mode: :wordwrap,
     number_of_lines: 0,
+<<<<<<< HEAD
     text_color: proc { MotionPrime::Config.color.error }
+=======
+    text_color: :onr_red
+>>>>>>> acb8281... move some observers to base section
 
   style :field_switch,
     top: 10,

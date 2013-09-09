@@ -11,6 +11,8 @@ module MotionPrime
     #   element :avatar, type: :image, image: 'defaults/avatar.jpg'
     # end
     #
+    KEYBOARD_HEIGHT_PORTRAIT = 216
+    KEYBOARD_HEIGHT_LANDSCAPE = 162
     DEFAULT_CONTENT_HEIGHT = 65
     include ::MotionSupport::Callbacks
     include MotionPrime::HasAuthorization
@@ -54,6 +56,11 @@ module MotionPrime
       # in next element with same name in another class
       options = opts.clone
       options.merge(section: self)
+    end
+
+    def cell
+      first_element = elements.values.first
+      first_element.view.superview
     end
 
     def render(container_options = {})
@@ -104,6 +111,30 @@ module MotionPrime
       container_options[:styles]
     end
 
+    def on_keyboard_show; end
+    def on_keyboard_hide; end
+    def keyboard_will_show; end
+    def keyboard_will_hide; end
+
+    def bind_keyboard_events
+      NSNotificationCenter.defaultCenter.addObserver self,
+                                         selector: :on_keyboard_show,
+                                             name: UIKeyboardDidShowNotification,
+                                           object: nil
+      NSNotificationCenter.defaultCenter.addObserver self,
+                                         selector: :on_keyboard_hide,
+                                             name: UIKeyboardDidHideNotification,
+                                           object: nil
+      NSNotificationCenter.defaultCenter.addObserver self,
+                                         selector: :keyboard_will_show,
+                                             name: UIKeyboardWillShowNotification,
+                                           object: nil
+      NSNotificationCenter.defaultCenter.addObserver self,
+                                         selector: :keyboard_will_hide,
+                                             name: UIKeyboardWillHideNotification,
+                                           object: nil
+    end
+
     class << self
       def element(name, options = {}, &block)
         options[:type] ||= :label
@@ -123,5 +154,7 @@ module MotionPrime
         set_callback :render, :after, method_name
       end
     end
+    after_render :bind_keyboard_events
+
   end
 end

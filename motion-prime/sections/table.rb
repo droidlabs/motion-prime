@@ -59,7 +59,7 @@ module MotionPrime
       if item.respond_to?(:name) && item.name.present?
         styles += [item.name.to_sym]
       end
-
+      puts 'cell' +styles.inspect
       # DrawSection allows as to draw inside the cell view, so we can setup
       # to use cell view as container
       if item.is_a?(MotionPrime::DrawSection)

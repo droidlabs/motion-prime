@@ -1,12 +1,23 @@
 motion_require '../table.rb'
 module MotionPrime
   class TableFieldSection < TableSection
-    attr_accessor :form, :cell_element
+    attr_accessor :form, :cell_element, :delegate
+    after_render :on_render
 
     def initialize(options = {})
       @form = options.delete(:form)
+      @delegate = options.delete(:delegate) || form
       @container_options = options.delete(:container)
       super
+    end
+
+    def on_render
+      puts @options.inspect
+      add_pull_to_refresh do
+        model.sync! do
+          finish_pull_to_refresh
+        end
+      end if @options[:pull_to_refresh] && model.present?
     end
 
     def render_table
@@ -24,17 +35,18 @@ module MotionPrime
       end
     end
 
-    def table_data
-      form.send("#{name}_table_data")
-    end
-
-    def container_height
-      form.send("#{name}_height")
-    end
-
     def on_click(table, index)
       section = data[index.row]
-      form.send("#{name}_selected", section)
+      delegate.send("#{name}_selected", section) if delegate.respond_to?("#{name}_selected")
     end
+
+    def self.delegate_method(method_name)
+      define_method method_name do |*args|
+        delegate.send("#{name}_#{method_name}", *args) if delegate.respond_to?("#{name}_#{method_name}")
+      end
+    end
+
+    delegate_method :table_data
+    delegate_method :container_height
   end
 end

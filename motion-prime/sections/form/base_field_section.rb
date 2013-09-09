@@ -58,11 +58,6 @@ module MotionPrime
       @container_options || super
     end
 
-    def cell
-      first_element = elements.values.first
-      first_element.view.superview
-    end
-
     def focus(begin_editing = true)
       # scroll to cell
       path = form.table_view.indexPathForCell cell

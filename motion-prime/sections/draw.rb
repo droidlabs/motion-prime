@@ -26,6 +26,7 @@ module MotionPrime
 
     def render!
       if container_options[:as].to_s == 'cell'
+        puts 'dmcell'+ container_options[:styles].inspect
         @container_view = screen.add_view DMCellWithSection, {
           section: self, styles: container_options[:styles],
           reuse_identifier: container_options[:reuse_identifier]
