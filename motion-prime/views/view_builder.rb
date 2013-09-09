@@ -90,9 +90,8 @@ module MotionPrime
             search_bar
           },
           'GMSMapView' => Proc.new{|klass, options|
-            camera = GMSCameraPosition.cameraWithLatitude(35.689466, longitude: 139.700196, zoom: 15)
-            map = GMSMapView.mapWithFrame(CGRectZero, camera: camera)
-            map
+            camera = GMSCameraPosition.cameraWithLatitude(23.42, longitude: 127.42, zoom: 15)
+            GMSMapView.mapWithFrame(CGRectZero, camera: camera)
           }
         }
       end
