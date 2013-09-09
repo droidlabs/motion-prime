@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    motion-prime (0.1.7)
+    motion-prime (0.2.0)
       bubble-wrap
       cocoapods
       motion-cocoapods

@@ -1,3 +1,8 @@
+=== 0.2.0
+* MP::BaseModel improvements
+* Added ability to observe form field errors
+* Use MP::Config for style configurations
+
 === 0.1.7
 * MP::BaseModel#fetch_associations now supports callback option
 * MP::LabelDrawElement now supports `size_to_fit` option
