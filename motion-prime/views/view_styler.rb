@@ -126,6 +126,8 @@ module MotionPrime
         end
       elsif key.end_with?('image')
         view.setValue value.uiimage, forKey: key.camelize
+      elsif key == 'keyboard_type'
+        view.setKeyboardType value.uikeyboardtype
       elsif value.is_a?(Hash)
         self.class.new(view.send(key.camelize(:lower).to_sym), nil, value).apply
       else

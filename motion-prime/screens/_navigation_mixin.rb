@@ -10,9 +10,9 @@ module MotionPrime
       ensure_wrapper_controller_in_place(screen, args)
       screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
       if args[:modal]
-        present_modal_view_controller screen, (args[:animated] || true)
+        present_modal_view_controller screen, (args.has_key?(:animated) ? args[:animated] : true)
       elsif has_navigation?
-        push_view_controller screen
+        push_view_controller screen, args
       else
         app_delegate.open_screen(screen.main_controller)
       end
@@ -32,7 +32,7 @@ module MotionPrime
 
     def close_screen(args = {})
       args ||= {}
-      args[:animated] ||= true
+      args[:animated] = args.has_key?(:animated) ? args[:animated] : true
       # Pop current view, maybe with arguments, if in navigation controller
       if modal?
         close_modal_screen args
@@ -52,8 +52,8 @@ module MotionPrime
       end
     end
 
-    def push_view_controller(vc)
-      navigation_controller.pushViewController(vc, animated: true)
+    def push_view_controller(vc, args = {})
+      navigation_controller.pushViewController(vc, animated: (args.has_key?(:animated) ? args[:animated] : true))
     end
 
     protected

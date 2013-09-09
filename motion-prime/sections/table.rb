@@ -12,22 +12,36 @@ module MotionPrime
     end
 
     def data
-      @data ||= begin
-        table_data
-      end
+      @data ||= table_data
+    end
+
+    def data_stamp_for(id)
+      @data_stamp[id.to_i]
+    end
+
+    def set_data_stamp(cell_ids)
+      @data_stamp ||= []
+      cell_ids.each { |id| @data_stamp[id] = Time.now.to_f }
     end
 
     def reload_data
       @did_appear = false
       @data = nil
-      @data_stamp = Time.now.to_i
+      set_data_stamp((0..elements_options.count-1).to_a)
       table_view.reloadData
     end
 
+    def table_styles
+      styles = [:base_table, name.to_sym]
+      styles += @styles if @styles.present?
+      styles
+    end
+
     def render_table
-      @data_stamp = Time.now.to_i
+      set_data_stamp((0..elements_options.count-1))
+
       self.table_view = screen.table_view(
-        styles: [:base_table, name.to_sym], delegate: self, data_source: self
+        styles: table_styles, delegate: self, data_source: self
       ).view
     end
 
@@ -36,6 +50,9 @@ module MotionPrime
 
       # define default styles for cell
       styles = [:"#{name}_cell"]
+      Array.wrap(@styles).each do |table_style|
+        styles << :"#{table_style}_cell"
+      end
       if item.respond_to?(:container_styles) && item.container_styles.present?
         styles += Array.wrap(item.container_styles)
       end
@@ -67,9 +84,9 @@ module MotionPrime
       record = data[index.row]
       if record && record.model &&
          record.model.respond_to?(:id) && record.model.id.present?
-        "cell_#{record.model.id}_#{@data_stamp}"
+        "cell_#{record.model.id}_#{data_stamp_for(index.row)}"
       else
-        "cell_#{index.section}_#{index.row}_#{@data_stamp}"
+        "cell_#{index.section}_#{index.row}_#{data_stamp_for(index.row)}"
       end
     end
 

@@ -8,13 +8,14 @@ module MotionPrime
     include HasNormalizer
 
     attr_accessor :options, :section, :name,
-                  :view_class, :view, :styles, :screen
+                  :view_class, :view, :view_name, :styles, :screen
 
     define_callbacks :render
 
     def initialize(options = {})
       @options = options
       @section = options.delete(:section)
+      @observe_errors_for = options.delete(:observe_errors_for)
       @name = options[:name]
       @block = options.delete(:block)
       @view_class = options.delete(:view_class) || "UIView"
@@ -56,9 +57,14 @@ module MotionPrime
     end
 
     def compute_style_options
-      @styles = [:"base_#{@view_name}"]
-      @styles += Array.wrap(@computed_options.delete(:styles))
-      @styles += [:"#{section.name}_#{name}"] if section.present?
+      @styles = []
+      @styles << :"#{section.name}_#{name}" if section.present?
+      @styles << :"base_#{@view_name}"
+      if section && @observe_errors_for && @observe_errors_for.errors[section.name].present?
+        @styles << :"base_#{name}_with_errors"
+      end
+      custom_styles = @computed_options.delete(:styles)
+      @styles += [*custom_styles]
       @computed_options.merge!(style_options)
     end
 

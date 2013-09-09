@@ -2,7 +2,6 @@ module MotionPrime
   module ModelMethods
     def save
       raise StoreError, 'No store provided' unless self.store
-
       error_ptr = Pointer.new(:id)
       self.store.addObject(self, error: error_ptr)
       raise StoreError, error_ptr[0].description if error_ptr[0]
@@ -20,6 +19,39 @@ module MotionPrime
 
     def store
       super || self.class.store
+    end
+
+    def assign_attributes(new_attributes, options = {})
+      attributes = new_attributes.symbolize_keys
+      attributes.each do |k, v|
+        if respond_to?("#{k}=")
+          send("#{k}=", v) unless options[:skip_nil_values] && v.nil?
+        elsif options[:check_attribute_presence]
+          puts "unknown attribute: #{k}"
+        else
+          raise(NoMethodError, "unknown attribute: #{k}")
+        end
+      end
+    end
+
+    def attributes_hash
+      self.info.to_hash.symbolize_keys
+    end
+
+    def new_record?
+      id.blank?
+    end
+
+    def persisted?
+      !new_record?
+    end
+
+    def model_name
+      self.class.name.underscore
+    end
+
+    def inspect
+      "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + MotionPrime::JSON.generate(info)
     end
   end
 

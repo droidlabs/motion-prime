@@ -6,3 +6,8 @@ MotionPrime::Config.model do |model|
     model.store_type = :file
   end
 end
+MotionPrime::Config.font.name = "Ubuntu"
+MotionPrime::Config.color do |color|
+  color.base = 0x424242
+  color.error = 0xef471f
+end

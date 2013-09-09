@@ -59,7 +59,7 @@ describe MotionPrime::BaseModel do
   end
 
   describe "#save" do
-    it "if no store set, create objects using shared store" do
+    it "creates objects using shared store if no store set" do
       user = stub_user("Bob", 10, Time.now)
       user.save
       @store.count(User).should == 1
@@ -113,6 +113,35 @@ describe MotionPrime::BaseModel do
       user1.created_at.should.be.nil
 
       File.delete(path) rescue nil
+    end
+  end
+
+  describe "#persisted?" do
+    before do
+      @user = stub_user("Bob", 10, nil)
+    end
+
+    describe "without id" do
+      it "should not be persisted" do
+        @user.persisted?.should == false
+      end
+
+      it "should be new record" do
+        @user.new_record?.should == true
+      end
+    end
+
+    describe "with id" do
+      before do
+        @user.id = 1
+      end
+      it "should be persisted" do
+        @user.persisted?.should == true
+      end
+
+      it "should not be new record" do
+        @user.new_record?.should == false
+      end
     end
   end
 
