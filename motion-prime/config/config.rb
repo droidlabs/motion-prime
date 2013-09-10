@@ -26,6 +26,10 @@ module MotionPrime
       !self[key].is_a?(self.class)
     end
 
+    def to_hash
+      @attributes
+    end
+
     class << self
       def method_missing(name, *args, &block)
         @base_config ||= self.new()

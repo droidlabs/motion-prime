@@ -12,7 +12,6 @@ module MotionPrime
     end
 
     def on_render
-      puts @options.inspect
       add_pull_to_refresh do
         model.sync! do
           finish_pull_to_refresh
