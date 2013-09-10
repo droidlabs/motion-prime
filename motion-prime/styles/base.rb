@@ -118,11 +118,7 @@ MotionPrime::Styles.define :base do
     width: 300,
     line_break_mode: :wordwrap,
     number_of_lines: 0,
-<<<<<<< HEAD
-    text_color: proc { MotionPrime::Config.color.error }
-=======
-    text_color: :onr_red
->>>>>>> acb8281... move some observers to base section
+    text_color: :onr_error
 
   style :field_switch,
     top: 10,
