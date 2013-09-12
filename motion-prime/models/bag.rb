@@ -12,8 +12,6 @@ module MotionPrime
       end
     end
 
-    attr_accessor :bare_class
-
     def originalClassString
       'NSFNanoBag'
     end
@@ -129,5 +127,4 @@ end
 
 class NSFNanoBag
   include MotionPrime::BagInstanceMethods
-  # include MotionPrime::ModelFinderMethods
 end

@@ -31,13 +31,6 @@ module MotionPrime
           bag = self.class.store.bagsWithKeysInArray([bag_key]).first
         end
 
-        association_name = name.gsub(/_bag$/, '')
-        bag.bare_class = association_name.classify.constantize
-        # back_relation_name = klass.name.demodulize.underscore.to_sym
-        # bag.class_eval do
-        #   attr_accessor back_relation_name
-        # end unless bag.respond_to?(back_relation_name)
-
         _bags[name] = bag
       end
 
@@ -124,17 +117,5 @@ module MotionPrime
         AssociationCollection.new(bag, collection_options, options)
       end
     end
-
-    # def new(*args)
-    #   super.tap do |model|
-    #     (_associations || {}).keys.each do |association_name|
-    #       back_relation_name = self.name.demodulize.underscore
-    #       if bag.respond_to?(back_relation_name)
-    #         bag.send("#{back_relation_name}=", model)
-    #         bag = model.send("#{association_name}_bag")
-    #       end
-    #     end
-    #   end
-    # end
   end
 end

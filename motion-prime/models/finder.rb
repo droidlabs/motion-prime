@@ -141,8 +141,7 @@ module MotionPrime
     end
 
     def bare_class_name
-      subject = @bare_class || self
-      subject.to_s.split("::").last
+      self.to_s.split("::").last
     end
 
     private
