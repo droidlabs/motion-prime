@@ -11,8 +11,6 @@ module MotionPrime
     end
 
     def all(fetch_options = {})
-      # bag.all(sort: sort_options(fetch_options[:sort]))
-      # problem with #all -> returns all stored records (don't respect bag key_id)
       data = bag.to_a
       if sort_options = sort_options(fetch_options[:sort])
         data = data.sort do |a, b|
