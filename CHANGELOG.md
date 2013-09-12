@@ -1,3 +1,6 @@
+=== 0.2.1
+* Bug fixes
+
 === 0.2.0
 * MP::BaseModel improvements
 * Added ability to observe form field errors
