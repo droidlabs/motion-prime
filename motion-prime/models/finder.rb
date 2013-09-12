@@ -4,6 +4,8 @@ module MotionPrime
     #
     # @return [Array] array of models
     def all(*args)
+      return [] unless self.store
+
       if args[0].is_a?(Hash)
         sort_options = args[0][:sort] || {}
       else
@@ -139,7 +141,8 @@ module MotionPrime
     end
 
     def bare_class_name
-      self.to_s.split("::").last
+      subject = @bare_class || self
+      subject.to_s.split("::").last
     end
 
     private

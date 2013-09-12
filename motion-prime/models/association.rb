@@ -18,6 +18,8 @@ module MotionPrime
     # @param [String] name - the name of bag
     # @return [Nil]
     def bag(name)
+      klass = self
+
       define_method(name) do |*args, &block|
         return _bags[name] if _bags[name]
 
@@ -28,6 +30,13 @@ module MotionPrime
         else
           bag = self.class.store.bagsWithKeysInArray([bag_key]).first
         end
+
+        association_name = name.gsub(/_bag$/, '')
+        bag.bare_class = association_name.classify.constantize
+        # back_relation_name = klass.name.demodulize.underscore.to_sym
+        # bag.class_eval do
+        #   attr_accessor back_relation_name
+        # end unless bag.respond_to?(back_relation_name)
 
         _bags[name] = bag
       end
@@ -61,7 +70,6 @@ module MotionPrime
 
       define_method("#{association_name}=") do |value|
         self.send(bag_name).clear
-
         self.send(:"#{bag_name}") << value
         value
       end
@@ -93,22 +101,40 @@ module MotionPrime
       define_method("#{association_name}_attributes=") do |value|
         self.send(bag_name).clear
 
-        association = []
-        value.each do |attrs|
+        pending_save_counter = 0
+        collection = value.inject({}) do |result, attrs|
           model = association_name.classify.constantize.new
           model.fetch_with_attributes(attrs)
-          association << model
+          unique_key = model.id || "pending_#{pending_save_counter+=1}"
+          result.merge(unique_key => model)
         end
-        self.send(:"#{bag_name}=", association)
-        association
+        association_data = collection.values
+        self.send(:"#{bag_name}=", association_data)
+        association_data
       end
       define_method("#{association_name}=") do |value|
         self.send(bag_name).clear
         self.send(:"#{bag_name}=", value)
       end
-      define_method("#{association_name}") do
-        self.send(:"#{bag_name}").to_a
+      define_method("#{association_name}") do |options = {}|
+        bag = self.send(:"#{bag_name}")
+        collection_options = {
+          association_name: association_name
+        }
+        AssociationCollection.new(bag, collection_options, options)
       end
     end
+
+    # def new(*args)
+    #   super.tap do |model|
+    #     (_associations || {}).keys.each do |association_name|
+    #       back_relation_name = self.name.demodulize.underscore
+    #       if bag.respond_to?(back_relation_name)
+    #         bag.send("#{back_relation_name}=", model)
+    #         bag = model.send("#{association_name}_bag")
+    #       end
+    #     end
+    #   end
+    # end
   end
 end
