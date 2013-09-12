@@ -106,9 +106,9 @@ module MotionPrime
       # apply options
       if key.end_with?('title_color')
         view.setTitleColor value.uicolor, forState: UIControlStateNormal
-      elsif key.end_with?('alignment')
+      elsif key.end_with?('alignment') && value.is_a?(Symbol)
         view.setValue value.uitextalignment, forKey: key.camelize
-      elsif key.end_with?('line_break_mode')
+      elsif key.end_with?('line_break_mode') && value.is_a?(Symbol)
         view.setValue value.uilinebreakmode, forKey: key.camelize
       elsif key.end_with?('title_shadow_color')
         view.setTitleShadowColor value.uicolor, forState: UIControlStateNormal
