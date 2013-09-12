@@ -5,5 +5,11 @@ MP::Config.color do |color|
   color.dark = 0x41929c
 end
 
+MP::Config.api do |api|
+  api.base = "http://example.com"
+  api.client_id = ""
+  api.client_secret = ""
+end
+
 # setup model's store
 MP::Store.connect

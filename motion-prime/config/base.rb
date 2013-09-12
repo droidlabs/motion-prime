@@ -11,3 +11,8 @@ MotionPrime::Config.color do |color|
   color.base = 0x424242
   color.error = 0xef471f
 end
+MotionPrime::Config.api do |api|
+  api.base = "http://example.com"
+  api.client_id = ""
+  api.client_secret = ""
+end
