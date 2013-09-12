@@ -5,7 +5,7 @@ module MotionPrime
     end
 
     def [](key)
-      fetch(key.to_sym) || store(key, self.class.new)
+      @attributes.has_key?(key.to_sym) ? fetch(key) : store(key, self.class.new)
     end
 
     def store(key, value)

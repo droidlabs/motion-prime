@@ -61,9 +61,9 @@ MotionPrime::Styles.define :base do
 
   style :field_input_with_errors,
     layer: {
-      border_color: :onr_error
+      border_color: proc { MotionPrime::Config.color.error }
     },
-    text_color: :onr_error
+    text_color: proc { MotionPrime::Config.color.error }
 
   # available options for submit button:
   # @button_type: :rounded, :custom
@@ -118,7 +118,7 @@ MotionPrime::Styles.define :base do
     width: 300,
     line_break_mode: :wordwrap,
     number_of_lines: 0,
-    text_color: :onr_error
+    text_color: proc { MotionPrime::Config.color.error }
 
   style :field_switch,
     top: 10,

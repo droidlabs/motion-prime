@@ -1,5 +1,9 @@
 module MotionPrime
   module ModelMethods
+    def self.included(base)
+      base.class_attribute :default_sort_options
+    end
+
     def save
       raise StoreError, 'No store provided' unless self.store
       error_ptr = Pointer.new(:id)
@@ -145,6 +149,10 @@ module MotionPrime
     def delete(*args)
       keys = find_keys(*args)
       self.store.delete_keys(keys)
+    end
+
+    def default_sort(sort_options)
+      self.default_sort_options = sort_options
     end
   end
 end

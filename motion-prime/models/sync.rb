@@ -8,7 +8,7 @@ module MotionPrime
 
     def sync_url(method = :get)
       url = self.class.sync_url
-      url = url.call(method) if url.is_a?(Proc)
+      url = url.call(method, self) if url.is_a?(Proc)
       normalize_sync_url(url)
     end
 
@@ -51,7 +51,7 @@ module MotionPrime
       end
 
       should_fetch = !new_record? if should_fetch.nil?
-      should_update = new_record? if should_update.nil?
+      should_update ||= new_record? unless should_fetch
 
       fetch_with_url url do
         save if sync_options[:save]
@@ -186,8 +186,7 @@ module MotionPrime
       updatable_attributes = self.class.updatable_attributes
 
       if updatable_attributes.blank?
-        attrs = attributes_hash.slice(*slice_attributes) if slice_attributes
-        return attrs
+        return slice_attributes ? attributes_hash.slice(*slice_attributes) : attributes_hash
       end
 
       updatable_attributes = updatable_attributes.slice(*slice_attributes) if slice_attributes

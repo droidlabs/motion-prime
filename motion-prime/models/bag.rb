@@ -1,3 +1,4 @@
+motion_require './finder.rb'
 module MotionPrime
   module BagInstanceMethods
     def self.included(base)
@@ -10,6 +11,8 @@ module MotionPrime
         alias_method :deflate, :deflateBag
       end
     end
+
+    attr_accessor :bare_class
 
     def originalClassString
       'NSFNanoBag'
@@ -126,4 +129,5 @@ end
 
 class NSFNanoBag
   include MotionPrime::BagInstanceMethods
+  # include MotionPrime::ModelFinderMethods
 end
