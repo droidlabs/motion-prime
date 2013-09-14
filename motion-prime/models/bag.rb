@@ -126,5 +126,6 @@ module MotionPrime
 end
 
 class NSFNanoBag
+  include MotionPrime::ModelFinderMethods
   include MotionPrime::BagInstanceMethods
 end

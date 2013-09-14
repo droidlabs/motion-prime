@@ -18,8 +18,6 @@ module MotionPrime
     # @param [String] name - the name of bag
     # @return [Nil]
     def bag(name)
-      klass = self
-
       define_method(name) do |*args, &block|
         return _bags[name] if _bags[name]
 
@@ -112,10 +110,25 @@ module MotionPrime
       define_method("#{association_name}") do |options = {}|
         bag = self.send(:"#{bag_name}")
         collection_options = {
-          association_name: association_name
+          association_name: association_name,
+          inverse_relation: {
+            type: :has_one,
+            name: self.class.name.demodulize.underscore,
+            instance: self
+          }
         }
         AssociationCollection.new(bag, collection_options, options)
       end
+    end
+
+    def belongs_to(association_name, options = {})
+      self._associations ||= {}
+      self._associations[association_name] = {
+        type: :belongs_to_one,
+        class_name: association_name.classify
+      }.merge(options)
+
+      self.send(:attr_accessor, association_name)
     end
   end
 end

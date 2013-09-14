@@ -1,5 +1,7 @@
 module MotionPrime
   module ModelFinderMethods
+    attr_accessor :bare_class
+
     # Find all models
     #
     # @return [Array] array of models
@@ -141,7 +143,8 @@ module MotionPrime
     end
 
     def bare_class_name
-      self.to_s.split("::").last
+      subject = @bare_class || self
+      subject.to_s.split("::").last
     end
 
     private
