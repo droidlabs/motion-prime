@@ -107,7 +107,7 @@ module MotionPrime
         self.send(bag_name).clear
         self.send(:"#{bag_name}=", value)
       end
-      define_method("#{association_name}") do |options = {}|
+      define_method("#{association_name}") do |*args|
         bag = self.send(:"#{bag_name}")
         collection_options = {
           association_name: association_name,
@@ -117,7 +117,7 @@ module MotionPrime
             instance: self
           }
         }
-        AssociationCollection.new(bag, collection_options, options)
+        AssociationCollection.new(bag, collection_options, *args)
       end
     end
 
