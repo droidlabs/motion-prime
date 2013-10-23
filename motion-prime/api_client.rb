@@ -1,5 +1,4 @@
 class ApiClient
-
   attr_accessor :access_token
 
   def initialize(options = {})
@@ -13,6 +12,14 @@ class ApiClient
     false
   end
 
+  def request_params(data)
+    params = {payload: data}
+    if MP::Config.api.http_auth.present?
+      params.merge!(credentials: MP::Config.api.http_auth.to_hash)
+    end
+    params
+  end
+
   def authenticate(username, password, &block)
     data = {
       grant_type: "password",
@@ -22,7 +29,7 @@ class ApiClient
       client_secret: MP::Config.api.client_secret
     }
     use_callback = block_given?
-    BW::HTTP.post("#{MP::Config.api.base}/oauth/token", payload: data) do |response|
+    BW::HTTP.post("#{MP::Config.api.base}/oauth/token", request_params(data)) do |response|
       access_token = if response.ok?
         json = parse_json(response.body)
         json[:access_token]
@@ -46,7 +53,7 @@ class ApiClient
 
   def request(method, path, params = {}, &block)
     params.merge!(access_token: access_token)
-    BW::HTTP.send method, api_url(path), payload: params do |response|
+    BW::HTTP.send method, api_url(path), request_params(params) do |response|
       json = parse_json(response.body.to_s)
       block.call(json, response.status_code)
     end
