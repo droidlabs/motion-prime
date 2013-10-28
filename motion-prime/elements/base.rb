@@ -1,4 +1,5 @@
 motion_require '../helpers/has_normalizer'
+motion_require '../helpers/has_style_chain_builder'
 module MotionPrime
   class BaseElement
     # MotionPrime::BaseElement is container for UIView class elements with options.
@@ -6,6 +7,7 @@ module MotionPrime
 
     include ::MotionSupport::Callbacks
     include HasNormalizer
+    include HasStyleChainBuilder
 
     attr_accessor :options, :section, :name,
                   :view_class, :view, :view_name, :styles, :screen
@@ -59,19 +61,39 @@ module MotionPrime
 
     def compute_style_options
       @styles = []
-      @styles << :"#{section.name}_#{name}" if section.present?
-      @styles << :"base_#{@view_name}"
-      if section && @observe_errors_for && @observe_errors_for.errors[section.name].present?
-        @styles << :"base_#{name}_with_errors"
+      base_styles = {common: [], specific: []}
+      suffixes = {common: [@view_name.to_sym, name.try(:to_sym)].compact, specific: []}
+
+      if section
+        field_section = section.respond_to?(:section_styles)
+        if field_section
+          section.section_styles.each { |type, values| base_styles[type] += values }
+        end
+        if @observe_errors_for && @observe_errors_for.errors[section.name].present?
+          suffixes[:common] += [:"#{name}_with_errors", :"#{@view_name}_with_errors"]
+        end
       end
+
+      # common + specific base - common suffixes
+      @styles += build_styles_chain(base_styles[:common], suffixes[:common])
+      @styles << :"#{section.name}_#{name}" if section
+      @styles += build_styles_chain(base_styles[:specific], suffixes[:common])
+      # specific base - specific suffixes
+      @styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
+      @styles << :"#{section.form.name}_field_#{section.name}_#{name}" if field_section
+
       custom_styles = @computed_options.delete(:styles)
-      @styles += [*custom_styles]
+      # puts view.class.name + @styles.inspect, ''
+      @styles += Array.wrap(custom_styles)
       @computed_options.merge!(style_options)
     end
 
     def style_options
       Styles.for(styles)
     end
+
+    private
+
 
     class << self
       def factory(type, options = {})

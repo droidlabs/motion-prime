@@ -10,9 +10,13 @@ module MotionPrime
       if options[:observe_errors_for]
         @observe_errors_for = self.send(:instance_eval, &options.delete(:observe_errors_for))
       end
-      super
       @container_options = options.delete(:container)
+      super
       observe_model_errors
+    end
+
+    def section_styles
+      form.try(:field_styles, self)
     end
 
     def render_element?(element_name)
@@ -52,10 +56,6 @@ module MotionPrime
 
     def form_name
       form.name
-    end
-
-    def container_options
-      @container_options || super
     end
 
     def focus(begin_editing = true)

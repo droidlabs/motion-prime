@@ -97,7 +97,7 @@ module MotionPrime
     #   end
     #
     # @return Nil
-    def attribute(name)
+    def attribute(name, options = {})
       attributes << name
 
       define_method(name) do |*args, &block|
@@ -106,6 +106,12 @@ module MotionPrime
 
       define_method((name + "=").to_sym) do |*args, &block|
         self.info[name] = args[0]
+      end
+
+      if options[:type].to_s == 'boolean'
+        define_method("#{name}?") do
+          !!self.info[name]
+        end
       end
     end
 

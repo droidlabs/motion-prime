@@ -16,12 +16,12 @@ module MotionPrime
     end
 
     def data_stamp_for(id)
-      @data_stamp[id.to_i]
+      @data_stamp[id]
     end
 
     def set_data_stamp(cell_ids)
-      @data_stamp ||= []
-      cell_ids.each { |id| @data_stamp[id] = Time.now.to_f }
+      @data_stamp ||= {}
+      [*cell_ids].each { |id| @data_stamp[id] = Time.now.to_f }
     end
 
     def reload_data
@@ -39,14 +39,30 @@ module MotionPrime
 
     def render_table
       set_data_stamp((0..elements_options.count-1))
-
       self.table_view = screen.table_view(
-        styles: table_styles, delegate: self, data_source: self
+        styles: table_styles, delegate: self, data_source: self, style: (UITableViewStyleGrouped unless flat_data?)
       ).view
+
+    end
+
+    def numberOfSectionsInTableView(tableView)
+      number_of_sections
+    end
+
+    def number_of_sections
+      if table_data.any? && table_data.first.is_a?(Array)
+        table_data.count
+      else
+        1
+      end
+    end
+
+    def row_by_index(index)
+      rows_for_section(index.section)[index.row]
     end
 
     def render_cell(index, table)
-      item = data[index.row]
+      item = row_by_index(index)
 
       # define default styles for cell
       styles = [:"#{name}_cell"]
@@ -67,7 +83,7 @@ module MotionPrime
           reuse_identifier: cell_name(table, index)
         )
       else
-        screen.table_view_cell styles: [:base_table_cell] + styles, reuse_identifier: cell_name(table, index) do
+        screen.table_view_cell styles: [:base_table_cell] + styles, reuse_identifier: cell_name(table, index), parent_view: table_view do
           item.render(to: screen)
         end
       end
@@ -80,12 +96,12 @@ module MotionPrime
     end
 
     def cell_name(table, index)
-      record = data[index.row]
+      record = row_by_index(index)
       if record && record.model &&
          record.model.respond_to?(:id) && record.model.id.present?
-        "cell_#{record.model.id}_#{data_stamp_for(index.row)}"
+        "cell_#{record.model.id}_#{data_stamp_for("#{index.section}_#{index.row}")}"
       else
-        "cell_#{index.section}_#{index.row}_#{data_stamp_for(index.row)}"
+        "cell_#{index.section}_#{index.row}_#{data_stamp_for("#{index.section}_#{index.row}")}"
       end
     end
 
@@ -101,16 +117,14 @@ module MotionPrime
       cell = cached_cell(index, table) || render_cell(index, table)
 
       # run table view is appeared callback if needed
-      if index.row == data.size - 1 && !@did_appear
-        @did_appear = true
+      if !@did_appear && index.row == rows_for_section(index.section).size - 1
         on_appear
       end
-
       cell.is_a?(UIView) ? cell : cell.view
     end
 
     def tableView(table, numberOfRowsInSection:section)
-      data.length
+      rows_for_section(section).length
     end
 
     def tableView(table, didSelectRowAtIndexPath:index)
@@ -118,7 +132,15 @@ module MotionPrime
     end
 
     def tableView(table, heightForRowAtIndexPath:index)
-      data[index.row].container_height
+      rows_for_section(index.section)[index.row].container_height
+    end
+
+    def flat_data?
+      number_of_sections == 1
+    end
+
+    def rows_for_section(section)
+      flat_data? ? data : data[section]
     end
   end
 end

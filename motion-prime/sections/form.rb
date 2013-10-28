@@ -1,6 +1,9 @@
 motion_require './table.rb'
+motion_require '../helpers/has_style_chain_builder'
 module MotionPrime
   class FormSection < TableSection
+    include HasStyleChainBuilder
+
     # MotionPrime::FormSection is container for Field Sections.
     # Forms are located inside Screen and can contain multiple Field Sections.
     # On render, each field will be added to parent screen.
@@ -22,26 +25,63 @@ module MotionPrime
     attr_accessor :fields, :field_indexes, :keyboard_visible
 
     def table_data
-      fields.values
+      if @groups_count == 1
+        fields.values
+      else
+        section_indexes = []
+        fields.inject([]) do |result, (key, field)|
+          section = self.class.fields_options[key][:group].to_i
+
+          section_indexes[section] ||= 0
+          result[section] ||= []
+          result[section][section_indexes[section]] = field
+          section_indexes[section] += 1
+          result
+        end
+      end
+    end
+
+    def form_styles
+      base_styles = [:base_form]
+      base_styles << :base_form_with_sections unless flat_data?
+      item_styles = [name.to_sym]
+      {common: base_styles, specific: item_styles}
+    end
+
+    def field_styles(field)
+      suffixes = [:field]
+      if field.is_a?(BaseFieldSection)
+        suffixes << field.class.name.demodulize.underscore.gsub(/\_section$/, '')
+      end
+
+      styles = {
+        common: build_styles_chain(form_styles[:common], suffixes),
+        specific: build_styles_chain(form_styles[:specific], suffixes)
+      }
+
+      if field.respond_to?(:container_styles) && field.container_styles.present?
+        styles[:specific] += Array.wrap(field.container_styles)
+      end
+      styles
+    end
+
+    def build_styles_chain(base_styles, suffixes)
+      [*base_styles].uniq.compact.map { |base_style| [*suffixes].uniq.compact.map { |suffix| [base_style, suffix].join('_').to_sym } }.flatten
     end
 
     def render_table
       init_form_fields
       set_data_stamp(self.field_indexes.values)
       self.table_view = screen.table_view(
-        styles: [:base_form, name.to_sym], delegate: self, dataSource: self
+        styles: form_styles.values.flatten, delegate: self, dataSource: self, style: (UITableViewStyleGrouped unless flat_data?)
       ).view
     end
 
     def render_cell(index, table)
-      item = data[index.row]
-      styles = [:base_form_field, :"#{name}_field"]
-      if item.respond_to?(:container_styles) && item.container_styles.present?
-        styles += Array.wrap(item.container_styles)
-      end
-      screen.table_view_cell styles: styles, reuse_identifier: cell_name(table, index) do |cell_element|
-        item.cell_element = cell_element if item.respond_to?(:cell_element)
-        item.render(to: screen)
+      field = rows_for_section(index.section)[index.row]
+      screen.table_view_cell styles: field_styles(field).values.flatten, reuse_identifier: cell_name(table, index), parent_view: table_view do |cell_element|
+        field.cell_element = cell_element if field.respond_to?(:cell_element)
+        field.render(to: screen)
       end
     end
 
@@ -53,7 +93,7 @@ module MotionPrime
 
       fields[field] = load_field(self.class.fields_options[field])
       @data = nil
-      set_data_stamp([field_indexes[field]])
+      set_data_stamp(field_indexes[field])
       table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
       table_view.endUpdates
     end
@@ -98,7 +138,7 @@ module MotionPrime
     # @return MotionPrime::BaseFieldSection field
     def focus_on(field_name, animated = true)
       # unfocus other field
-      data.each do |item|
+      data.flatten.each do |item|
         item.blur
       end
       # focus on field
@@ -159,8 +199,15 @@ module MotionPrime
       klass.new(field.merge(form: self))
     end
 
-    def render_field?(name)
-      true
+    def render_field?(name, options)
+      condition = options.delete(:if)
+      if condition.nil?
+        true
+      elsif condition.is_a?(Proc)
+        self.instance_eval(&condition)
+      else
+        condition
+      end
     end
 
     class << self
@@ -188,9 +235,10 @@ module MotionPrime
         self.field_indexes = {}
         index = 0
         (self.class.fields_options || []).each do |key, field|
-          next unless render_field?(key)
+          next unless render_field?(key, field)
+          @groups_count = [@groups_count || 1, field[:group].to_i + 1].max
           self.fields[key] = load_field(field)
-          self.field_indexes[key] = index
+          self.field_indexes[key] = "#{field[:group].to_i}_#{index}"
           index += 1
         end
       end

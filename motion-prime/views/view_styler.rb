@@ -28,7 +28,7 @@ module MotionPrime
       left    = options.delete(:left)
 
       if width.nil? && height.nil? && right.nil? && bottom.nil?
-        options[:frame] = CGRectZero
+        options[:frame] = bounds
       else
         frame = CGRectZero
         max_width = bounds.size.width
@@ -123,6 +123,12 @@ module MotionPrime
           view.setSearchFieldBackgroundImage value.uiimage, forState: UIControlStateNormal
         else
           view.setBackgroundColor value.uiimage.uicolor
+        end
+      elsif key.end_with?('background_view')
+        if view.is_a?(UITableView)
+          bg_view = UIView.alloc.initWithFrame(view.bounds)
+          bg_view.backgroundColor = value[:color].uicolor
+          view.backgroundView = bg_view
         end
       elsif key.end_with?('image')
         view.setValue value.uiimage, forKey: key.camelize

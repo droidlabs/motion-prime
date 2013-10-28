@@ -9,7 +9,11 @@ module MotionPrime
     end
 
     def add_view(klass, options = {}, &block)
-      bounds = view_stack.empty? ? CGRectZero : view_stack.last.bounds
+      bounds = if view_stack.empty?
+        options.delete(:parent_view).try(:bounds) || CGRectZero
+      else
+        view_stack.last.bounds
+      end
       builder = ViewBuilder.new(klass, options)
       options = builder.options.merge(calculate_frame: true, bounds: bounds)
       view = builder.view

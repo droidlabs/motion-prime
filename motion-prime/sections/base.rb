@@ -18,16 +18,21 @@ module MotionPrime
     include MotionPrime::HasAuthorization
     include MotionPrime::HasNormalizer
 
-    attr_accessor :screen, :model, :name, :options, :elements
-    class_attribute :elements_options, :container_options
+    attr_accessor :screen, :model, :name, :options, :elements, :container_options
+    class_attribute :elements_options, :container_options, :keyboard_close_bindings
     define_callbacks :render
 
     def initialize(options = {})
       @options = options
       @model = options[:model]
       @name = options[:name] ||= default_name
+
       create_elements
       self.hide if container_options[:hidden]
+    end
+
+    def container_options
+      @normalized_container_options ||= (@container_options || {}).merge(normalize_options(self.class.container_options.try(:clone) || {}))
     end
 
     def default_name
@@ -97,12 +102,6 @@ module MotionPrime
       end
     end
 
-    def container_options
-      @container_options ||= normalize_options(
-        self.class.container_options.try(:clone) || {}
-      )
-    end
-
     def container_height
       container_options[:height] || DEFAULT_CONTENT_HEIGHT
     end
@@ -115,6 +114,12 @@ module MotionPrime
     def on_keyboard_hide; end
     def keyboard_will_show; end
     def keyboard_will_hide; end
+
+    def dealloc
+      NSNotificationCenter.defaultCenter.removeObserver self
+      self.delegate = nil if self.respond_to?(:delegate)
+      super
+    end
 
     def bind_keyboard_events
       NSNotificationCenter.defaultCenter.addObserver self,
@@ -135,6 +140,21 @@ module MotionPrime
                                            object: nil
     end
 
+    def bind_keyboard_close
+      return unless self.class.keyboard_close_bindings.try(:[], :tap_on)
+      self.instance_eval(&self.class.keyboard_close_bindings[:tap_on]).each do |element|
+        gesture_recognizer = UITapGestureRecognizer.alloc.initWithTarget(self, action: :hide_keyboard)
+        element.addGestureRecognizer(gesture_recognizer)
+      end
+    end
+
+    def hide_keyboard
+      self.instance_eval(&self.class.keyboard_close_bindings[:elements]).each do |el|
+        next unless %w[text_field text_view].include?(el.view_name)
+        el.view.try(:resignFirstResponder)
+      end
+    end
+
     class << self
       def element(name, options = {}, &block)
         options[:type] ||= :label
@@ -153,8 +173,12 @@ module MotionPrime
       def after_render(method_name)
         set_callback :render, :after, method_name
       end
+      def bind_keyboard_close(options)
+        self.keyboard_close_bindings = options
+      end
     end
     after_render :bind_keyboard_events
+    after_render :bind_keyboard_close
 
   end
 end

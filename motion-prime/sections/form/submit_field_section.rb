@@ -1,13 +1,7 @@
 module MotionPrime
   class SubmitFieldSection < BaseFieldSection
     element :submit, type: :button do
-      {
-        styles: [
-          :base_submit_button,
-          :"#{form_name}_submit_button",
-          :"#{form_name}_#{name}_button"
-        ]
-      }.merge(title: options[:title])
+      {title: options[:title]}
     end
     after_render :bind_submit
 
