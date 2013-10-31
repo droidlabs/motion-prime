@@ -32,6 +32,11 @@ module MotionPrime
         {
           'UIView' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
           'UIControl' => Proc.new {|klass, options| klass.alloc.init },
+          'UISwitch' => Proc.new {|klass, options|
+            view = klass.alloc.init
+            view.setOn options.delete(:on)
+            view
+          },
           'UIActionSheet' => Proc.new {|klass, options|
             title = options.delete(:title) || ''
             delegate = options.delete(:delegate)

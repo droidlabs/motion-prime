@@ -13,8 +13,12 @@ module MotionPrime
     def render
     end
 
+    def default_styles
+      [:base_screen, self.class.name.underscore.to_sym]
+    end
+
     def on_load
-      setup view, styles: [:base_screen, self.class.name.underscore.to_sym] do
+      setup view, styles: default_styles do
         render
       end
     end

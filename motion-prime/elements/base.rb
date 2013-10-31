@@ -83,8 +83,8 @@ module MotionPrime
       @styles << :"#{section.form.name}_field_#{section.name}_#{name}" if field_section
 
       custom_styles = @computed_options.delete(:styles)
-      # puts view.class.name + @styles.inspect, ''
       @styles += Array.wrap(custom_styles)
+      # puts @view_class.to_s + @styles.inspect, ''
       @computed_options.merge!(style_options)
     end
 

@@ -37,12 +37,14 @@ module MotionPrime
         self.send("#{k}=", v) if self.respond_to?("#{k}=")
       end
 
-      if @wrap_in_navigation = args[:navigation]
-        self.add_navigation_controller
-      end
+      @wrap_in_navigation = args[:navigation]
 
       self.on_init if respond_to?(:on_init)
       self
+    end
+
+    def wrap_in_navigation?
+      @wrap_in_navigation
     end
 
     def modal?
@@ -59,10 +61,6 @@ module MotionPrime
 
     def navigation_controller=(val)
       @navigation_controller = val
-    end
-
-    def add_navigation_controller
-      self.navigation_controller = NavigationController.alloc.initWithRootViewController(self)
     end
 
     def title

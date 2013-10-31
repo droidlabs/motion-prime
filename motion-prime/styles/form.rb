@@ -2,7 +2,8 @@ motion_require '../views/styles.rb'
 MotionPrime::Styles.define :base_form do
 
   style :field,
-    selection_style: UITableViewCellSelectionStyleNone
+    selection_style: UITableViewCellSelectionStyleNone,
+    background_color: :clear
 
   style :with_sections,
     left: 0,
@@ -82,7 +83,7 @@ MotionPrime::Styles.define :base_form do
   style :with_sections_select_field_arrow,
     right: 25
 
-  style :with_sections_switch_field_switch,
+  style :with_sections_switch_field_input,
     right: 25
   style :with_sections_switch_field_label,
     left: 25
@@ -95,11 +96,10 @@ MotionPrime::Styles.define :base_form do
     },
     text_color: proc { MotionPrime::Config.color.error }
 
-  style :field_switch,
+  style :switch_field_input,
     top: 10,
-    width: 50,
-    height: 27,
-    right: 0
+    right: 0,
+    width: 51
 
   style :switch_field_label,
     top: 10,

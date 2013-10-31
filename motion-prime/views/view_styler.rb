@@ -98,8 +98,9 @@ module MotionPrime
     end
 
     def setValue(value, forUndefinedKey: key)
-      return if value.nil?
+      # return if value.nil?
       # ignore options
+      return if key == 'status_bar'
       return if key == 'size_to_fit' && view.is_a?(UILabel)
       return if (key == 'url' || key == 'default') && view.is_a?(UIImageView)
 
@@ -113,7 +114,7 @@ module MotionPrime
       elsif key.end_with?('title_shadow_color')
         view.setTitleShadowColor value.uicolor, forState: UIControlStateNormal
       elsif key.end_with?('color')
-        color = value.uicolor
+        color = value.try(:uicolor)
         color = color.cgcolor if view.is_a?(CALayer)
         view.send :"#{key.camelize(:lower)}=", color
       elsif key.end_with?('background_image')
@@ -132,6 +133,8 @@ module MotionPrime
         end
       elsif key.end_with?('image')
         view.setValue value.uiimage, forKey: key.camelize
+      elsif key == 'autocapitalization'
+        view.autocapitalizationType = UITextAutocapitalizationTypeNone if value === false
       elsif key == 'keyboard_type'
         view.setKeyboardType value.uikeyboardtype
       elsif value.is_a?(Hash)

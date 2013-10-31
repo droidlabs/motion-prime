@@ -1,8 +1,6 @@
 motion_require '../helpers/has_normalizer'
 module MotionPrime
   class Styles
-    FORM_FIELDS = [:field, :string_field, :date_field, :password_field, :select_field, :string_field, :submit_field, :switch_field, :table_field, :text_field, :text_with_button_field]
-
     @@repo = {}
 
     def initialize(namespace = nil)
@@ -23,16 +21,6 @@ module MotionPrime
         end
         @@repo[name].deep_merge! options
       end
-    end
-
-    def form_fields_selector(selectors = ':field')
-      [*selectors].map do |selector|
-        if selector.blank?
-          FORM_FIELDS
-        else
-          FORM_FIELDS.map { |field| selector.to_s.gsub(':field', field.to_s).to_sym }
-        end
-      end.flatten
     end
 
     class << self

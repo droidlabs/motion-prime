@@ -1,8 +1,8 @@
 class DMViewController < UIViewController
   def self.new(args = {})
-    s = self.alloc.initWithNibName(nil, bundle: nil)
-    s.on_create(args) if s.respond_to?(:on_create)
-    s
+    self.alloc.initWithNibName(nil, bundle: nil).tap do |screen|
+      screen.on_create(args) if screen.respond_to?(:on_create)
+    end
   end
 
   def viewDidLoad

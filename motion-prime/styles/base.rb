@@ -12,6 +12,9 @@ MotionPrime::Styles.define :base do
     width: 320,
     bottom: 0
 
+  style :table_cell,
+    background_color: :clear
+
   # basic form styles
   # ----------
   style :form,

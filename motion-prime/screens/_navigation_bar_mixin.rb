@@ -24,7 +24,6 @@ module MotionPrime
       args[:style]  ||= UIBarButtonItemStylePlain
       args[:target] ||= self
       args[:action] ||= nil
-
       # TODO: Find better place for this code, may be just create custom control
       if args[:image]
         image = args[:image].uiimage
@@ -34,8 +33,7 @@ module MotionPrime
         face.on :touch do
           args[:action].to_proc.call(self)
         end
-        button = UIBarButtonItem.alloc.initWithCustomView(face)
-        button
+        UIBarButtonItem.alloc.initWithCustomView(face)
       elsif args[:icon]
         image = args[:icon].uiimage
         face = UIButton.buttonWithType UIButtonTypeCustom
@@ -46,11 +44,10 @@ module MotionPrime
         face.on :touch do
           args[:action].to_proc.call(self)
         end
-        button = UIBarButtonItem.alloc.initWithCustomView(face)
-        button
+        UIBarButtonItem.alloc.initWithCustomView(face)
       else
         UIBarButtonItem.alloc.initWithTitle(title,
-            style: args[:style], target: args[:target], action: args[:action])
+          style: args[:style], target: args[:target], action: args[:action])
       end
     end
   end

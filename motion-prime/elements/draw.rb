@@ -134,8 +134,8 @@ module MotionPrime
 
     def reset_computed_values
       [:left, :top, :right, :bottom, :width, :height].each do |key|
-        instance_variable_set "@compited_#{key}", nil
-        instance_variable_set "@compited_inner_#{key}", nil
+        instance_variable_set "@computed_#{key}", nil
+        instance_variable_set "@computed_inner_#{key}", nil
       end
     end
 

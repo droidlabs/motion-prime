@@ -6,9 +6,10 @@ module MotionPrime
 
     def open_screen(screen, args = {})
       # Apply properties to instance
+
       screen = setup_screen_for_open(screen, args)
-      ensure_wrapper_controller_in_place(screen, args)
       screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
+
       if args[:modal]
         present_modal_view_controller screen, (args.has_key?(:animated) ? args[:animated] : true)
       elsif has_navigation?
@@ -56,6 +57,14 @@ module MotionPrime
       navigation_controller.pushViewController(vc, animated: (args.has_key?(:animated) ? args[:animated] : true))
     end
 
+    def ensure_wrapper_controller_in_place(args = {})
+      # Wrap in a NavigationController?
+      if wrap_in_navigation? && !args[:modal]
+        add_navigation_controller
+        # screen.navigation_controller ||= navigation_controller
+      end
+    end
+
     protected
 
     def setup_screen_for_open(screen, args = {})
@@ -67,17 +76,8 @@ module MotionPrime
       screen.title = args[:title] if args[:title] && screen.respond_to?("title=")
       screen.modal = args[:modal] if args[:modal] && screen.respond_to?("modal=")
 
-      # Wrap in a NavigationController?
-      screen.add_navigation if args[:navigation] && screen.respond_to?(:add_navigation)
-
       # Return modified screen instance
       screen
-    end
-
-    def ensure_wrapper_controller_in_place(screen, args={})
-      if !args[:modal] && screen.respond_to?(:navigation_controller=)
-        screen.navigation_controller ||= navigation_controller
-      end
     end
 
     def present_modal_view_controller(screen, animated)

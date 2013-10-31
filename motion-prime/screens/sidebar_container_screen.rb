@@ -1,58 +1,71 @@
 module MotionPrime
-  class SidebarContainerScreen < PKRevealController
-
+  class SidebarContainerScreen < REFrostedViewController
     include ::MotionPrime::ScreenBaseMixin
 
     def self.new(menu, content, options={})
-      screen = self.revealControllerWithFrontViewController(nil, leftViewController: nil, options: nil)
+      screen = self.alloc.initWithContentViewController(nil, menuViewController: nil)
+      screen.direction = REFrostedViewControllerDirectionLeft
+      screen.liveBlurBackgroundStyle = REFrostedViewControllerLiveBackgroundStyleLight
+      screen.blurTintColor = :black.uicolor
+
       screen.on_create(options) if screen.respond_to?(:on_create)
       screen.menu_controller = menu unless menu.nil?
       screen.content_controller = content unless content.nil?
+
       screen
     end
 
     def show_sidebar
-      show_controller menu_controller
+      self.presentMenuViewController
     end
 
     def hide_sidebar
-      show_controller content_controller
+      self.hideMenuViewController
     end
 
     def menu_controller=(c)
-      setLeftViewController prepare_controller(c),
-        focusAfterChange: true, completion: default_completion_block
+      self.setMenuViewController prepare_controller(c)
     end
 
     def content_controller=(c)
-      setFrontViewController prepare_controller(c),
-        focusAfterChange: true, completion: default_completion_block
+      controller = prepare_controller(c)
+      puts controller.to_s
+      if content_controller.nil?
+        self.setContentViewController controller
+      else#if controller.is_a?(MotionPrime::NavigationController)
+        content_controller.viewControllers = [controller]
+      # else
+      #   self.setContentViewController controller
+
+      #   old_content = content_controller
+      #   re_displayController(controller, frame: self.view.frame)
+      #   old_content.view.removeFromSuperview
+      #   old_content.removeFromParentViewController
+      end
+      hide_sidebar
     end
 
     def menu_controller
-      self.leftViewController
+      self.menuViewController
     end
 
     def content_controller
-      self.frontViewController
+      self.contentViewController
     end
 
     private
 
-      def show_controller(controller)
-        showViewController controller, animated: true, completion: default_completion_block
-      end
-
       def prepare_controller(controller)
-        controller.on_screen_load if controller.respond_to?(:on_screen_load)
         controller = setup_screen_for_open(controller, {})
-        ensure_wrapper_controller_in_place(controller, {})
-        controller = controller.main_controller if controller.respond_to?(:main_controller)
-        controller
-      end
+        controller.send(:on_screen_load) if controller.respond_to?(:on_screen_load)
 
-      def default_completion_block
-        -> (completed) { true }
+        if content_controller.nil?
+          controller.ensure_wrapper_controller_in_place
+          controller = controller.main_controller if controller.respond_to?(:main_controller)
+        else
+          controller.navigation_controller = content_controller
+        end
+        controller
       end
   end
 end
