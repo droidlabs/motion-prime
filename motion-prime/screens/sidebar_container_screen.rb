@@ -29,18 +29,10 @@ module MotionPrime
 
     def content_controller=(c)
       controller = prepare_controller(c)
-      puts controller.to_s
       if content_controller.nil?
         self.setContentViewController controller
-      else#if controller.is_a?(MotionPrime::NavigationController)
+      else
         content_controller.viewControllers = [controller]
-      # else
-      #   self.setContentViewController controller
-
-      #   old_content = content_controller
-      #   re_displayController(controller, frame: self.view.frame)
-      #   old_content.view.removeFromSuperview
-      #   old_content.removeFromParentViewController
       end
       hide_sidebar
     end

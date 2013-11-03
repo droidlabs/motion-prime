@@ -6,14 +6,14 @@ module MotionPrime
 
     def open_screen(screen, args = {})
       # Apply properties to instance
-
-      screen = setup_screen_for_open(screen, args)
-      screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
-
-      if args[:modal]
-        present_modal_view_controller screen, (args.has_key?(:animated) ? args[:animated] : true)
-      elsif has_navigation?
-        push_view_controller screen, args
+      if args[:modal] || has_navigation?
+        screen = setup_screen_for_open(screen, args)
+        screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
+        if has_navigation?
+          push_view_controller screen, args
+        else
+          present_modal_view_controller screen, (args.has_key?(:animated) ? args[:animated] : true)
+        end
       else
         app_delegate.open_screen(screen.main_controller)
       end
