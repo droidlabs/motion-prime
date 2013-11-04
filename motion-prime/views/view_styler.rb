@@ -100,7 +100,6 @@ module MotionPrime
     def setValue(value, forUndefinedKey: key)
       # return if value.nil?
       # ignore options
-      return if key == 'status_bar'
       return if key == 'size_to_fit' && view.is_a?(UILabel)
       return if (key == 'url' || key == 'default') && view.is_a?(UIImageView)
 
@@ -137,6 +136,15 @@ module MotionPrime
         view.autocapitalizationType = UITextAutocapitalizationTypeNone if value === false
       elsif key == 'keyboard_type'
         view.setKeyboardType value.uikeyboardtype
+      elsif key == 'mask'
+        radius = value[:radius]
+        bounds = CGRectMake(0, 0, value[:width], value[:height])
+        mask_path = UIBezierPath.bezierPathWithRoundedRect(bounds, byRoundingCorners: UIRectCornerAllCorners, cornerRadii: CGSizeMake(radius, radius))
+        mask_layer = CAShapeLayer.layer
+        mask_layer.frame = bounds
+        mask_layer.path = mask_path.CGPath
+        view.layer.mask = mask_layer
+
       elsif value.is_a?(Hash)
         self.class.new(view.send(key.camelize(:lower).to_sym), nil, value).apply
       else

@@ -122,13 +122,16 @@ module MotionPrime
     def fetch_association(key, sync_options = {}, &block)
       options = self.class._associations[key]
       return unless options[:sync_url]
-      options[:type] == :many ?
-      fetch_has_many(key, options, sync_options, &block) :
-      fetch_has_one(key, options, sync_options, &block)
+      if options[:type] == :many
+        fetch_has_many(key, options, sync_options, &block)
+      else
+        fetch_has_one(key, options, sync_options, &block)
+      end
     end
 
     def fetch_has_many(key, options = {}, sync_options = {}, &block)
       old_collection = self.send(key)
+
       use_callback = block_given?
       puts "SYNC: started sync for #{key} in #{self.class.name}"
       api_client.get normalize_sync_url(options[:sync_url]) do |data|

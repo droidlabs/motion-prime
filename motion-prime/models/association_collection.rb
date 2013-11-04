@@ -54,6 +54,7 @@ module MotionPrime
 
     def find_options(options)
       options ||= {}
+      options.merge!(bag_key: bag.key)
       if inverse_relation_key.present?
         {inverse_relation_key => inverse_relation.id}.merge options
       else

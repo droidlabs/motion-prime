@@ -20,13 +20,13 @@ module MotionPrime
     def bag(name)
       define_method(name) do |*args, &block|
         return _bags[name] if _bags[name]
-
         bag_key = self.info[name]
-        if bag_key.nil?
+        if bag_key.present?
+          bag = self.class.store.bagsWithKeysInArray([bag_key]).first
+        end
+        unless bag
           bag = Bag.bag
           self.info[name] = bag.key
-        else
-          bag = self.class.store.bagsWithKeysInArray([bag_key]).first
         end
 
         _bags[name] = bag

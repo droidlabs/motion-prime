@@ -10,7 +10,8 @@ MotionPrime::Styles.define :base do
     top: 0,
     left: 0,
     width: 320,
-    bottom: 0
+    bottom: 0,
+    separatorInset: 0
 
   style :table_cell,
     background_color: :clear

@@ -43,13 +43,7 @@ class NSFNanoStore
     raise MotionPrime::StoreError, error_ptr[0].description if error_ptr[0]
     self
   end
-
-  def +(object)
-    error_ptr = Pointer.new(:id)
-    self.addObject(object, error:error_ptr)
-    raise MotionPrime::StoreError, error_ptr[0].description if error_ptr[0]
-    self
-  end
+  alias_method :+, :<<
 
   # delete a object or array of objects from the array
   def delete(objects)

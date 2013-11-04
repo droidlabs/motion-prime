@@ -1,9 +1,10 @@
 module MotionPrime
   module HasAuthorization
     def current_user
-      if defined?(User) && User.respond_to?(:current)
-        @current_user = User.current
-      end
+      App.delegate.current_user
+    end
+    def update_current_user
+      App.delegate.update_current_user
     end
     def user_signed_in?
       current_user.present?

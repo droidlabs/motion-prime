@@ -12,7 +12,7 @@ module MotionPrime
       )
       # draw already initialized image
       if image_data
-        image_data.drawInRect(image_rect)
+        draw_with_layer(image_data, image_rect)
       # draw image from resources
       elsif computed_options[:image]
         self.image_data = computed_options[:image].uiimage
@@ -50,10 +50,12 @@ module MotionPrime
 
         if radius = computed_options[:layer][:corner_radius]
           layer.masksToBounds = true
+          k = image.size.width / rect.size.width
+          radius = radius * k
           layer.cornerRadius = radius
         end
 
-        UIGraphicsBeginImageContext(image.size);
+        UIGraphicsBeginImageContext(image.size)
         layer.renderInContext(UIGraphicsGetCurrentContext())
         image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()

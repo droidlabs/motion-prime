@@ -27,30 +27,30 @@ module MotionPrime
       self.savedObjects.values + self.unsavedObjects.values
     end
 
-    # Add an object to bag
-    #
-    # @return self
-    def <<(object)
-      error_ptr = Pointer.new(:id)
-      self.addObject(object, error:error_ptr)
-      raise StoreError, error_ptr[0].description if error_ptr[0]
-      self
-    end
-
     # Add an object or array of objects to bag
     #
     # @return self
     def add(object_or_array)
       error_ptr = Pointer.new(:id)
       if object_or_array.is_a?(Array)
-        self.addObjectsFromArray(object_or_array, error:error_ptr)
+        self.addObjectsFromArray(prepare_for_store(object_or_array), error:error_ptr)
       else
-        self.addObject(object_or_array, error:error_ptr)
+        self.addObject(prepare_for_store(object_or_array), error:error_ptr)
       end
       raise StoreError, error_ptr[0].description if error_ptr[0]
       self
     end
     alias_method :+, :add
+    alias_method :<<, :add
+
+    def prepare_for_store(object)
+      if object.is_a?(Array)
+        object.map { |entity| prepare_for_store(entity) }
+      else
+        object.bag_key = self.key
+        object
+      end
+    end
 
     # Remove object from bag with key
     #

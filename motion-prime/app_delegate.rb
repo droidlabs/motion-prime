@@ -1,3 +1,4 @@
+include EM::Eventable
 motion_require './helpers/has_authorization'
 module MotionPrime
   class BaseAppDelegate
@@ -14,10 +15,6 @@ module MotionPrime
       true
     end
 
-    def app_delegate
-      UIApplication.sharedApplication.delegate
-    end
-
     def app_window
       self.app_delegate.window
     end
@@ -31,14 +28,12 @@ module MotionPrime
       self.window ||= UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
       self.window.rootViewController = screen
       self.window.makeKeyAndVisible
-      set_statusbar_background
       screen
     end
 
     def open_screen(screen)
       if sidebar?
         sidebar_container.content_controller = screen
-        set_statusbar_background
       else
         open_root_screen(screen)
       end
@@ -59,6 +54,18 @@ module MotionPrime
 
     def hide_sidebar
       sidebar_container.hide_sidebar
+    end
+
+    def current_user
+      @current_user ||= if defined?(User) && User.respond_to?(:current)
+        User.current
+      end
+    end
+
+    def update_current_user
+      user_was = @current_user
+      @current_user = nil
+      NSNotificationCenter.defaultCenter.postNotificationName(:current_user_updated, object: user_was)
     end
   end
 end
