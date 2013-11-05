@@ -42,7 +42,6 @@ module MotionPrime
       self.table_view = screen.table_view(
         styles: table_styles, delegate: self, data_source: self, style: (UITableViewStyleGrouped unless flat_data?)
       ).view
-
     end
 
     def numberOfSectionsInTableView(tableView)
