@@ -109,6 +109,14 @@ module MotionPrime
       table.dequeueReusableCellWithIdentifier(cell_name(table, index))
     end
 
+    def tableView(table, viewForFooterInSection: section)
+      UIView.new
+    end
+
+    def tableView(table, heightForFooterInSection: section)
+      0.1
+    end
+
     # ALIASES
     # ---------------------
 
