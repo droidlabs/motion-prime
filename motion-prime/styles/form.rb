@@ -28,7 +28,9 @@ MotionPrime::Styles.define :base_form do
     width: 300,
     line_break_mode: :wordwrap,
     number_of_lines: 0,
-    text_color: proc { MotionPrime::Config.color.error }
+    size_to_fit: true,
+    text_color: proc { MotionPrime::Config.color.error },
+    font: proc { MotionPrime::Config.font.name.uifont(12) }
 
   # available options for input:
   # @layer: @border_width: FLOAT

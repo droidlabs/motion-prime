@@ -28,10 +28,7 @@ module MotionPrime
     end
 
     def cell
-      cell_element || begin
-        first_element = elements.values.first
-        first_element.view.superview
-      end
+      cell_element || super
     end
 
     def on_click(table, index)

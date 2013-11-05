@@ -99,8 +99,8 @@ module MotionPrime
     end
 
     def container_height
-      error_height = element(:error_message).try(:content_height)
-      super + error_height.to_i
+      error_height = element(:error_message).try(:content_height).to_i
+      super + error_height
     end
   end
 end

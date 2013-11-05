@@ -9,6 +9,7 @@ module MotionPrime
     end
 
     def size_to_fit
+      puts 'setting' + self.content_height.to_s
       view.size.height = self.content_height
     end
 

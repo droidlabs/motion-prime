@@ -90,7 +90,6 @@ module MotionPrime
       path = table_view.indexPathForRowAtPoint(section.cell.center) # do not use indexPathForCell here as field may be invisibe
       table_view.beginUpdates
       section.cell.removeFromSuperview
-
       fields[field] = load_field(self.class.fields_options[field])
       @data = nil
       set_data_stamp(field_indexes[field])

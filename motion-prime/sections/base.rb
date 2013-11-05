@@ -65,7 +65,7 @@ module MotionPrime
 
     def cell
       first_element = elements.values.first
-      first_element.view.superview
+      first_element.view.superview.superview
     end
 
     def render(container_options = {})
