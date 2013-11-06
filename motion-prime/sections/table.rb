@@ -49,8 +49,8 @@ module MotionPrime
     end
 
     def number_of_sections
-      if table_data.any? && table_data.first.is_a?(Array)
-        table_data.count
+      if data.any? && data.first.is_a?(Array)
+        data.count
       else
         1
       end
