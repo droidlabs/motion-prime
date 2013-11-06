@@ -49,11 +49,11 @@ module MotionPrime
     end
 
     def number_of_sections
-      if data.any? && data.first.is_a?(Array)
-        data.count
-      else
-        1
-      end
+      has_many_sections? ? data.count : 1
+    end
+
+    def has_many_sections?
+      data.any? && data.first.is_a?(Array)
     end
 
     def row_by_index(index)
