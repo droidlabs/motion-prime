@@ -3,7 +3,7 @@ module MotionPrime
     def add_pull_to_refresh(&block)
       screen.automaticallyAdjustsScrollViewInsets = false
       current_inset = self.table_view.contentInset
-      current_inset.top = UIApplication.sharedApplication.statusBarFrame.size.height + screen.navigation_controller.navigationBar.size.height
+      current_inset.top = 64#UIApplication.sharedApplication.statusBarFrame.size.height + screen.navigation_controller.navigationBar.size.height
       self.table_view.contentInset = current_inset
 
       table_view.addPullToRefreshWithActionHandler(block)
