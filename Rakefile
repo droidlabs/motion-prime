@@ -22,10 +22,10 @@ require 'motion-redgreen'
 Motion::Project::App.setup do |app|
   app.name = 'MotionPrime'
   app.pods do
-    pod 'PKRevealController'
     pod 'NanoStore', '~> 2.7.7'
     pod 'SDWebImage'
     pod 'SVPullToRefresh'
     pod 'MBAlertView'
+    pod 'RESideMenu', git: 'https://github.com/feklistov/RESideMenu.git'
   end
 end
