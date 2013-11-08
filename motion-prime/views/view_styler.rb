@@ -26,6 +26,7 @@ module MotionPrime
       right   = options.delete(:right)
       bottom  = options.delete(:bottom)
       left    = options.delete(:left)
+      value_type = options.delete(:value_type).to_s # absolute/relative
 
       if width.nil? && height.nil? && right.nil? && bottom.nil?
         options[:frame] = bounds
@@ -37,7 +38,7 @@ module MotionPrime
         height = 0.0 if height.nil?
 
         # calculate left and right if width is relative, e.g 0.7
-        if width > 0 && width <= 1
+        if width > 0 && width <= 1 && value_type != 'absolute'
           if right.nil?
             left ||= 0
             right = max_width - max_width * width
@@ -47,7 +48,7 @@ module MotionPrime
         end
 
         # calculate top and bottom if height is relative, e.g 0.7
-        if height > 0 && height <= 1
+        if height > 0 && height <= 1 && value_type != 'absolute'
           if bottom.nil?
             top ||= 0
             bottom = max_height - max_height * height
@@ -129,6 +130,8 @@ module MotionPrime
           bg_view = UIView.alloc.initWithFrame(view.bounds)
           bg_view.backgroundColor = value[:color].uicolor
           view.backgroundView = bg_view
+        else
+          view.setValue value, forKey: key.camelize(:lower)
         end
       elsif key.end_with?('image')
         view.setValue value.uiimage, forKey: key.camelize
@@ -144,7 +147,11 @@ module MotionPrime
         mask_layer.frame = bounds
         mask_layer.path = mask_path.CGPath
         view.layer.mask = mask_layer
-
+      elsif key == 'attributed_text_options'
+        paragrahStyle = NSMutableParagraphStyle.alloc.init
+        paragrahStyle.setLineSpacing(value[:line_spacing])
+        attributedString = NSAttributedString.alloc.initWithString(value[:text], attributes:{NSParagraphStyleAttributeName => paragrahStyle})
+        view.attributedText = attributedString
       elsif value.is_a?(Hash)
         self.class.new(view.send(key.camelize(:lower).to_sym), nil, value).apply
       else

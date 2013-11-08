@@ -31,6 +31,15 @@ module MotionPrime
       def default_views_map
         {
           'UIView' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
+          'UILabel' => Proc.new {|klass, options|
+            if options[:line_spacing]
+              options[:attributed_text_options] = {
+                text: options.delete(:text),
+                line_spacing: options.delete(:line_spacing)
+              }
+            end
+            klass.alloc.initWithFrame CGRectZero
+          },
           'UIControl' => Proc.new {|klass, options| klass.alloc.init },
           'UISwitch' => Proc.new {|klass, options|
             view = klass.alloc.init

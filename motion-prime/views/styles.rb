@@ -16,7 +16,8 @@ module MotionPrime
 
         @@repo[name] ||= {}
         if parent = options.delete(:parent)
-          parent ="#{@namespace}_#{parent}".to_sym if @namespace
+          namespace = options.delete(:parent_namspace) || @namespace
+          parent ="#{namespace}_#{parent}".to_sym if namespace
           @@repo[name].deep_merge! self.class.for(parent)
         end
         @@repo[name].deep_merge! options
@@ -26,8 +27,10 @@ module MotionPrime
     class << self
       include HasNormalizer
 
-      def define(namespace = nil, &block)
-        self.new(namespace).instance_eval(&block)
+      def define(*namespaces, &block)
+        Array.wrap(namespaces).each do |namespace|
+          self.new(namespace).instance_eval(&block)
+        end
       end
 
       def for(style_names)

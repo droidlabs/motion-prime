@@ -1,10 +1,16 @@
 # This module adds search functionality, to Screen or TableSection
 module MotionPrime
   module HasSearchBar
-    def add_search_bar(&block)
+    def add_search_bar(options = {}, &block)
       search_bar = create_search_bar
       search_bar.delegate = self
-      self.table_view.tableHeaderView = search_bar if is_a?(TableSection)
+
+      if target = options[:target]
+        target.addSubview search_bar
+      elsif is_a?(TableSection)
+        self.table_view.tableHeaderView = search_bar
+      end
+
       @search_callback = block
     rescue
       puts "can't add search bar to #{self.class.name}"
