@@ -49,7 +49,7 @@ MotionPrime::Styles.define :base_form do
     right: 0,
     top: 30,
     bottom: 0,
-    padding_top: 4
+    padding_top: 10
 
   style :select_field_button,
     background_color: :white,

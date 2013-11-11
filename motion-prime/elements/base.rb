@@ -43,10 +43,12 @@ module MotionPrime
     end
 
     def compute_options!
-      @computed_options = normalize_options(options, section)
-      compute_block_options
-      compute_style_options
-      @computed_options = normalize_options(@computed_options, section)
+      @computed_options ||= {}
+      block_options = compute_block_options || {}
+      compute_style_options(options, block_options)
+      @computed_options.merge!(options)
+      @computed_options.merge!(block_options)
+      normalize_options(@computed_options, section, %w[text font title_label padding padding_left padding_right max_width width left right])
     end
 
     # Compute options sent inside block, e.g.
@@ -54,12 +56,10 @@ module MotionPrime
     #   {name: model.name}
     # end
     def compute_block_options
-      if block = @block
-        @computed_options.merge!(section.send :instance_eval, &block)
-      end
+      section.send(:instance_exec, self, &@block) if @block
     end
 
-    def compute_style_options
+    def compute_style_options(*style_sources)
       @styles = []
       base_styles = {common: [], specific: []}
       suffixes = {common: [@view_name.to_sym, name.try(:to_sym)].compact, specific: []}
@@ -81,9 +81,11 @@ module MotionPrime
       # specific base - specific suffixes
       @styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
       @styles << :"#{section.form.name}_field_#{section.name}_#{name}" if field_section
-
-      custom_styles = @computed_options.delete(:styles)
-      @styles += Array.wrap(custom_styles)
+      # custom style (from options or block options)
+      custom_styles = style_sources.map do |source|
+        normalize_object(source.delete(:styles), section)
+      end.compact.flatten
+      @styles += custom_styles
       # puts @view_class.to_s + @styles.inspect, ''
       @computed_options.merge!(style_options)
     end

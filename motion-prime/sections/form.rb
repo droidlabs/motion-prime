@@ -71,7 +71,7 @@ module MotionPrime
 
     def render_table
       init_form_fields
-      set_data_stamp(self.field_indexes.values)
+      reset_data_stamps
       self.table_view = screen.table_view(
         styles: form_styles.values.flatten, delegate: self, dataSource: self, style: (UITableViewStyleGrouped unless flat_data?)
       ).view
@@ -95,6 +95,10 @@ module MotionPrime
       set_data_stamp(field_indexes[field])
       table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
       table_view.endUpdates
+    end
+
+    def reset_data_stamps
+      set_data_stamp(self.field_indexes.values)
     end
 
     # Returns element based on field name and element name
@@ -210,9 +214,10 @@ module MotionPrime
     end
 
     class << self
-      def field(name, options = {})
+      def field(name, options = {}, &block)
         options[:name] = name
         options[:type] ||= :string
+        options[:block] = block
         self.fields_options ||= {}
         self.fields_options[name] = options
         self.fields_options[name]

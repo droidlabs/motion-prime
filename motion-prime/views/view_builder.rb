@@ -67,7 +67,7 @@ module MotionPrime
             is_custom_button = options[:background_image] || options[:title_color]
             default_button_type = is_custom_button ? :custom : :rounded
             button_type = (options.delete(:button_type) || default_button_type).uibuttontype
-            klass.buttonWithType button_type
+            button = klass.buttonWithType button_type
           },
           'UIImageView' => Proc.new{|klass, options|
             image = options.delete(:image)

@@ -135,6 +135,10 @@ module MotionPrime
         end
       elsif key.end_with?('image')
         view.setValue value.uiimage, forKey: key.camelize
+      elsif key.end_with?('_content_offset')
+        current_inset = view.contentInset
+        current_inset.send("#{key.partition('_').first}=", value)
+        view.contentInset = current_inset
       elsif key == 'autocapitalization'
         view.autocapitalizationType = UITextAutocapitalizationTypeNone if value === false
       elsif key == 'keyboard_type'
@@ -157,6 +161,8 @@ module MotionPrime
       else
         view.setValue value, forKey: key.camelize(:lower)
       end
+    rescue => e
+      puts "Error: Can't set `#{key}`: `#{value}` for #{view.to_s}"
     end
 
     STRUCTS_MAP = {

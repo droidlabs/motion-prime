@@ -1,5 +1,5 @@
 module MotionPrime
-  module ElementTextHeightMixin
+  module ElementTextDimensionsMixin
     def content_height
       text = computed_options[:text]
       return 0 if text.blank?
@@ -16,7 +16,6 @@ module MotionPrime
       end
       attributed_text = NSAttributedString.alloc.initWithString(computed_options[:text], attributes: attributes)
       rect = attributed_text.boundingRectWithSize([width, Float::MAX], options:NSStringDrawingUsesLineFragmentOrigin, context:nil)
-
       rect.size.height
     end
 

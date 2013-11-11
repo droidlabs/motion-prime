@@ -1,14 +1,21 @@
 module MotionPrime
   module HasNormalizer
-    def normalize_options(options, receiver = nil)
-      receiver ||= self
-      options.each do |key, option|
-        options[key] = if option.is_a?(Proc)
-          receiver.send :instance_eval, &option
-        else
-          option
-        end
+    def normalize_options(unordered_options, receiver = nil, order = nil)
+      options = if order
+        Hash[unordered_options.sort_by { |k,v| order.index(k.to_s).to_i }]
+      else
+        unordered_options
       end
+
+      options.each do |key, option|
+        unordered_options[key] = normalize_object(option, receiver)
+      end
+    end
+
+    def normalize_object(object, receiver)
+      return object unless object.is_a?(Proc)
+      receiver ||= self
+      receiver.send(:instance_exec, self, &object)
     end
   end
 end

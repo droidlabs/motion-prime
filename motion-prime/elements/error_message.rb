@@ -1,6 +1,6 @@
 module MotionPrime
   class ErrorMessageElement < BaseElement
-    include MotionPrime::ElementTextHeightMixin
+    include MotionPrime::ElementTextDimensionsMixin
 
     after_render :size_to_fit
 

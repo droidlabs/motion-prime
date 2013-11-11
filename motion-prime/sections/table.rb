@@ -24,10 +24,24 @@ module MotionPrime
       [*cell_ids].each { |id| @data_stamp[id] = Time.now.to_f }
     end
 
+    def reset_data_stamps
+      keys = data.each_with_index.map do |row, id|
+        if row.is_a?(Array)
+          section = id
+          rows = (0...row.count)
+        else
+          section = 0
+          rows = [id]
+        end
+        rows.map { |row| "#{section}_#{row}" }
+      end.flatten
+      set_data_stamp(keys)
+    end
+
     def reload_data
       @did_appear = false
       @data = nil
-      set_data_stamp((0..elements_options.count-1).to_a)
+      reset_data_stamps
       table_view.reloadData
     end
 
@@ -38,10 +52,18 @@ module MotionPrime
     end
 
     def render_table
-      set_data_stamp((0..elements_options.count-1))
+      reset_data_stamps
       self.table_view = screen.table_view(
         styles: table_styles, delegate: self, data_source: self, style: (UITableViewStyleGrouped unless flat_data?)
       ).view
+    end
+
+    def hide
+      table_view.try(:hide)
+    end
+
+    def show
+      table_view.try(:show)
     end
 
     def numberOfSectionsInTableView(tableView)

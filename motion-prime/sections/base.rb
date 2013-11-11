@@ -26,8 +26,8 @@ module MotionPrime
       @options = options
       @model = options[:model]
       @name = options[:name] ||= default_name
-
       create_elements
+      self.instance_eval(&options.delete(:block)) if options[:block].is_a?(Proc)
       self.hide if container_options[:hidden]
     end
 
@@ -46,10 +46,16 @@ module MotionPrime
     def create_elements
       self.elements = {}
       elements_options.each do |key, opts|
-        next unless render_element?(key)
-        options = build_options_for_element(opts)
-        self.elements[key] = MotionPrime::BaseElement.factory(options.delete(:type), options)
+        add_element(key, opts)
       end
+    end
+
+    def add_element(key, opts)
+      return unless render_element?(key)
+      options = build_options_for_element(opts)
+      options[:name] ||= key
+      options[:type] ||= :label
+      self.elements[key] = MotionPrime::BaseElement.factory(options.delete(:type), options)
     end
 
     def render_element?(element_name)
@@ -157,8 +163,8 @@ module MotionPrime
 
     class << self
       def element(name, options = {}, &block)
+        options[:name] ||= name
         options[:type] ||= :label
-        options[:name] = name
         options[:block] = block
         self.elements_options ||= {}
         self.elements_options[name] = options
