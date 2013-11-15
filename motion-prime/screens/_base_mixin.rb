@@ -101,7 +101,7 @@ module MotionPrime
     end
 
     def refresh
-      main_section.reload_data
+      main_section.try(:reload_data)
     end
 
     # Class methods

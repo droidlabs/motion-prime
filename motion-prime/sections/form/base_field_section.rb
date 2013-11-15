@@ -1,5 +1,6 @@
 module MotionPrime
   class BaseFieldSection < BaseSection
+    include CellSection
     include BW::KVO
     attr_accessor :form
 
@@ -7,9 +8,7 @@ module MotionPrime
 
     def initialize(options = {})
       @form = options.delete(:form)
-      if options[:observe_errors_for]
-        @observe_errors_for = self.send(:instance_eval, &options.delete(:observe_errors_for))
-      end
+      @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, self) if options[:observe_errors]
       @container_options = options.delete(:container)
       super
       observe_model_errors
@@ -22,7 +21,7 @@ module MotionPrime
     def render_element?(element_name)
       case element_name.to_sym
       when :error_message
-        @observe_errors_for && @observe_errors_for.errors[name].present?
+        has_errors?
       when :label
         not @options[:label] === false
       else true
@@ -31,27 +30,28 @@ module MotionPrime
 
     def on_section_render
       @status_for_updated = :rendered
+      form.register_elements_from_section(self)
     end
 
     def observe_model_errors
-      return unless @observe_errors_for
-      observe @observe_errors_for.errors, name do |old_value, new_value|
-        if @status_for_updated == :rendered
-          clear_observer_and_reload
-        else
-          create_elements
-          form.table_view.reloadData
+      return unless observing_errors?
+      errors_observer_fields.each do |field|
+        observe observing_errors_for.errors, field do |old_value, new_value|
+          if @status_for_updated == :rendered
+            clear_observer_and_reload
+          else
+            create_elements
+            form.table_view.reloadData
+          end
         end
       end
     end
 
     def clear_observer_and_reload
-      unobserve @observe_errors_for.errors, name
+      errors_observer_fields.each do |field|
+        unobserve observing_errors_for.errors, field
+      end
       reload_section
-    end
-
-    def build_options_for_element(opts)
-      super.merge(observe_errors_for: @observe_errors_for)
     end
 
     def form_name
@@ -94,12 +94,44 @@ module MotionPrime
       view(:input).delegate = self.form
     end
 
+    def observing_errors?
+      @errors_observer_options.present?
+    end
+
+    def has_errors?
+      return false unless observing_errors?
+      errors_observer_fields.any? do |field|
+        observing_errors_for.errors[field].present?
+      end
+    end
+
+    def errors_observer_fields
+      @errors_observer_fields ||= begin
+        fields = Array.wrap(@errors_observer_options[:fields])
+        fields << name if fields.empty?
+        fields.uniq
+      end
+    end
+
+    def observing_errors_for
+      @errors_observer_options[:resource]
+    end
+
+    def all_errors
+      return [] unless observing_errors?
+
+      errors_observer_fields.map do |field|
+        observing_errors_for.errors[field]
+      end
+    end
+
     def reload_section
       form.reload_cell(self)
     end
 
     def container_height
-      error_height = element(:error_message).try(:content_height).to_i
+      element = element(:error_message)
+      error_height = element ? element.content_height + 5 : 0
       super + error_height
     end
   end

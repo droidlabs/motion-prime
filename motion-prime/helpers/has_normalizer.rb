@@ -13,9 +13,16 @@ module MotionPrime
     end
 
     def normalize_object(object, receiver)
-      return object unless object.is_a?(Proc)
       receiver ||= self
-      receiver.send(:instance_exec, self, &object)
+      if object.is_a?(Proc)
+        receiver.send(:instance_exec, self, &object)
+      elsif object.is_a?(Hash)
+        object.inject({}) do |result, (key, nested_object)|
+          result.merge(key => normalize_object(nested_object, receiver))
+        end
+      else
+        object
+      end
     end
   end
 end

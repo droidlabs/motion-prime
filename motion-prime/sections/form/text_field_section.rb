@@ -9,8 +9,8 @@ module MotionPrime
 
     element :error_message, type: :error_message do
       {
-        hidden: proc { form.model && form.model.errors[name].blank? },
-        text: proc { form.model and form.model.errors[name].join("\n") }
+        hidden: proc { !has_errors? },
+        text: proc { observing_errors? and all_errors.join("\n") }
       }
     end
     after_render :bind_text_input

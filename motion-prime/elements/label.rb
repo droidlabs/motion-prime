@@ -2,6 +2,7 @@ module MotionPrime
   class LabelElement < BaseElement
     include MotionPrime::ElementTextDimensionsMixin
 
+    before_render :size_to_fit_if_needed
     after_render :size_to_fit
 
     def size_to_fit
@@ -11,6 +12,12 @@ module MotionPrime
         else
           view.sizeToFit
         end
+      end
+    end
+
+    def size_to_fit_if_needed
+      if computed_options[:size_to_fit] && computed_options[:width]
+        @computed_options[:height_to_fit] = content_height
       end
     end
 

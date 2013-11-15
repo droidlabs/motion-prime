@@ -1,7 +1,8 @@
 motion_require '../table.rb'
 module MotionPrime
   class TableFieldSection < TableSection
-    attr_accessor :form, :cell_element, :delegate
+    include CellSection
+    attr_accessor :delegate, :form
     after_render :on_render
 
     def initialize(options = {})
@@ -25,10 +26,6 @@ module MotionPrime
         :"#{form.name}_table",
         :"#{form.name}_#{name}_table"]
       super
-    end
-
-    def cell
-      cell_element || super
     end
 
     def on_click(table, index)

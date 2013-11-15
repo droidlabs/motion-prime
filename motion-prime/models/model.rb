@@ -28,14 +28,22 @@ module MotionPrime
     def assign_attributes(new_attributes, options = {})
       attributes = new_attributes.symbolize_keys
       attributes.each do |k, v|
-        if respond_to?("#{k}=")
-          send("#{k}=", v) unless options[:skip_nil_values] && v.nil?
+        if has_attribute?(k)
+          assign_attribute(k, v) unless options[:skip_nil_values] && v.nil?
         elsif options[:check_attribute_presence]
           puts "unknown attribute: #{k}"
         else
           raise(NoMethodError, "unknown attribute: #{k}")
         end
       end
+    end
+
+    def assign_attribute(name, value)
+      self.send("#{name}=", value) if has_attribute?(name)
+    end
+
+    def has_attribute?(name)
+      respond_to?("#{name}=")
     end
 
     def attributes_hash

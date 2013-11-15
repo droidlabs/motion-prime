@@ -32,7 +32,11 @@ module MotionPrime
     end
 
     def container_options
-      @normalized_container_options ||= (@container_options || {}).merge(normalize_options(self.class.container_options.try(:clone) || {}))
+      @container_options ||= {}
+      class_container_options = self.class.container_options.try(:clone) || {}
+      # @normalized_container_options ||= normalize_options(class_container_options.merge(@container_options))
+      @normalized_container_options ||= normalize_options(class_container_options.merge(@container_options))
+      @normalized_container_options
     end
 
     def default_name

@@ -113,8 +113,8 @@ module MotionPrime
     def on_click(table, index)
     end
 
-    def on_appear
-    end
+    def on_appear; end
+    def on_row_render(cell, index); end
 
     def cell_name(table, index)
       record = row_by_index(index)
@@ -131,19 +131,24 @@ module MotionPrime
       table.dequeueReusableCellWithIdentifier(cell_name(table, index))
     end
 
-    def tableView(table, viewForFooterInSection: section)
-      UIView.new
-    end
-
-    def tableView(table, heightForFooterInSection: section)
-      0.1
-    end
+    # def tableView(table, viewForFooterInSection: section) # cause bug in ios7.0.0-7.0.2
+    #   UIView.new
+    # end
+    # def tableView(table, heightForFooterInSection: section)
+    #   0.1
+    # end
 
     # ALIASES
     # ---------------------
 
     def tableView(table, cellForRowAtIndexPath:index)
-      cell = cached_cell(index, table) || render_cell(index, table)
+      @rendered_cells ||= []
+      @rendered_cells[index.section] ||= []
+
+      cell = cached_cell(index, table) || render_cell(index, table).tap do |cell|
+        @rendered_cells[index.section][index.row] = cell
+        on_row_render(cell, index)
+      end
 
       # run table view is appeared callback if needed
       if !@did_appear && index.row == rows_for_section(index.section).size - 1

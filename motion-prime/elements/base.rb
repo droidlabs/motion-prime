@@ -11,13 +11,13 @@ module MotionPrime
 
     attr_accessor :options, :section, :name,
                   :view_class, :view, :view_name, :styles, :screen
-
+    delegate :observing_errors?, :has_errors?, :errors_observer_fields, :observing_errors_for, to: :section, allow_nil: true
     define_callbacks :render
 
     def initialize(options = {})
       @options = options
       @section = options.delete(:section)
-      @observe_errors_for = options.delete(:observe_errors_for)
+
       @name = options[:name]
       @block = options.delete(:block)
       @view_class = options.delete(:view_class) || "UIView"
@@ -69,7 +69,7 @@ module MotionPrime
         if field_section
           section.section_styles.each { |type, values| base_styles[type] += values }
         end
-        if @observe_errors_for && @observe_errors_for.errors[section.name].present?
+        if section.respond_to?(:observing_errors?) && observing_errors? && has_errors?
           suffixes[:common] += [:"#{name}_with_errors", :"#{@view_name}_with_errors"]
         end
       end
@@ -95,7 +95,6 @@ module MotionPrime
     end
 
     private
-
 
     class << self
       def factory(type, options = {})

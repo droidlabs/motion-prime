@@ -195,7 +195,7 @@ module MotionPrime
       updatable_attributes = updatable_attributes.slice(*slice_attributes) if slice_attributes
       updatable_attributes.to_a.inject({}) do |hash, attribute|
         key, options = *attribute
-        return hash if options[:if] && !send(options[:if])
+        next hash if options[:if] && !send(options[:if])
         value = if block = options[:block]
           block.call(self)
         else

@@ -91,7 +91,9 @@ module MotionPrime
           },
           'UITableView' => Proc.new{|klass, options|
             style = options.delete(:style) || UITableViewStylePlain
-            klass.alloc.initWithFrame CGRectZero, style: style
+            view = klass.alloc.initWithFrame CGRectZero, style: style
+            view.tableFooterView = UIView.new
+            view
           },
           'UITableViewCell' => Proc.new{|klass, options|
             style = options.delete(:style) || UITableViewCellStyleDefault

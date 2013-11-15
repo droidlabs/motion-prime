@@ -9,10 +9,10 @@ module MotionPrime
       if args[:modal] || has_navigation?
         screen = setup_screen_for_open(screen, args)
         screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
-        if has_navigation?
-          push_view_controller screen, args
-        else
+        if args[:modal] || !has_navigation?
           present_modal_view_controller screen, (args.has_key?(:animated) ? args[:animated] : true)
+        else
+          push_view_controller screen, args
         end
       else
         app_delegate.open_screen(screen.main_controller)

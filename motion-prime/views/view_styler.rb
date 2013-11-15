@@ -28,6 +28,10 @@ module MotionPrime
       left    = options.delete(:left)
       value_type = options.delete(:value_type).to_s # absolute/relative
 
+      if options[:height_to_fit].present? && height.nil? && (top.nil? || bottom.nil?)
+        height = options[:height_to_fit]
+      end
+
       if width.nil? && height.nil? && right.nil? && bottom.nil?
         options[:frame] = bounds
       else
@@ -38,7 +42,7 @@ module MotionPrime
         height = 0.0 if height.nil?
 
         # calculate left and right if width is relative, e.g 0.7
-        if width > 0 && width <= 1 && value_type != 'absolute'
+        if width && width > 0 && width <= 1 && value_type != 'absolute'
           if right.nil?
             left ||= 0
             right = max_width - max_width * width
@@ -48,7 +52,7 @@ module MotionPrime
         end
 
         # calculate top and bottom if height is relative, e.g 0.7
-        if height > 0 && height <= 1 && value_type != 'absolute'
+        if height && height > 0 && height <= 1 && value_type != 'absolute'
           if bottom.nil?
             top ||= 0
             bottom = max_height - max_height * height
@@ -103,6 +107,7 @@ module MotionPrime
       # ignore options
       return if key == 'size_to_fit' && view.is_a?(UILabel)
       return if (key == 'url' || key == 'default') && view.is_a?(UIImageView)
+      return if %w[max_width min_width height_to_fit].include? key.to_s
 
       # apply options
       if key.end_with?('title_color')

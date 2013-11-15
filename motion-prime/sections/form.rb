@@ -22,7 +22,7 @@ module MotionPrime
 
     class_attribute :text_field_limits, :text_view_limits
     class_attribute :fields_options
-    attr_accessor :fields, :field_indexes, :keyboard_visible
+    attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views
 
     def table_data
       if @groups_count == 1
@@ -79,18 +79,22 @@ module MotionPrime
 
     def render_cell(index, table)
       field = rows_for_section(index.section)[index.row]
-      screen.table_view_cell styles: field_styles(field).values.flatten, reuse_identifier: cell_name(table, index), parent_view: table_view do |cell_element|
-        field.cell_element = cell_element if field.respond_to?(:cell_element)
+      screen.table_view_cell styles: field_styles(field).values.flatten, reuse_identifier: cell_name(table, index), parent_view: table_view do |cell_view|
+        field.cell_view = cell_view if field.respond_to?(:cell_view)
         field.render(to: screen)
       end
     end
 
     def reload_cell(section)
       field = section.name.to_sym
-      path = table_view.indexPathForRowAtPoint(section.cell.center) # do not use indexPathForCell here as field may be invisibe
+      index = field_indexes[field].split('_').map(&:to_i)
+      path = NSIndexPath.indexPathForRow(index.last, inSection: index.first)
+      # path = table_view.indexPathForRowAtPoint(section.cell.center) # do not use indexPathForCell here as field may be invisibe
       table_view.beginUpdates
       section.cell.removeFromSuperview
+
       fields[field] = load_field(self.class.fields_options[field])
+
       @data = nil
       set_data_stamp(field_indexes[field])
       table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
@@ -130,6 +134,13 @@ module MotionPrime
 
     def fields_hash
       fields.to_hash
+    end
+
+    def register_elements_from_section(section)
+      self.rendered_views ||= {}
+      section.elements.values.each do |element|
+        self.rendered_views[element.view] = {element: element, section: section}
+      end
     end
 
     # Set focus on field cell
