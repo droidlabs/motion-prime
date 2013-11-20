@@ -6,9 +6,9 @@ module MotionPrime
       base.class_attribute :_associations
     end
 
-    def sync_url(method = :get)
+    def sync_url(method = :get, options = {})
       url = self.class.sync_url
-      url = url.call(method, self) if url.is_a?(Proc)
+      url = url.call(method, self, options) if url.is_a?(Proc)
       normalize_sync_url(url)
     end
 
@@ -38,12 +38,13 @@ module MotionPrime
         should_fetch
       end
 
-      method = if should_update
+      method = sync_options[:method]
+      method ||= if should_update
         persisted? ? :put : :post
       else
         :get
       end
-      url = sync_url(method)
+      url = sync_url(method, sync_options)
 
       if url.blank?
         should_fetch = false
@@ -83,15 +84,21 @@ module MotionPrime
     def update_with_url(url, sync_options = nil, &block)
       use_callback = block_given?
       post_data = { model_name => filtered_updatable_attributes(sync_options)}
-      api_client.send(id ? :put : :post, url, post_data) do |data, status_code|
+      method = sync_options[:method] || (id ? :put : :post)
+      api_client.send(method, url, post_data) do |data, status_code|
         if status_code.to_s =~ /20\d/ && data.is_a?(Hash)
-          self.id ||= data['id']
-          accessible_attributes = self.class.attributes.map(&:to_sym) - [:id]
-          attrs = data.symbolize_keys.slice(*accessible_attributes)
-          fetch_with_attributes(attrs)
+          set_attributes_from_response(data)
         end
         block.call(data, status_code) if use_callback
       end
+    end
+
+    def set_attributes_from_response(data)
+      self.id ||= data['id']
+      accessible_attributes = self.class.attributes.map(&:to_sym) - [:id]
+      accessible_attributes += self.methods(false).grep(/^fetch_/).map { |custom| custom.partition(':').first.partition('_').last.to_sym }
+      attrs = data.symbolize_keys.slice(*accessible_attributes)
+      fetch_with_attributes(attrs)
     end
 
     # set attributes, using fetch
@@ -136,7 +143,7 @@ module MotionPrime
       puts "SYNC: started sync for #{key} in #{self.class.name}"
       api_client.get normalize_sync_url(options[:sync_url]) do |data|
         data = data[options[:sync_key]] if options[:sync_key]
-        if data.present?
+        if data
           # Update/Create existing records
           data.each do |attributes|
             model = old_collection.detect{ |model| model.id == attributes[:id]}

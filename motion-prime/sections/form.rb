@@ -21,8 +21,8 @@ module MotionPrime
     #
 
     class_attribute :text_field_limits, :text_view_limits
-    class_attribute :fields_options
-    attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views
+    class_attribute :fields_options, :section_header_options
+    attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :section_headers
 
     def table_data
       if @groups_count == 1
@@ -65,16 +65,28 @@ module MotionPrime
       styles
     end
 
-    def build_styles_chain(base_styles, suffixes)
-      [*base_styles].uniq.compact.map { |base_style| [*suffixes].uniq.compact.map { |suffix| [base_style, suffix].join('_').to_sym } }.flatten
+    def header_styles(header)
+      suffixes = [:header, :"#{header.name}_header"]
+      styles = {
+        common: build_styles_chain(form_styles[:common], suffixes),
+        specific: build_styles_chain(form_styles[:specific], suffixes)
+      }
+
+      if header.respond_to?(:container_styles) && header.container_styles.present?
+        styles[:specific] += Array.wrap(header.container_styles)
+      end
+      styles
     end
 
     def render_table
       init_form_fields
       reset_data_stamps
-      self.table_view = screen.table_view(
-        styles: form_styles.values.flatten, delegate: self, dataSource: self, style: (UITableViewStyleGrouped unless flat_data?)
-      ).view
+      options = {
+        styles: form_styles.values.flatten,
+        delegate: self,
+        dataSource: self,
+        style: (UITableViewStyleGrouped unless flat_data?)}
+      self.table_element = screen.table_view(options)
     end
 
     def render_cell(index, table)
@@ -171,6 +183,18 @@ module MotionPrime
       self.keyboard_visible = false
     end
 
+    def keyboard_will_show
+      current_inset = table_view.contentInset
+      current_inset.bottom = KEYBOARD_HEIGHT_PORTRAIT + (self.table_element.computed_options[:bottom_content_offset] || 0)
+      table_view.contentInset = current_inset
+    end
+
+    def keyboard_will_hide
+      current_inset = table_view.contentInset
+      current_inset.bottom = self.table_element.computed_options[:bottom_content_offset] || 0
+      table_view.contentInset = current_inset
+    end
+
     # ALIASES
     def on_input_change(text_field); end
     def on_input_edit(text_field); end
@@ -224,6 +248,29 @@ module MotionPrime
       end
     end
 
+    def render_header(section)
+      return unless options = self.class.section_header_options.try(:[], section)
+      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(form: self))
+    end
+
+    def header_for_section(section)
+      self.section_headers ||= []
+      self.section_headers[section] || render_header(section)
+    end
+
+    def tableView(table, viewForHeaderInSection: section)
+      return unless header = header_for_section(section)
+      wrapper = MotionPrime::BaseElement.factory(:view, styles: header_styles(header).values.flatten, parent_view: table_view)
+      wrapper.render(to: screen) do |cell_view|
+        header.cell_view = cell_view if header.respond_to?(:cell_view)
+        header.render(to: screen)
+      end
+    end
+
+    def tableView(table, heightForHeaderInSection: section)
+      header_for_section(section).try(:container_height) || 0
+    end
+
     class << self
       def field(name, options = {}, &block)
         options[:name] = name
@@ -232,6 +279,13 @@ module MotionPrime
         self.fields_options ||= {}
         self.fields_options[name] = options
         self.fields_options[name]
+      end
+
+      def group_header(name, options)
+        options[:name] = name
+        self.section_header_options ||= []
+        section = options.delete(:id)
+        self.section_header_options[section] = options
       end
 
       def limit_text_field_length(name, limit)

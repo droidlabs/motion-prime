@@ -1,5 +1,9 @@
 motion_require '../views/styles.rb'
 MotionPrime::Styles.define :base_form do
+  style :header, container: {height: 25}
+  style :header_label,
+    left: 0, right: 0, size_to_fit: true,
+    bottom: 20, top: nil
 
   style :field,
     selection_style: UITableViewCellSelectionStyleNone,
@@ -48,8 +52,7 @@ MotionPrime::Styles.define :base_form do
     left: 0,
     right: 0,
     top: 30,
-    bottom: 0,
-    padding_top: 10
+    bottom: 0
 
   style :select_field_button,
     background_color: :white,
@@ -59,7 +62,6 @@ MotionPrime::Styles.define :base_form do
     height: 35,
     title_color: 0x16759a,
     title_shadow_color: :white,
-    padding_top: 12,
     contentHorizontalAlignment: UIControlContentHorizontalAlignmentLeft,
     layer: {
       border_color: :gray,
@@ -71,7 +73,7 @@ MotionPrime::Styles.define :base_form do
     }
   style :select_field_arrow,
     image: "images/forms/select_arrow.png",
-    top: 42,
+    top: 40,
     right: 5,
     width: 9,
     height: 14

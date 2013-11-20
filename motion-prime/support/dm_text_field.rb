@@ -3,7 +3,6 @@
 # * support placeholder_color, placeholder_font options
 class DMTextField < UITextField
   DEFAULT_PADDING_LEFT = 5
-  DEFAULT_PADDING_TOP = 3
   include MotionPrime::KeyValueStore
 
   attr_accessor :paddingLeft, :paddingRight, :paddingTop, :padding,
@@ -35,7 +34,12 @@ class DMTextField < UITextField
   end
 
   def padding_top
-    self.paddingTop || self.padding || DEFAULT_PADDING_TOP
+    self.paddingTop || self.padding || default_padding_top
+  end
+
+  def default_padding_top # to center title label
+    single_line_height = self.font.pointSize
+    (self.bounds.size.height - single_line_height)/2
   end
 
   private

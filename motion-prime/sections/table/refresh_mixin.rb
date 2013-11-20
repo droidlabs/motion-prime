@@ -4,7 +4,7 @@ module MotionPrime
       screen.automaticallyAdjustsScrollViewInsets = false
       current_inset = self.table_view.contentInset
       # TODO: debug this
-      current_inset.top = 64 + options[:top_offset].to_f #UIApplication.sharedApplication.statusBarFrame.size.height + screen.navigation_controller.navigationBar.size.height
+      # current_inset.top = 64 + options[:top_offset].to_f #UIApplication.sharedApplication.statusBarFrame.size.height + screen.navigation_controller.navigationBar.size.height
       self.table_view.contentInset = current_inset
 
       table_view.addPullToRefreshWithActionHandler(block)

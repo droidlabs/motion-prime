@@ -10,6 +10,7 @@ module MotionPrime
     #   # e.g. in this sample: InfoTabSection.new(model: model).render(to: screen)
     # end
     #
+    include MotionPrime::HasNormalizer
 
     class_attribute :tabs_options, :tabs_default, :tabs_indexes
     attr_accessor :tab_pages
@@ -21,7 +22,7 @@ module MotionPrime
     after_render :render_tab_controls
 
     def tab_options
-      @tab_options ||= self.class.tabs_options
+      @tab_options ||= normalize_options(self.class.tabs_options.clone)
     end
 
     def tab_control_items
@@ -31,7 +32,6 @@ module MotionPrime
     def tab_default
       @tab_default ||= self.class.tabs_default || 0
     end
-
 
     # Make tab button disabled by index
     # @param Fixnum index
@@ -58,15 +58,35 @@ module MotionPrime
     # on click to segment tab
     # @param UISegemtedControl control
     def on_click(*control)
+      show_at_index(control.selectedSegment)
+    end
+
+    def show_at_index(index)
       @tab_pages.each_with_index do |page, i|
-        page.hide if control.selectedSegment != i
+        page.hide if index != i
       end
-      @tab_pages[control.selectedSegment].show
+      view(:control).setSelectedSegmentIndex index
+      @tab_pages[index].show
+    end
+
+    def show_by_key(key)
+      id = self.class.tabs_indexes[key]
+      show_at_index(id)
+    end
+
+    def tab_page(key)
+      id = self.class.tabs_indexes[key]
+      tab_pages[id]
+    end
+
+    def set_title(key, title)
+      id = self.class.tabs_indexes[key]
+      view(:control).setTitle(title, forSegmentAtIndex: id)
     end
 
     class << self
       def tab(id, options = {})
-        options[:name] = id.to_s.titleize
+        options[:name] ||= id.to_s.titleize
         options[:id] = id
 
         self.tabs_indexes ||= {}

@@ -113,7 +113,13 @@ module MotionPrime
       end
 
       define_method((name + "=").to_sym) do |*args, &block|
-        self.info[name] = args[0]
+        value = args[0]
+        case options[:type].to_s
+        when 'integer' then value = value.to_i
+        when 'float' then value = value.to_f
+        end unless value.nil?
+
+        self.info[name] = value
       end
 
       if options[:type].to_s == 'boolean'

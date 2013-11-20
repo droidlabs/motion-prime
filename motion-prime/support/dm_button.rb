@@ -1,7 +1,6 @@
 class DMButton < UIButton
   include MotionPrime::KeyValueStore
   DEFAULT_PADDING_LEFT = 5
-  DEFAULT_PADDING_TOP = 0
   attr_accessor :paddingLeft, :paddingRight, :paddingTop, :padding
 
   def setTitle(value)
@@ -26,7 +25,12 @@ class DMButton < UIButton
   end
 
   def padding_top
-    self.paddingTop || self.padding || DEFAULT_PADDING_TOP
+    self.paddingTop || self.padding || default_padding_top
+  end
+
+  def default_padding_top # to center title label
+    single_line_height = self.font.pointSize
+    (self.bounds.size.height - single_line_height)/2
   end
 
   def drawPadding(rect)

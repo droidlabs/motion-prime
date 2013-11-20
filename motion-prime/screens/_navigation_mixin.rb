@@ -61,7 +61,6 @@ module MotionPrime
       # Wrap in a NavigationController?
       if wrap_in_navigation? && !args[:modal]
         add_navigation_controller
-        # screen.navigation_controller ||= navigation_controller
       end
     end
 

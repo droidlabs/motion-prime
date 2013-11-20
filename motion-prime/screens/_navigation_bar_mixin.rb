@@ -8,6 +8,10 @@ module MotionPrime
       navigationItem.leftBarButtonItem
     end
 
+    def remove_navigation_right_button(args = {})
+      navigationItem.setRightBarButtonItem(nil, animated: args[:animated])
+    end
+
     def set_navigation_right_button(title, args = {})
       navigationItem.rightBarButtonItem = create_navigation_button(title, args)
     end

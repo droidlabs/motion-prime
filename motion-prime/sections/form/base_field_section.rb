@@ -9,9 +9,12 @@ module MotionPrime
     def initialize(options = {})
       @form = options.delete(:form)
       @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, self) if options[:observe_errors]
-      @container_options = options.delete(:container)
       super
       observe_model_errors
+    end
+
+    def style_options
+      @style_options ||= Styles.for(section_styles.values.flatten)
     end
 
     def section_styles

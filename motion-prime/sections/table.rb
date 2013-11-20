@@ -4,7 +4,7 @@ module MotionPrime
     include TableSectionRefreshMixin
     include HasSearchBar
 
-    attr_accessor :table_view, :did_appear
+    attr_accessor :table_element, :did_appear
     before_render :render_table
 
     def table_data
@@ -53,9 +53,17 @@ module MotionPrime
 
     def render_table
       reset_data_stamps
-      self.table_view = screen.table_view(
-        styles: table_styles, delegate: self, data_source: self, style: (UITableViewStyleGrouped unless flat_data?)
-      ).view
+      options = {
+        styles: table_styles,
+        delegate: self,
+        data_source: self,
+        style: (UITableViewStyleGrouped unless flat_data?)
+      }
+      self.table_element = screen.table_view(options)
+    end
+
+    def table_view
+      table_element.view
     end
 
     def hide

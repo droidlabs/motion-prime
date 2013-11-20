@@ -8,7 +8,6 @@ module MotionPrime
     def initialize(options = {})
       @form = options.delete(:form)
       @delegate = options.delete(:delegate) || form
-      @container_options = options.delete(:container)
       super
     end
 

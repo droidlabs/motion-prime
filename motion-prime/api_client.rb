@@ -13,7 +13,7 @@ class ApiClient
   end
 
   def request_params(data)
-    params = {payload: data}
+    params = {payload: data, no_redirect: true}
     if MP::Config.api.http_auth.present?
       params.merge!(credentials: MP::Config.api.http_auth.to_hash)
     end

@@ -18,7 +18,7 @@ module MotionPrime
     include MotionPrime::HasAuthorization
     include MotionPrime::HasNormalizer
 
-    attr_accessor :screen, :model, :name, :options, :elements, :container_options
+    attr_accessor :screen, :model, :name, :options, :elements
     class_attribute :elements_options, :container_options, :keyboard_close_bindings
     define_callbacks :render
 
@@ -26,17 +26,25 @@ module MotionPrime
       @options = options
       @model = options[:model]
       @name = options[:name] ||= default_name
-      create_elements
-      self.instance_eval(&options.delete(:block)) if options[:block].is_a?(Proc)
-      self.hide if container_options[:hidden]
+      @options_block = options.delete(:block)
+      load_section
     end
 
     def container_options
-      @container_options ||= {}
-      class_container_options = self.class.container_options.try(:clone) || {}
-      # @normalized_container_options ||= normalize_options(class_container_options.merge(@container_options))
-      @normalized_container_options ||= normalize_options(class_container_options.merge(@container_options))
-      @normalized_container_options
+      @normalized_container_options or begin
+        # priority: class; from styles; passed directly
+        raw_container_options = self.class.container_options.try(:clone) || {}
+        passed_container_options = options.delete(:container) || {}
+        raw_container_options.merge!(passed_container_options)
+        @normalized_container_options = normalize_options(raw_container_options)
+
+        style_container_options = style_options.delete(:container) || {}
+        @normalized_container_options.merge!(style_container_options.except(*passed_container_options.keys))
+      end
+    end
+
+    def style_options
+      {}
     end
 
     def default_name
@@ -45,6 +53,19 @@ module MotionPrime
 
     def elements_options
       self.class.elements_options || {}
+    end
+
+    def load_section
+      create_elements
+      self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
+    end
+
+    def reload_section
+      self.elements.values.map(&:view).flatten.compact.each { |view| view.removeFromSuperview }
+      load_section
+      run_callbacks :render do
+        render!
+      end
     end
 
     def create_elements
@@ -56,10 +77,16 @@ module MotionPrime
 
     def add_element(key, opts)
       return unless render_element?(key)
+      index = opts.delete(:at)
       options = build_options_for_element(opts)
       options[:name] ||= key
       options[:type] ||= :label
-      self.elements[key] = MotionPrime::BaseElement.factory(options.delete(:type), options)
+      element = MotionPrime::BaseElement.factory(options.delete(:type), options)
+      if index
+        self.elements = Hash[self.elements.to_a.insert index, [key, element]]
+      else
+        self.elements[key] = element
+      end
     end
 
     def render_element?(element_name)
