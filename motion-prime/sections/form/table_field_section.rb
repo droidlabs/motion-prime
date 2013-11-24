@@ -38,6 +38,15 @@ module MotionPrime
       end
     end
 
+    def tableView(table, viewForFooterInSection: section)
+      method_name = :"#{name}_footer_view_for_section"
+      delegate.respond_to?(method_name) ? delegate.send(method_name) : nil
+    end
+    def tableView(table, heightForFooterInSection: section)
+      method_name = :"#{name}_footer_height_for_section"
+      delegate.respond_to?(method_name) ? delegate.send(method_name) : 0
+    end
+
     delegate_method :table_data
     delegate_method :container_height
   end

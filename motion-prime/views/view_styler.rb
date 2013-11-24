@@ -156,6 +156,11 @@ module MotionPrime
         mask_layer.frame = bounds
         mask_layer.path = mask_path.CGPath
         view.layer.mask = mask_layer
+        # TODO: apply for corner_radius_top/bottom
+        # CAShapeLayer *shape = [[CAShapeLayer alloc] init];
+        # shape.path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height) byRoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight cornerRadii:CGSizeMake(10, 10)].CGPath;
+        # self.layer.mask = shape;
+        # self.layer.masksToBounds = YES;
       elsif key == 'attributed_text_options'
         paragrahStyle = NSMutableParagraphStyle.alloc.init
         paragrahStyle.setLineSpacing(value[:line_spacing])

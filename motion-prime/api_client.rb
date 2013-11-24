@@ -13,7 +13,11 @@ class ApiClient
   end
 
   def request_params(data)
-    params = {payload: data, no_redirect: true}
+    files = data.delete(:files)
+    params = {payload: data, no_redirect: true, format: :form_data}
+    if files.present?
+      params.merge!(files: files)
+    end
     if MP::Config.api.http_auth.present?
       params.merge!(credentials: MP::Config.api.http_auth.to_hash)
     end

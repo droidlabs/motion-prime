@@ -83,7 +83,14 @@ module MotionPrime
     # update on server using url
     def update_with_url(url, sync_options = nil, &block)
       use_callback = block_given?
-      post_data = { model_name => filtered_updatable_attributes(sync_options)}
+      filtered_attributes = filtered_updatable_attributes(sync_options)
+
+      post_data = {files: {}}
+      filtered_attributes.delete(:files).each do |file_name, file|
+        post_data[:files][[model_name, file_name].join] = file
+      end
+      post_data[model_name] = filtered_attributes
+
       method = sync_options[:method] || (id ? :put : :post)
       api_client.send(method, url, post_data) do |data, status_code|
         if status_code.to_s =~ /20\d/ && data.is_a?(Hash)
@@ -94,11 +101,8 @@ module MotionPrime
     end
 
     def set_attributes_from_response(data)
-      self.id ||= data['id']
-      accessible_attributes = self.class.attributes.map(&:to_sym) - [:id]
-      accessible_attributes += self.methods(false).grep(/^fetch_/).map { |custom| custom.partition(':').first.partition('_').last.to_sym }
-      attrs = data.symbolize_keys.slice(*accessible_attributes)
-      fetch_with_attributes(attrs)
+      self.id ||= data.delete('id')
+      fetch_with_attributes(data)
     end
 
     # set attributes, using fetch
@@ -200,15 +204,24 @@ module MotionPrime
       end
 
       updatable_attributes = updatable_attributes.slice(*slice_attributes) if slice_attributes
-      updatable_attributes.to_a.inject({}) do |hash, attribute|
+      updatable_attributes.to_a.inject({files: {}}) do |hash, attribute|
         key, options = *attribute
         next hash if options[:if] && !send(options[:if])
         value = if block = options[:block]
-          block.call(self)
+          block.call(self, hash)
         else
           info[key]
         end
-        hash.merge(key => value)
+
+        if key.to_s.starts_with?('file_')
+          value.to_a.each do |file_data|
+            file_name, file = file_data.to_a
+            hash[:files]["[#{key.partition('_').last}]#{file_name}"] = file
+          end
+        else
+          hash.merge!(key => value)
+        end
+        hash
       end
     end
 

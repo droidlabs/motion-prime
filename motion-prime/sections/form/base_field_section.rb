@@ -133,6 +133,7 @@ module MotionPrime
     end
 
     def container_height
+      return 0 if container_options[:hidden]
       element = element(:error_message)
       error_height = element ? element.content_height + 5 : 0
       super + error_height

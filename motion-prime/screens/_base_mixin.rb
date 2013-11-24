@@ -95,9 +95,13 @@ module MotionPrime
       @activity_indicator_view.stopAnimating
     end
 
-    def show_notice(message, time = 1.0)
+    def show_notice(message, time = 1.0, type = :notice)
+      hud_type = case type.to_s
+      when 'alert' then MBAlertViewHUDTypeExclamationMark
+      else MBAlertViewHUDTypeCheckmark
+      end
       MBHUDView.hudWithBody message,
-        type: MBAlertViewHUDTypeCheckmark, hidesAfter: time, show: true
+        type: hud_type, hidesAfter: time, show: true
     end
 
     def refresh

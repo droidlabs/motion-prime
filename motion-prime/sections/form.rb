@@ -103,7 +103,7 @@ module MotionPrime
       path = NSIndexPath.indexPathForRow(index.last, inSection: index.first)
       # path = table_view.indexPathForRowAtPoint(section.cell.center) # do not use indexPathForCell here as field may be invisibe
       table_view.beginUpdates
-      section.cell.removeFromSuperview
+      section.cell.try(:removeFromSuperview)
 
       fields[field] = load_field(self.class.fields_options[field])
 
@@ -184,6 +184,7 @@ module MotionPrime
     end
 
     def keyboard_will_show
+      return if table_view.contentSize.height + table_view.top <= UIScreen.mainScreen.bounds.size.height
       current_inset = table_view.contentInset
       current_inset.bottom = KEYBOARD_HEIGHT_PORTRAIT + (self.table_element.computed_options[:bottom_content_offset] || 0)
       table_view.contentInset = current_inset
@@ -302,13 +303,15 @@ module MotionPrime
       def init_form_fields
         self.fields = {}
         self.field_indexes = {}
-        index = 0
+        section_indexes = []
         (self.class.fields_options || []).each do |key, field|
           next unless render_field?(key, field)
-          @groups_count = [@groups_count || 1, field[:group].to_i + 1].max
+          section_id = field[:group].to_i
+          section_indexes[section_id] ||= 0
+          @groups_count = [@groups_count || 1, section_id + 1].max
           self.fields[key] = load_field(field)
-          self.field_indexes[key] = "#{field[:group].to_i}_#{index}"
-          index += 1
+          self.field_indexes[key] = "#{section_id}_#{section_indexes[section_id]}"
+          section_indexes[section_id] += 1
         end
       end
   end
