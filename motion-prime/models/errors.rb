@@ -1,35 +1,39 @@
 module MotionPrime
   class Errors
-    attr_accessor :keys
+    attr_accessor :_unique_keys
 
     def initialize(model)
-      @keys = []
+      @_unique_keys = []
+      @model = model
       model.class.attributes.map(&:to_sym).each do |key|
         initialize_for_key key
       end
     end
 
+    def unique_key(key)
+      [key, @model.object_id].join('_').to_sym
+    end
+
     def initialize_for_key(key)
-      return if @keys.include?(key.to_sym)
-      @keys << key.to_sym unless @keys.include?(key.to_sym)
-      unless instance_variable_get("@#{key}")
-        instance_variable_set("@#{key}", [])
-      end
-      self.class.send :attr_accessor, key.to_sym
+      unique_key = unique_key(key)
+      return if @_unique_keys.include?(unique_key)
+      @_unique_keys << unique_key
+      instance_variable_set("@#{unique_key}", [])
+      self.class.send :attr_accessor, unique_key
     end
 
     def get(key)
       initialize_for_key(key)
-      send(:"#{key.to_sym}")
+      send(unique_key(key))
     end
 
     def set(key, errors)
       initialize_for_key(key)
-      send :"#{key.to_sym}=", Array.wrap(errors)
+      send :"#{unique_key(key)}=", Array.wrap(errors)
     end
 
     def add(key, error)
-      get(key) << error
+      send :"#{unique_key(key)}<<", error
     end
 
     def [](key)
@@ -40,14 +44,18 @@ module MotionPrime
       set(key, errors)
     end
 
+    def reset_for(key)
+      send :"#{unique_key(key)}=", []
+    end
+
     def reset
-      @keys.each do |key|
-        set(key, [])
+      @_unique_keys.each do |unique_key|
+        send :"#{unique_key}=", []
       end
     end
 
     def messages
-      @keys.map{ |k| get(k)}.compact.flatten
+      @_unique_keys.map{ |uniq_k| send(uniq_k) }.compact.flatten
     end
 
     def blank?

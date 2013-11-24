@@ -39,7 +39,7 @@ module MotionPrime
     def observe_model_errors
       return unless observing_errors?
       errors_observer_fields.each do |field|
-        observe observing_errors_for.errors, field do |old_value, new_value|
+        observe observing_errors_for.errors, [field, observing_errors_for.object_id].join('_') do |old_value, new_value|
           if @status_for_updated == :rendered
             clear_observer_and_reload
           else
@@ -52,7 +52,7 @@ module MotionPrime
 
     def clear_observer_and_reload
       errors_observer_fields.each do |field|
-        unobserve observing_errors_for.errors, field
+        unobserve observing_errors_for.errors, [field, observing_errors_for.object_id].join('_')
       end
       reload_section
     end
