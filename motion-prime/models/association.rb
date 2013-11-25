@@ -113,7 +113,7 @@ module MotionPrime
           association_name: association_name,
           inverse_relation: {
             type: :has_one,
-            name: self.class.name.demodulize.underscore,
+            name: self.class_name_without_kvo.demodulize.underscore,
             instance: self
           }
         }

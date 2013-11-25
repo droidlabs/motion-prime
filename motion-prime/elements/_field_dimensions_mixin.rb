@@ -23,5 +23,21 @@ module MotionPrime
       width = (rect.size.width + padding_left + padding_right).ceil
       [[width, max_width].min, min_width].max
     end
+
+    def computed_height
+      text = view ? view.titleLabel.text : computed_options[:title]
+      return 0 if text.blank?
+
+      width = computed_options[:width]
+      font = computed_options[:title_label][:font] || :system.uifont
+      raise "Please set element width for height calculation" unless width
+
+      attributes = {NSFontAttributeName => font }
+      attributed_text = NSAttributedString.alloc.initWithString(text, attributes: attributes)
+      rect = attributed_text.boundingRectWithSize([width, Float::MAX], options:NSStringDrawingUsesLineFragmentOrigin, context:nil)
+
+      padding_top = computed_options[:padding_top] || computed_options[:padding] || view.try(:default_padding_top)
+      rect.size.height + padding_top*2
+    end
   end
 end

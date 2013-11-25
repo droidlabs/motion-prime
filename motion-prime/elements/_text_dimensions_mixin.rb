@@ -1,7 +1,7 @@
 module MotionPrime
   module ElementTextDimensionsMixin
     def content_height
-      text = computed_options[:text]
+      text = view.try(:text) || computed_options[:text]
       return 0 if text.blank?
 
       width = computed_options[:width]
@@ -20,7 +20,7 @@ module MotionPrime
     end
 
     def content_width
-      text = computed_options[:text]
+      text = view.try(:text) || computed_options[:text]
       return 0 if text.blank?
 
       width = computed_options[:width]

@@ -39,22 +39,16 @@ module MotionPrime
     def observe_model_errors
       return unless observing_errors?
       errors_observer_fields.each do |field|
-        observe observing_errors_for.errors, [field, observing_errors_for.object_id].join('_') do |old_value, new_value|
+        observe observing_errors_for.errors, observing_errors_for.errors.unique_key(field) do |old_value, new_value|
+          next if old_value == new_value
           if @status_for_updated == :rendered
-            clear_observer_and_reload
+            reload_section
           else
-            create_elements
+            load_section
             form.table_view.reloadData
           end
         end
       end
-    end
-
-    def clear_observer_and_reload
-      errors_observer_fields.each do |field|
-        unobserve observing_errors_for.errors, [field, observing_errors_for.object_id].join('_')
-      end
-      reload_section
     end
 
     def form_name
@@ -75,7 +69,7 @@ module MotionPrime
       end
       self
     rescue
-      puts "can't focus on element #{self.class.name}"
+      puts "can't focus on element #{self.class_name_without_kvo}"
     end
 
     def blur
@@ -86,7 +80,7 @@ module MotionPrime
       end
       self
     rescue
-      puts "can't blur on element #{self.class.name}"
+      puts "can't blur on element #{self.class_name_without_kvo}"
     end
 
     def bind_text_input
@@ -129,6 +123,9 @@ module MotionPrime
     end
 
     def reload_section
+      errors_observer_fields.each do |field|
+        unobserve observing_errors_for.errors, observing_errors_for.errors.unique_key(field)
+      end if observing_errors?
       form.reload_cell(self)
     end
 

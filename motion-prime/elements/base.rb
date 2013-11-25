@@ -21,7 +21,7 @@ module MotionPrime
       @name = options[:name]
       @block = options.delete(:block)
       @view_class = options.delete(:view_class) || "UIView"
-      @view_name = self.class.name.demodulize.underscore.gsub('_element', '')
+      @view_name = self.class_name_without_kvo.demodulize.underscore.gsub('_element', '')
     end
 
     def render(options = {}, &block)

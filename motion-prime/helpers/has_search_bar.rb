@@ -2,24 +2,30 @@
 module MotionPrime
   module HasSearchBar
     def add_search_bar(options = {}, &block)
-      search_bar = create_search_bar
+      target = options.delete(:target)
+
+      search_bar = create_search_bar(options)
       search_bar.delegate = self
 
-      if target = options[:target]
+      if target
         target.addSubview search_bar
       elsif is_a?(TableSection)
         self.table_view.tableHeaderView = search_bar
       end
 
       @search_callback = block
+      search_bar
     rescue
-      puts "can't add search bar to #{self.class.name}"
+      puts "can't add search bar to #{self.class_name_without_kvo}"
     end
 
-    def create_search_bar
-      name = is_a?(TableSection) ? name : self.class.name.underscore
+    def create_search_bar(options = {})
+      name = is_a?(TableSection) ? name : self.class_name_without_kvo.underscore
       screen = is_a?(TableSection) ? self.screen : self
-      screen.search_bar(styles: [:"base_search_bar", :"#{name}_search_bar"]).view
+      options[:styles] ||= []
+      options[:styles] += [:"base_search_bar", :"base_#{name}_search_bar"]
+
+      screen.search_bar(options).view
     end
 
     def searchBar(search_bar, textDidChange: text)

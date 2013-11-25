@@ -51,7 +51,7 @@ module MotionPrime
     def field_styles(field)
       suffixes = [:field]
       if field.is_a?(BaseFieldSection)
-        suffixes << field.class.name.demodulize.underscore.gsub(/\_section$/, '')
+        suffixes << field.class_name_without_kvo.demodulize.underscore.gsub(/\_section$/, '')
       end
 
       styles = {
@@ -101,12 +101,10 @@ module MotionPrime
       field = section.name.to_sym
       index = field_indexes[field].split('_').map(&:to_i)
       path = NSIndexPath.indexPathForRow(index.last, inSection: index.first)
-      # path = table_view.indexPathForRowAtPoint(section.cell.center) # do not use indexPathForCell here as field may be invisibe
       table_view.beginUpdates
       section.cell.try(:removeFromSuperview)
 
       fields[field] = load_field(self.class.fields_options[field])
-
       @data = nil
       set_data_stamp(field_indexes[field])
       table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)

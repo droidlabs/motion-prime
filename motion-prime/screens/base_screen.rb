@@ -14,7 +14,7 @@ module MotionPrime
     end
 
     def default_styles
-      [:base_screen, self.class.name.underscore.to_sym]
+      [:base_screen, self.class_name_without_kvo.underscore.to_sym]
     end
 
     def on_load

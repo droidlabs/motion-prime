@@ -1,7 +1,7 @@
 class DMButton < UIButton
   include MotionPrime::KeyValueStore
   DEFAULT_PADDING_LEFT = 5
-  attr_accessor :paddingLeft, :paddingRight, :paddingTop, :padding
+  attr_accessor :paddingLeft, :paddingRight, :paddingTop, :padding, :sizeToFit
 
   def setTitle(value)
     setTitle value, forState: UIControlStateNormal
@@ -34,7 +34,7 @@ class DMButton < UIButton
   end
 
   def drawPadding(rect)
-    return if @custom_title_inset_drawn
+    return if @custom_title_inset_drawn || [padding_top, padding_left, padding_right].all?(&:zero?)
 
     height_diff = self.bounds.size.height - (self.font.pointSize + padding_top*2)
     self.setTitleEdgeInsets UIEdgeInsetsMake(

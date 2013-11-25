@@ -144,7 +144,7 @@ module MotionPrime
       old_collection = self.send(key)
 
       use_callback = block_given?
-      puts "SYNC: started sync for #{key} in #{self.class.name}"
+      puts "SYNC: started sync for #{key} in #{self.class_name_without_kvo}"
       api_client.get normalize_sync_url(options[:sync_url]) do |data|
         data = data[options[:sync_key]] if options[:sync_key]
         if data
@@ -165,10 +165,10 @@ module MotionPrime
             end
           end
           save if sync_options[:save]
-          puts "SYNC: finished sync for #{key} in #{self.class.name}"
+          puts "SYNC: finished sync for #{key} in #{self.class_name_without_kvo}"
           block.call if use_callback
         else
-          puts "SYNC ERROR: failed sync for #{key} in #{self.class.name}"
+          puts "SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}"
           block.call if use_callback
         end
       end
@@ -176,7 +176,7 @@ module MotionPrime
 
     def fetch_has_one(key, options = {}, &block)
       use_callback = block_given?
-      puts "SYNC: started sync for #{key} in #{self.class.name}"
+      puts "SYNC: started sync for #{key} in #{self.class_name_without_kvo}"
       api_client.get normalize_sync_url(options[:sync_url]) do |data|
         data = data[options[:sync_key]] if options[:sync_key]
         if data.present?
@@ -189,7 +189,7 @@ module MotionPrime
           model.save if sync_options[:save]
           block.call if use_callback
         else
-          puts "SYNC ERROR: failed sync for #{key} in #{self.class.name}"
+          puts "SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}"
           block.call if use_callback
         end
       end

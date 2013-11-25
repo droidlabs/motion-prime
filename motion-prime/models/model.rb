@@ -59,7 +59,7 @@ module MotionPrime
     end
 
     def model_name
-      self.class.name.underscore
+      self.class_name_without_kvo.underscore
     end
 
     def inspect

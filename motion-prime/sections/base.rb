@@ -26,7 +26,7 @@ module MotionPrime
       @options = options
       @model = options[:model]
       @name = options[:name] ||= default_name
-      @options_block = options.delete(:block)
+      @options_block = options[:block]
       load_section
     end
 
@@ -48,7 +48,7 @@ module MotionPrime
     end
 
     def default_name
-      self.class.name.demodulize.underscore.gsub(/\_section$/, '')
+      self.class_name_without_kvo.demodulize.underscore.gsub(/\_section$/, '')
     end
 
     def elements_options
@@ -178,18 +178,24 @@ module MotionPrime
     end
 
     def bind_keyboard_close
-      return unless self.class.keyboard_close_bindings.try(:[], :tap_on)
-      self.instance_eval(&self.class.keyboard_close_bindings[:tap_on]).each do |element|
+      return unless self.class.keyboard_close_bindings.present?
+      Array.wrap(self.instance_eval(&self.class.keyboard_close_bindings[:tap_on])).each do |view|
         gesture_recognizer = UITapGestureRecognizer.alloc.initWithTarget(self, action: :hide_keyboard)
-        element.addGestureRecognizer(gesture_recognizer)
+        view.addGestureRecognizer(gesture_recognizer)
+        gesture_recognizer.cancelsTouchesInView = false
       end
     end
 
+    def keyboard_close_bindings_options
+      @keyboard_close_bindings_options ||= normalize_options(self.class.keyboard_close_bindings.clone, self)
+    end
+
     def hide_keyboard
-      self.instance_eval(&self.class.keyboard_close_bindings[:elements]).each do |el|
-        next unless %w[text_field text_view].include?(el.view_name)
-        el.view.try(:resignFirstResponder)
-      end
+      elements = Array.wrap(keyboard_close_bindings_options[:elements])
+      views = Array.wrap(keyboard_close_bindings_options[:views])
+
+      elements.each { |el| views << el.view if %w[text_field text_view].include?(el.view_name) && el.view }
+      (views + Array.wrap(keyboard_close_bindings_options[:views])).compact.each(&:resignFirstResponder)
     end
 
     class << self
@@ -216,6 +222,5 @@ module MotionPrime
     end
     after_render :bind_keyboard_events
     after_render :bind_keyboard_close
-
   end
 end

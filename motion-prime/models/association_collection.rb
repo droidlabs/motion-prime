@@ -14,7 +14,7 @@ module MotionPrime
       define_inverse_relation(inverse_relation_options)
 
       @model_inverse_relation_name = (model_class._associations || {}).find do |name, options|
-        options[:class_name] == inverse_relation.class.name
+        options[:class_name] == inverse_relation.class_name_without_kvo
       end.try(:first)
 
       super all(*args)
