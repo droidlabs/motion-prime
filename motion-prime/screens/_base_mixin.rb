@@ -110,8 +110,12 @@ module MotionPrime
 
     # Class methods
     module ClassMethods
-      def title(t = nil)
-        t ? @title = t : @title ||= self.to_s
+      def title(t = nil, &block)
+        if block_given?
+          @title = block
+        else
+          t ? @title = t : @title ||= self.to_s
+        end
       end
       def before_load(method_name)
         set_callback :load, :before, method_name
