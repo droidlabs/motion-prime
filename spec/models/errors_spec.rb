@@ -10,19 +10,19 @@ describe "Model Errors" do
     end
 
     it "should not be blank after adding error" do
-      @user.errors.add(:foo, 'bar')
+      @user.errors.add(:name, 'bar')
       @user.errors.blank?.should == false
     end
 
     it "should not present after reset" do
-      @user.errors.add(:foo, 'bar')
+      @user.errors.add(:name, 'bar')
       @user.errors.present?.should == true
       @user.errors.reset
       @user.errors.present?.should == false
     end
 
     it "should be convertable to string" do
-      @user.errors.add(:foo, 'bar')
+      @user.errors.add(:name, 'bar')
       @user.errors.to_s.match(/bar/).should != nil
     end
   end
