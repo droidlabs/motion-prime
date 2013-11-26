@@ -8,6 +8,7 @@ module MotionPrime
 
     def application(application, willFinishLaunchingWithOptions:opts)
       application.setStatusBarStyle UIStatusBarStyleLightContent
+      application.setStatusBarHidden false
     end
 
     def application(application, didFinishLaunchingWithOptions:launch_options)
@@ -45,6 +46,7 @@ module MotionPrime
 
     def open_with_sidebar(content, menu, options={})
       self.sidebar_container = SidebarContainerScreen.new(menu, content, options)
+      self.sidebar_container.delegate = self
       open_root_screen(sidebar_container)
     end
 

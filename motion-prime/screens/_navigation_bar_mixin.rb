@@ -24,6 +24,14 @@ module MotionPrime
       navigationItem.leftBarButtonItem = create_navigation_button(title, {action: :back}.merge(args))
     end
 
+    def set_navigation_back_or_menu(back_title = 'Back')
+      if parent_screen.is_a?(MotionPrime::SidebarContainerScreen)
+        set_navigation_left_button 'Menu', image: 'images/navigation/menu_button.png', action: :show_sidebar
+      else
+        set_navigation_back_button back_title, icon: 'images/navigation/back_icon.png'
+      end
+    end
+
     def create_navigation_button(title, args = {})
       args[:style]  ||= UIBarButtonItemStylePlain
       args[:target] ||= self
