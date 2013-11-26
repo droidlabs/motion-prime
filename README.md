@@ -17,25 +17,30 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 
     $ bundle
 
-### 3. Setup application
+### 3. Setup pods
+
+    $ pod setup
+
+### 4. Setup application
 
     # edit Rakefile
 
-### 4. Run application
+### 5. Run application
 
     $ rake
 
 ## Hello World (Sample)
+
 ```ruby
   # app/app_delegate.rb
-  class AppDelegate < MotionPrime::BaseAppDelegate
+  class AppDelegate < Prime::BaseAppDelegate
     def on_load(app, options)
       open_root_screen MainScreen.new
     end
   end
 
   # app/screens/main_screen.rb
-  class MainScreen < ApplicationScreen
+  class MainScreen < Prime::BaseScreen
     title 'Main screen'
 
     def render
@@ -45,13 +50,13 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
   end
 
   # app/sections/my_profile.rb
-  class MyProfileSection < MotionPrime::BaseSection
+  class MyProfileSection < Prime::BaseSection
     element :title, text: "Hello World"
     element :avatar, image: "images/avatar.png", type: :image
   end
 
   # app/styles/my_profile.rb
-  MotionPrime::Styles.define :my_profile do
+  Prime::Styles.define :my_profile do
     style :title,
       width: 300, height: 20, color: :black,
       top: 10, left: 5, background_color: :white

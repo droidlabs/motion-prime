@@ -1,4 +1,4 @@
-class SidebarTableSection < MotionPrime::TableSection
+class SidebarTableSection < Prime::TableSection
   def sidebar_items
     [
       {title: 'Home Screen', action: :open_home},

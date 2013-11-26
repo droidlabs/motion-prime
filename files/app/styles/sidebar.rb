@@ -1,8 +1,8 @@
-MotionPrime::Styles.define :sidebar do
+Prime::Styles.define :sidebar do
   # navigation layout
   # ----------
   style :screen,
-    background_color: MP::Config.color.base,
+    background_color: Prime::Config.color.base,
     opaque: true
 
   style :table,
@@ -10,8 +10,8 @@ MotionPrime::Styles.define :sidebar do
     left: 0,
     width: 320,
     bottom: 0,
-    background_color: MP::Config.color.base,
-    separator_color: MP::Config.color.dark,
+    background_color: Prime::Config.color.base,
+    separator_color: Prime::Config.color.dark,
     opaque: true
 
   style :table_cell,
@@ -19,7 +19,7 @@ MotionPrime::Styles.define :sidebar do
     opaque: true
 
   style :action_title,
-    background_color: MP::Config.color.base,
+    background_color: Prime::Config.color.base,
     text_color: :white,
     top: 10,
     width: 320,

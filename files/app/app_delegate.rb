@@ -1,4 +1,4 @@
-class AppDelegate < MotionPrime::BaseAppDelegate
+class AppDelegate < Prime::BaseAppDelegate
   def on_load(app, options)
     setup_navigation_styles
     open_with_sidebar HomeScreen.new(navigation: true), SidebarScreen.new
