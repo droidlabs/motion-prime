@@ -200,7 +200,8 @@ module MotionPrime
       updatable_attributes = self.class.updatable_attributes
 
       if updatable_attributes.blank?
-        return slice_attributes ? attributes_hash.slice(*slice_attributes) : attributes_hash
+        attrs =  slice_attributes ? attributes_hash.slice(*slice_attributes) : attributes_hash
+        return attrs.merge(files: {})
       end
 
       updatable_attributes = updatable_attributes.slice(*slice_attributes) if slice_attributes
