@@ -9,13 +9,13 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 
 ## Getting Started
 
-### 1. Create MotionPrime project:
+### 1. Install MotionPrime:
+
+    $ gem install motion-prime
+
+### 2. Create MotionPrime project:
 
     $ prime new myapp
-
-### 2. Setup application
-
-    # edit Rakefile
 
 ### 3. Run application
 

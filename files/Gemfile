@@ -7,4 +7,4 @@ gem 'sugarcube', '~> 0.20.23'
 gem 'bubble-wrap', '~> 1.3.0'
 gem 'nano-store', '~> 0.6.3'
 
-gem 'motion-prime', :path => '../motion-prime'
+gem 'motion-prime', '~> 0.3.0'
