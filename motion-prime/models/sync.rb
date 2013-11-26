@@ -54,9 +54,9 @@ module MotionPrime
       should_fetch = !new_record? if should_fetch.nil?
       should_update ||= new_record? unless should_fetch
 
-      fetch_with_url url do
+      fetch_with_url url do |data, status_code|
         save if sync_options[:save]
-        block.call if use_callback
+        block.call(data, status_code) if use_callback
       end if should_fetch
 
       update_with_url url, sync_options do |data, status_code|
@@ -65,18 +65,20 @@ module MotionPrime
         block.call(data, status_code) if use_callback && !should_fetch
       end if should_update
 
-      fetch_associations(sync_options) do
+      fetch_associations(sync_options) do |data, status_code|
         # run callback only if it wasn't run on fetch or update
-        block.call if use_callback && !should_fetch && !should_update
+        block.call(data, status_code) if use_callback && !should_fetch && !should_update
       end if should_fetch_associations
     end
 
     # fetch from server using url
     def fetch_with_url(url, &block)
-      api_client.get(url) do |data|
+      use_callback = block_given?
+      api_client.get(url) do |data, status_code|
         if data.present?
           fetch_with_attributes(data, &block)
         end
+        block.call(data, status_code) if use_callback
       end
     end
 
@@ -106,7 +108,7 @@ module MotionPrime
     end
 
     # set attributes, using fetch
-    def fetch_with_attributes(attrs, &block)
+    def fetch_with_attributes(attrs)
       attrs.each do |key, value|
         if respond_to?(:"fetch_#{key}")
           self.send(:"fetch_#{key}", value)
@@ -114,7 +116,6 @@ module MotionPrime
           self.send(:"#{key}=", value)
         end
       end
-      block.call(self) if block_given?
     end
 
     def fetch_associations(sync_options = {}, &block)
@@ -145,7 +146,7 @@ module MotionPrime
 
       use_callback = block_given?
       puts "SYNC: started sync for #{key} in #{self.class_name_without_kvo}"
-      api_client.get normalize_sync_url(options[:sync_url]) do |data|
+      api_client.get normalize_sync_url(options[:sync_url]) do |data, status_code|
         data = data[options[:sync_key]] if options[:sync_key]
         if data
           # Update/Create existing records
@@ -166,10 +167,10 @@ module MotionPrime
           end
           save if sync_options[:save]
           puts "SYNC: finished sync for #{key} in #{self.class_name_without_kvo}"
-          block.call if use_callback
+          block.call(data, status_code) if use_callback
         else
           puts "SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}"
-          block.call if use_callback
+          block.call(data, status_code) if use_callback
         end
       end
     end
@@ -177,7 +178,7 @@ module MotionPrime
     def fetch_has_one(key, options = {}, &block)
       use_callback = block_given?
       puts "SYNC: started sync for #{key} in #{self.class_name_without_kvo}"
-      api_client.get normalize_sync_url(options[:sync_url]) do |data|
+      api_client.get normalize_sync_url(options[:sync_url]) do |data, status_code|
         data = data[options[:sync_key]] if options[:sync_key]
         if data.present?
           model = self.send(key)
@@ -187,10 +188,10 @@ module MotionPrime
           end
           model.fetch_with_attributes(data)
           model.save if sync_options[:save]
-          block.call if use_callback
+          block.call(data, status_code) if use_callback
         else
           puts "SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}"
-          block.call if use_callback
+          block.call(data, status_code) if use_callback
         end
       end
     end
