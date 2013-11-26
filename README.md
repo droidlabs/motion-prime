@@ -19,7 +19,7 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 
 ### 3. Setup pods
 
-    $ pod install
+    $ pod setup
 
 ### 4. Setup application
 
