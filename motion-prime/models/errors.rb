@@ -34,7 +34,7 @@ module MotionPrime
     end
 
     def add(key, error)
-      send(:"#{unique_key(key)}") << error
+      send(unique_key(key)) << error
     end
 
     def [](key)
