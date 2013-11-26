@@ -17,11 +17,15 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 
     $ bundle
 
-### 3. Setup application
+### 3. Setup pods
+
+    $ pod install
+
+### 4. Setup application
 
     # edit Rakefile
 
-### 4. Run application
+### 5. Run application
 
     $ rake
 
