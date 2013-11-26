@@ -1,4 +1,4 @@
-class ApplicationScreen < MotionPrime::BaseScreen
+class ApplicationScreen < Prime::BaseScreen
   before_load :setup_navigation
 
   def setup_navigation
