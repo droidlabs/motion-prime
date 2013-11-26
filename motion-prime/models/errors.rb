@@ -16,6 +16,7 @@ module MotionPrime
 
     def initialize_for_key(key)
       unique_key = unique_key(key)
+
       return if @_unique_keys.include?(unique_key)
       @_unique_keys << unique_key
       instance_variable_set("@#{unique_key}", [])
@@ -33,7 +34,7 @@ module MotionPrime
     end
 
     def add(key, error)
-      send :"#{unique_key(key)}<<", error
+      send(:"#{unique_key(key)}") << error
     end
 
     def [](key)
