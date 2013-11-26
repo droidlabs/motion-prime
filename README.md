@@ -11,21 +11,13 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 
 ### 1. Create MotionPrime project:
 
-    $ motion create --template=git@github.com:droidlabs/motion-prime.git myapp
+    $ prime new myapp
 
-### 2. Install gems
-
-    $ bundle
-
-### 3. Setup pods
-
-    $ pod setup
-
-### 4. Setup application
+### 2. Setup application
 
     # edit Rakefile
 
-### 5. Run application
+### 3. Run application
 
     $ rake
 
