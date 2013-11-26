@@ -11,6 +11,7 @@ module MotionPrime
       names = Array.wrap(args)
       options = names.pop if args.last.is_a?(Hash)
 
+      raise "No style rules specified for `#{names.join(', ')}`. Namespace: `#{@namespace}`" unless options
       names.each do |name|
         name = "#{@namespace}_#{name}".to_sym if @namespace
 

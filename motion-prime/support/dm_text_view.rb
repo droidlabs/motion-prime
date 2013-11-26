@@ -8,10 +8,14 @@ class DMTextView < UITextView
   attr_accessor :paddingLeft, :paddingTop, :padding,
     :placeholderColor, :placeholderFont, :placeholder
 
+  def padding_top
+    paddingTop || padding || paddingLeft || 5
+  end
+
   def drawPadding(rect)
     # add padding to UITextView
-    padding_left = 0 - DEFAULT_PADDING_LEFT + (self.paddingLeft || self.padding || 5)
-    padding_top = 0 - DEFAULT_PADDING_LEFT + (self.paddingTop || self.padding || 5)
+    padding_left = (self.paddingLeft || self.padding || 5) - 5
+    padding_top = self.padding_top - 8
     padding = UIEdgeInsetsMake(
       padding_top, padding_left,
       padding_top, padding_left
@@ -30,7 +34,6 @@ class DMTextView < UITextView
 
   def drawPlaceholder(rect)
     padding_left = self.paddingLeft || self.padding || 5
-    padding_top = self.paddingTop || self.padding || 5
     padding = UIEdgeInsetsMake(
       padding_top, padding_left,
       padding_top, padding_left

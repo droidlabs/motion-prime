@@ -39,14 +39,13 @@ class DMTextField < UITextField
 
   def default_padding_top # to center title label
     single_line_height = self.font.pointSize
-    (self.bounds.size.height - single_line_height)/2
+    (self.bounds.size.height - single_line_height)/2 + 2
   end
 
   private
     def calculate_rect_for(bounds)
       height_diff = self.bounds.size.height - (self.font.pointSize + padding_top*2)
       bounds = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height - height_diff)
-      # CGRectInset(bounds, padding_left, padding_top)
       CGRectMake(
         bounds.origin.x + padding_left, bounds.origin.y + padding_top,
         bounds.size.width - (padding_left + padding_right), bounds.size.height - padding_top*2)

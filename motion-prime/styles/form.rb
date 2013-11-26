@@ -20,7 +20,7 @@ MotionPrime::Styles.define :base_form do
     background_color: :clear,
     text_color: :gray,
     top: 15,
-    height: 20,
+    height: 16,
     left: 0,
     right: 0,
     font: proc { MotionPrime::Config.font.name.uifont(12) },

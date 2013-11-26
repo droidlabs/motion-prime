@@ -9,12 +9,7 @@ module MotionPrime
     element :arrow, type: :image do
       options[:arrow] || {}
     end
-    element :error_message, type: :error_message do
-      {
-        hidden: proc { !has_errors? },
-        text: proc { observing_errors? and all_errors.join("\n") }
-      }
-    end
+    element :error_message, type: :error_message, text: proc { observing_errors? and all_errors.join("\n") }
 
     after_render :bind_select_button
 

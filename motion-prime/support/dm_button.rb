@@ -30,7 +30,7 @@ class DMButton < UIButton
 
   def default_padding_top # to center title label
     single_line_height = self.font.pointSize
-    (self.bounds.size.height - single_line_height)/2
+    (self.bounds.size.height - single_line_height)/2 + 1
   end
 
   def drawPadding(rect)

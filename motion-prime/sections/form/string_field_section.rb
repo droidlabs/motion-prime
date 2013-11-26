@@ -8,12 +8,7 @@ module MotionPrime
       options[:input] || {}
     end
 
-    element :error_message, type: :error_message do
-      {
-        hidden: proc { !has_errors? },
-        text: proc { all_errors.join("\n") if observing_errors? }
-      }
-    end
+    element :error_message, type: :error_message, text: proc { all_errors.join("\n") if observing_errors? }
     after_render :bind_text_input
   end
 end

@@ -74,9 +74,7 @@ module MotionPrime
     # fetch from server using url
     def fetch_with_url(url, &block)
       api_client.get(url) do |data|
-        if data.present?
-          fetch_with_attributes(data, &block)
-        end
+        fetch_with_attributes(data, &block) if data.present?
       end
     end
 
@@ -85,7 +83,8 @@ module MotionPrime
       use_callback = block_given?
       filtered_attributes = filtered_updatable_attributes(sync_options)
 
-      post_data = {files: {}}
+      post_data = sync_options[:params_root] || {}
+      post_data[:files] = {}
       filtered_attributes.delete(:files).each do |file_name, file|
         post_data[:files][[model_name, file_name].join] = file
       end
@@ -93,7 +92,8 @@ module MotionPrime
 
       method = sync_options[:method] || (id ? :put : :post)
       api_client.send(method, url, post_data) do |data, status_code|
-        if status_code.to_s =~ /20\d/ && data.is_a?(Hash)
+        update_from_response = sync_options.has_key?(:update_from_response) ? sync_options[:update_from_response] : true
+        if update_from_response && status_code.to_s =~ /20\d/ && data.is_a?(Hash)
           set_attributes_from_response(data)
         end
         block.call(data, status_code) if use_callback
@@ -120,8 +120,9 @@ module MotionPrime
     def fetch_associations(sync_options = {}, &block)
       use_callback = block_given?
       associations = self.class._associations || {}
+      association_keys = associations.keys.select { |key| fetch_association?(key) }
 
-      associations.keys.each_with_index do |key, index|
+      association_keys.each_with_index do |key, index|
         if use_callback && associations.count - 1 == index
           fetch_association(key, sync_options, &block)
         else
@@ -130,9 +131,15 @@ module MotionPrime
       end
     end
 
-    def fetch_association(key, sync_options = {}, &block)
+    def fetch_association?(key)
       options = self.class._associations[key]
-      return unless options[:sync_url]
+      return if options[:if] && !options[:if].to_proc.call(self)
+      options[:sync_url].present?
+    end
+
+    def fetch_association(key, sync_options = {}, &block)
+      return unless fetch_association?(key)
+      options = self.class._associations[key]
       if options[:type] == :many
         fetch_has_many(key, options, sync_options, &block)
       else

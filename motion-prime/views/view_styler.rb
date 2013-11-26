@@ -162,17 +162,31 @@ module MotionPrime
         # self.layer.mask = shape;
         # self.layer.masksToBounds = YES;
       elsif key == 'attributed_text_options'
-        paragrahStyle = NSMutableParagraphStyle.alloc.init
-        paragrahStyle.setLineSpacing(value[:line_spacing])
-        attributedString = NSAttributedString.alloc.initWithString(value[:text], attributes:{NSParagraphStyleAttributeName => paragrahStyle})
-        view.attributedText = attributedString
+        attributes = {}
+        if line_spacing = value[:line_spacing]
+          paragrahStyle = NSMutableParagraphStyle.alloc.init
+          paragrahStyle.setLineSpacing(line_spacing)
+          attributes[NSParagraphStyleAttributeName] = paragrahStyle
+        end
+
+
+        attributedString = NSAttributedString.alloc.initWithString(value[:text], attributes: attributes)
+        if underline_range = value[:underline]
+          attributedString = NSMutableAttributedString.alloc.initWithAttributedString(attributedString)
+          attributedString.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
+        end
+
+        if view.is_a?(UIButton)
+          view.setAttributedTitle attributedString, forState: UIControlStateNormal
+        else
+          view.attributedText = attributedString
+        end
+
       elsif value.is_a?(Hash)
         self.class.new(view.send(key.camelize(:lower).to_sym), nil, value).apply
       else
         view.setValue value, forKey: key.camelize(:lower)
       end
-    rescue => e
-      puts "Error: Can't set `#{key}`: `#{value}` for #{view.to_s}"
     end
 
     STRUCTS_MAP = {

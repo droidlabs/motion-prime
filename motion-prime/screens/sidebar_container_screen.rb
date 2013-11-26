@@ -7,8 +7,16 @@ module MotionPrime
       screen.backgroundImage = "images/sidebar/background.png".uiimage
 
       full_width = UIScreen.mainScreen.bounds.size.width
-      screen.contentViewInPortraitOffsetCenterX = full_width*(1 + screen.contentViewScaleValue/2) - 45
-      screen.contentViewInPortraitOffsetCenterY = UIScreen.mainScreen.bounds.size.height/2 + 30
+
+      if scale = options[:content_scale_value]
+        screen.contentViewScaleValue = scale
+      end
+      x_offset = options[:x_offset] || 45
+      screen.contentViewInPortraitOffsetCenterX = full_width*(1 + screen.contentViewScaleValue/2) - x_offset
+
+      if y_offset = options[:y_offset]
+        screen.contentViewInPortraitOffsetCenterY = UIScreen.mainScreen.bounds.size.height/2 + y_offset
+      end
 
       screen.on_create(options) if screen.respond_to?(:on_create)
       screen.menu_controller = menu unless menu.nil?
