@@ -45,7 +45,10 @@ module MotionPrime
 
     def size_to_fit_if_needed
       if computed_options[:size_to_fit]
-        @computed_options[:height] = content_height
+        @computed_options[:width] = content_width
+        if computed_options[:width]
+          @computed_options[:height] = content_height
+        end
         reset_computed_values
       end
     end
