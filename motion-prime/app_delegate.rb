@@ -1,4 +1,3 @@
-include EM::Eventable
 motion_require './helpers/has_authorization'
 module MotionPrime
   class BaseAppDelegate
@@ -20,6 +19,17 @@ module MotionPrime
       self.app_delegate.window
     end
 
+    def open_screen(screen, options = {})
+      if options[:sidebar]
+        open_with_sidebar(content, options.delete(:sidebar), options)
+      elsif options[:root]
+        open_root_screen(screen)
+      else
+        open_content_screen(screen)
+      end
+    end
+
+    # TODO: move to private methods
     def open_root_screen(screen)
       screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
       screen.ensure_wrapper_controller_in_place if screen.respond_to?(:ensure_wrapper_controller_in_place)
@@ -32,7 +42,8 @@ module MotionPrime
       screen
     end
 
-    def open_screen(screen)
+    # TODO: move to private methods
+    def open_content_screen(screen)
       if sidebar?
         sidebar_container.content_controller = screen
       else
@@ -40,14 +51,15 @@ module MotionPrime
       end
     end
 
-    def sidebar?
-      self.window.rootViewController.is_a?(SidebarContainerScreen)
-    end
-
-    def open_with_sidebar(content, menu, options={})
-      self.sidebar_container = SidebarContainerScreen.new(menu, content, options)
+    # TODO: move to private methods
+    def open_with_sidebar(content, sidebar, options={})
+      self.sidebar_container = SidebarContainerScreen.new(sidebar, content, options)
       self.sidebar_container.delegate = self
       open_root_screen(sidebar_container)
+    end
+
+    def sidebar?
+      self.window.rootViewController.is_a?(SidebarContainerScreen)
     end
 
     def show_sidebar
