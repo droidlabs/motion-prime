@@ -1,13 +1,16 @@
 module MotionPrime
   module ScreenNavigationMixin
-    extend ConcernDelegateTo
-
     def app_delegate
       UIApplication.sharedApplication.delegate
     end
 
-    delegate_to :app_delegate, :show_sidebar
-    delegate_to :app_delegate, :hide_sidebar
+    def show_sidebar
+      app_delegate.show_sidebar
+    end
+
+    def hide_sidebar
+      app_delegate.hide_sidebar
+    end
 
     def open_screen(screen, args = {})
       if args[:modal] || has_navigation?

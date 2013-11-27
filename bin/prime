@@ -32,6 +32,8 @@ class App
     sh "cd ./#{name} & bundle install"
     info "Command: pod setup"
     sh "cd ./#{name} & pod setup"
+    info "Command: rake pod:install"
+    sh "cd ./#{name} & rake pod:install"
   end
 
   description "Command line tools for MotionPrime"

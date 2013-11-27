@@ -5,7 +5,13 @@ class AppDelegate < Prime::BaseAppDelegate
   end
 
   def setup_navigation_styles
-    # set navigation bar and button backgrounds
-    UINavigationBar.appearance.barTintColor = Prime::Config.color.dark.uicolor
+    bar_appearance = UINavigationBar.appearance
+    bar_appearance.barTintColor = Prime::Config.color.dark.uicolor
+
+    settings = {
+      UITextAttributeFont =>  MP::Config.font.name.uifont(17),
+      UITextAttributeTextColor =>  :white.uicolor
+    }
+    bar_appearance.setTitleTextAttributes(settings)
   end
 end

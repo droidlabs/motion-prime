@@ -1,5 +1,6 @@
 class HomeScreen < ApplicationScreen
-  def render
+  title 'Home'
 
+  def render
   end
 end

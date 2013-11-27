@@ -1,29 +1,21 @@
 Prime::Styles.define :sidebar do
-  # navigation layout
-  # ----------
   style :screen,
-    background_color: Prime::Config.color.base,
-    opaque: true
-
+    background_color: :clear
   style :table,
-    top: 0,
+    top: 150,
     left: 0,
     width: 320,
     bottom: 0,
-    background_color: Prime::Config.color.base,
-    separator_color: Prime::Config.color.dark,
-    opaque: true
+    background_color: :clear,
+    separator_color: :clear
 
   style :table_cell,
-    selection_style: UITableViewCellSelectionStyleNone,
-    opaque: true
+    selection_style: UITableViewCellSelectionStyleNone
 
   style :action_title,
-    background_color: Prime::Config.color.base,
     text_color: :white,
     top: 10,
     width: 320,
-    opaque: true,
     font: proc { :system.uifont(20) },
     size_to_fit: true,
     left: 20,
@@ -32,7 +24,7 @@ Prime::Styles.define :sidebar do
   style :action_arrow,
     width: 9,
     height: 14,
-    right: 50,
-    top: 14,
+    right: 150,
+    top: 17,
     image: "images/sidebar/arrow.png"
 end
