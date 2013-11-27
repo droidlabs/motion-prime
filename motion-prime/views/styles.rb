@@ -12,15 +12,14 @@ module MotionPrime
       options = names.pop if args.last.is_a?(Hash)
 
       raise "No style rules specified for `#{names.join(', ')}`. Namespace: `#{@namespace}`" unless options
+      parent = options.delete(:parent)
+      namespace = options.delete(:parent_namspace) || @namespace
+      parent ="#{namespace}_#{parent}".to_sym if namespace
+
       names.each do |name|
         name = "#{@namespace}_#{name}".to_sym if @namespace
-
         @@repo[name] ||= {}
-        if parent = options.delete(:parent)
-          namespace = options.delete(:parent_namspace) || @namespace
-          parent ="#{namespace}_#{parent}".to_sym if namespace
-          @@repo[name].deep_merge! self.class.for(parent)
-        end
+        @@repo[name].deep_merge!(self.class.for(parent)) if parent
         @@repo[name].deep_merge! options
       end
     end

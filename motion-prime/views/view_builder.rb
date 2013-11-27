@@ -37,6 +37,10 @@ module MotionPrime
                 text: options.delete(:text),
                 line_spacing: options.delete(:line_spacing)
               }
+              [:text_alignment].each do |key|# add keys which must follow after attributed text here
+                value = options.delete(key)
+                options[key] = value unless value.nil?
+              end
             end
             klass.alloc.initWithFrame CGRectZero
           },

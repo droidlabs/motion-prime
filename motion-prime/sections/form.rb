@@ -2,8 +2,6 @@ motion_require './table.rb'
 motion_require '../helpers/has_style_chain_builder'
 module MotionPrime
   class FormSection < TableSection
-    include HasStyleChainBuilder
-
     # MotionPrime::FormSection is container for Field Sections.
     # Forms are located inside Screen and can contain multiple Field Sections.
     # On render, each field will be added to parent screen.
@@ -41,48 +39,15 @@ module MotionPrime
       end
     end
 
-    def form_styles
-      base_styles = [:base_form]
-      base_styles << :base_form_with_sections unless flat_data?
-      item_styles = [name.to_sym]
-      {common: base_styles, specific: item_styles}
-    end
-
-    def field_styles(field)
-      suffixes = [:field]
-      if field.is_a?(BaseFieldSection)
-        suffixes << field.class_name_without_kvo.demodulize.underscore.gsub(/\_section$/, '')
-      end
-
-      styles = {
-        common: build_styles_chain(form_styles[:common], suffixes),
-        specific: build_styles_chain(form_styles[:specific], suffixes)
-      }
-
-      if field.respond_to?(:container_styles) && field.container_styles.present?
-        styles[:specific] += Array.wrap(field.container_styles)
-      end
-      styles
-    end
-
-    def header_styles(header)
-      suffixes = [:header, :"#{header.name}_header"]
-      styles = {
-        common: build_styles_chain(form_styles[:common], suffixes),
-        specific: build_styles_chain(form_styles[:specific], suffixes)
-      }
-
-      if header.respond_to?(:container_styles) && header.container_styles.present?
-        styles[:specific] += Array.wrap(header.container_styles)
-      end
-      styles
+    def data
+      @data ||= table_data
     end
 
     def render_table
       init_form_fields
       reset_data_stamps
       options = {
-        styles: form_styles.values.flatten,
+        styles: table_styles.values.flatten,
         delegate: self,
         dataSource: self,
         style: (UITableViewStyleGrouped unless flat_data?)}
@@ -91,7 +56,7 @@ module MotionPrime
 
     def render_cell(index, table)
       field = rows_for_section(index.section)[index.row]
-      screen.table_view_cell styles: field_styles(field).values.flatten, reuse_identifier: cell_name(table, index), parent_view: table_view do |cell_view|
+      screen.table_view_cell section: field, styles: cell_styles(field).values.flatten, reuse_identifier: cell_name(table, index), parent_view: table_view do |cell_view|
         field.cell_view = cell_view if field.respond_to?(:cell_view)
         field.render(to: screen)
       end
@@ -233,7 +198,7 @@ module MotionPrime
 
     def load_field(field)
       klass = "MotionPrime::#{field[:type].classify}FieldSection".constantize
-      klass.new(field.merge(form: self))
+      klass.new(field.merge(table: self))
     end
 
     def render_field?(name, options)
@@ -249,7 +214,7 @@ module MotionPrime
 
     def render_header(section)
       return unless options = self.class.section_header_options.try(:[], section)
-      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(form: self))
+      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(table: self))
     end
 
     def header_for_section(section)
@@ -259,7 +224,7 @@ module MotionPrime
 
     def tableView(table, viewForHeaderInSection: section)
       return unless header = header_for_section(section)
-      wrapper = MotionPrime::BaseElement.factory(:view, styles: header_styles(header).values.flatten, parent_view: table_view)
+      wrapper = MotionPrime::BaseElement.factory(:view, styles: cell_styles(header).values.flatten, parent_view: table_view)
       wrapper.render(to: screen) do |cell_view|
         header.cell_view = cell_view if header.respond_to?(:cell_view)
         header.render(to: screen)

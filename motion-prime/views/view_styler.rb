@@ -169,19 +169,21 @@ module MotionPrime
           attributes[NSParagraphStyleAttributeName] = paragrahStyle
         end
 
-
         attributedString = NSAttributedString.alloc.initWithString(value[:text], attributes: attributes)
         if underline_range = value[:underline]
           attributedString = NSMutableAttributedString.alloc.initWithAttributedString(attributedString)
           attributedString.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
         end
-
         if view.is_a?(UIButton)
           view.setAttributedTitle attributedString, forState: UIControlStateNormal
         else
           view.attributedText = attributedString
         end
-
+      elsif key == 'gradient'
+        gradient = CAGradientLayer.layer
+        gradient.frame = CGRectMake(value[:frame_x].to_f, value[:frame_y].to_f, value[:frame_width].to_f, value[:frame_height].to_f)
+        gradient.colors = value[:colors]
+        view.layer.addSublayer(gradient)
       elsif value.is_a?(Hash)
         self.class.new(view.send(key.camelize(:lower).to_sym), nil, value).apply
       else

@@ -18,7 +18,7 @@ module MotionPrime
     include MotionPrime::HasAuthorization
     include MotionPrime::HasNormalizer
 
-    attr_accessor :screen, :model, :name, :options, :elements
+    attr_accessor :screen, :model, :name, :options, :elements, :section_styles
     class_attribute :elements_options, :container_options, :keyboard_close_bindings
     define_callbacks :render
 
@@ -30,6 +30,14 @@ module MotionPrime
       load_section
     end
 
+    def style_options
+      @style_options ||= if section_styles.present?
+        Styles.for(section_styles.values.flatten)
+      else
+        {}
+      end
+    end
+
     def container_options
       @normalized_container_options or begin
         # priority: class; from styles; passed directly
@@ -37,14 +45,9 @@ module MotionPrime
         passed_container_options = options.delete(:container) || {}
         raw_container_options.merge!(passed_container_options)
         @normalized_container_options = normalize_options(raw_container_options)
-
         style_container_options = style_options.delete(:container) || {}
         @normalized_container_options.merge!(style_container_options.except(*passed_container_options.keys))
       end
-    end
-
-    def style_options
-      {}
     end
 
     def default_name

@@ -1,23 +1,18 @@
+motion_require '../table/base_cell_section'
 module MotionPrime
-  class BaseHeaderSection < BaseSection
+  class BaseHeaderSection < BaseCellSection
     include CellSection
     DEFAULT_HEADER_HEIGHT = 20
 
     element :title, text: proc { @options[:title] }
 
-    attr_accessor :form
-
     def initialize(options = {})
-      @form = options[:form]
+      @cell_type = :header
       super
     end
 
-    def style_options
-      @style_options ||= Styles.for(section_styles.values.flatten)
-    end
-
     def section_styles
-      form.header_styles(self)
+      table.cell_styles(self)
     end
 
     def container_height

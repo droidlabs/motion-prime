@@ -2,6 +2,7 @@ motion_require './table/refresh_mixin'
 module MotionPrime
   class TableSection < BaseSection
     include TableSectionRefreshMixin
+    include HasStyleChainBuilder
     include HasSearchBar
 
     attr_accessor :table_element, :did_appear
@@ -12,7 +13,11 @@ module MotionPrime
     end
 
     def data
-      @data ||= table_data
+      @data ||= table_data.tap { |cells| set_cells_table(cells) }
+    end
+
+    def set_cells_table(cells)
+      cells.each { |cell| cell.table = self if cell.respond_to?(:table=) }
     end
 
     def data_stamp_for(id)
@@ -46,15 +51,41 @@ module MotionPrime
     end
 
     def table_styles
-      styles = [:base_table, name.to_sym]
-      styles += @styles if @styles.present?
+      type = self.is_a?(FormSection) ? :base_form : :base_table
+
+      base_styles = [type]
+      base_styles << :"#{type}_with_sections" unless flat_data?
+      item_styles = [name.to_sym]
+      item_styles << @styles if @styles.present?
+      {common: base_styles, specific: item_styles}
+    end
+
+    def cell_styles(cell)
+      # type: cell/field/header
+      type = cell.respond_to?(:cell_type) ? cell.cell_type : 'cell'
+
+      suffixes = [type]
+      if cell.is_a?(BaseFieldSection)
+        suffixes << cell.default_name
+      elsif cell.respond_to?(:cell_name)
+        suffixes << cell.cell_name
+      end
+
+      styles = {
+        common: build_styles_chain(table_styles[:common], suffixes),
+        specific: build_styles_chain(table_styles[:specific], suffixes)
+      }
+
+      if cell.respond_to?(:container_styles) && cell.container_styles.present?
+        styles[:specific] += Array.wrap(cell.container_styles)
+      end
       styles
     end
 
     def render_table
       reset_data_stamps
       options = {
-        styles: table_styles,
+        styles: table_styles.values.flatten,
         delegate: self,
         data_source: self,
         style: (UITableViewStyleGrouped unless flat_data?)
@@ -90,29 +121,19 @@ module MotionPrime
       rows_for_section(index.section)[index.row]
     end
 
+
     def render_cell(index, table)
       item = row_by_index(index)
 
-      # define default styles for cell
-      styles = [:"#{name}_cell"]
-      Array.wrap(@styles).each do |table_style|
-        styles << :"#{table_style}_cell"
-      end
-      if item.respond_to?(:container_styles) && item.container_styles.present?
-        styles += Array.wrap(item.container_styles)
-      end
-      if item.respond_to?(:name) && item.name.present?
-        styles += [item.name.to_sym]
-      end
       # DrawSection allows as to draw inside the cell view, so we can setup
       # to use cell view as container
       if item.is_a?(MotionPrime::DrawSection)
         item.render(to: screen, as: :cell,
-          styles: [:base_table_cell] + styles,
+          styles: cell_styles(item).values.flatten,
           reuse_identifier: cell_name(table, index)
         )
       else
-        screen.table_view_cell styles: [:base_table_cell] + styles, reuse_identifier: cell_name(table, index), parent_view: table_view do
+        screen.table_view_cell section: item, styles: cell_styles(item).values.flatten, reuse_identifier: cell_name(table, index), parent_view: table_view do
           item.render(to: screen)
         end
       end

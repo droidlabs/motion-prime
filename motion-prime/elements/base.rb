@@ -65,8 +65,8 @@ module MotionPrime
       suffixes = {common: [@view_name.to_sym, name.try(:to_sym)].compact, specific: []}
 
       if section
-        field_section = section.respond_to?(:section_styles)
-        if field_section
+        cell_section = section.is_a?(BaseCellSection)
+        if cell_section
           section.section_styles.each { |type, values| base_styles[type] += values }
         end
         if section.respond_to?(:observing_errors?) && observing_errors? && has_errors?
@@ -76,11 +76,13 @@ module MotionPrime
 
       # common + specific base - common suffixes
       @styles += build_styles_chain(base_styles[:common], suffixes[:common])
-      @styles << :"#{section.name}_#{name}" if section
+      @styles << [section.name, name].compact.join('_').to_sym if section
       @styles += build_styles_chain(base_styles[:specific], suffixes[:common])
       # specific base - specific suffixes
       @styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
-      @styles << :"#{section.form.name}_field_#{section.name}_#{name}" if field_section
+      if cell_section && section.table.present?
+        @styles << [section.table.name, section.cell_type, section.name, name].compact.join('_').to_sym
+      end
       # custom style (from options or block options)
       custom_styles = style_sources.map do |source|
         normalize_object(source.delete(:styles), section)

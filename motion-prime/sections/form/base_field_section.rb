@@ -1,24 +1,17 @@
+motion_require '../table/base_cell_section'
 module MotionPrime
-  class BaseFieldSection < BaseSection
+  class BaseFieldSection < BaseCellSection
     include CellSection
     include BW::KVO
-    attr_accessor :form
 
+    attr_reader :form
     after_render :on_section_render
 
     def initialize(options = {})
-      @form = options.delete(:form)
+      @form = options[:table]
       @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, self) if options[:observe_errors]
       super
       observe_model_errors
-    end
-
-    def style_options
-      @style_options ||= Styles.for(section_styles.values.flatten)
-    end
-
-    def section_styles
-      form.try(:field_styles, self)
     end
 
     def render_element?(element_name)
