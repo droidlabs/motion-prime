@@ -182,8 +182,9 @@ module MotionPrime
       elsif key == 'gradient'
         gradient = CAGradientLayer.layer
         gradient.frame = CGRectMake(value[:frame_x].to_f, value[:frame_y].to_f, value[:frame_width].to_f, value[:frame_height].to_f)
-        gradient.colors = value[:colors]
-        view.layer.addSublayer(gradient)
+        gradient.colors = value[:colors].map(&:uicolor).map(&:cgcolor)
+        gradient.locations = value[:locations] if value[:locations]
+        view.layer.insertSublayer(gradient, atIndex: 0)
       elsif value.is_a?(Hash)
         self.class.new(view.send(key.camelize(:lower).to_sym), nil, value).apply
       else

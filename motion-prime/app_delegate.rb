@@ -64,10 +64,10 @@ module MotionPrime
       end
     end
 
-    def update_current_user
+    def reset_current_user
       user_was = @current_user
       @current_user = nil
-      NSNotificationCenter.defaultCenter.postNotificationName(:current_user_updated, object: user_was)
+      NSNotificationCenter.defaultCenter.postNotificationName(:on_current_user_reset, object: user_was)
     end
   end
 end

@@ -3,8 +3,8 @@ module MotionPrime
     def current_user
       App.delegate.current_user
     end
-    def update_current_user
-      App.delegate.update_current_user
+    def reset_current_user
+      App.delegate.reset_current_user
     end
     def user_signed_in?
       current_user.present?
