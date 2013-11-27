@@ -27,7 +27,7 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
   # app/app_delegate.rb
   class AppDelegate < Prime::BaseAppDelegate
     def on_load(app, options)
-      open_root_screen MainScreen.new
+      open_screen MainScreen.new
     end
   end
 
