@@ -1,3 +1,8 @@
+=== 0.3.0
+* Added iOS 7 support
+* Added command line tools
+* Many bug fixes
+
 === 0.2.1
 * Bug fixes
 
