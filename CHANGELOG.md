@@ -1,3 +1,8 @@
+=== 0.3.1.beta
+* Added universal AppDelegate#open_screen method for opening screens.
+* Old AppDelegate#open_screen method renamed to AppDelegate#open_content_screen
+
+
 === 0.3.0
 * Added iOS 7 support
 * Added command line tools
