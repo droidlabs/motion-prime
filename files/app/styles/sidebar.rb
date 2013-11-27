@@ -34,5 +34,5 @@ Prime::Styles.define :sidebar do
     height: 14,
     right: 50,
     top: 14,
-    image: "images/sidebar/icons/arrow.png"
+    image: "images/sidebar/arrow.png"
 end

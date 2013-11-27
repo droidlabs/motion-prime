@@ -9,5 +9,7 @@ Prime::Config.api do |api|
   api.client_secret = ""
 end
 
+Prime::Config.font.name = "Ubuntu"
+
 # setup model's store
 Prime::Store.connect

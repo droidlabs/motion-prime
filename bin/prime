@@ -28,12 +28,10 @@ class App
     return puts "Usage: prime new <appname>" unless name.to_s.length > 0
     info "Creating new MotionPrime iOS app: #{name}"
     sh "motion create --template=git@github.com:droidlabs/motion-prime.git #{name}"
-    sh "cd ./#{name}"
     info "Command: bundle instal"
-    sh "bundle install"
+    sh "cd ./#{name} & bundle install"
     info "Command: pod setup"
-    sh "pod setup"
-    sh "cd .."
+    sh "cd ./#{name} & pod setup"
   end
 
   description "Command line tools for MotionPrime"
