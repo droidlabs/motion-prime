@@ -3,6 +3,7 @@
 * Old AppDelegate#open_screen method renamed to AppDelegate#open_content_screen
 * Ability to add inherited styles
 * Small refactoring
+* Update project template
 
 
 === 0.3.0
