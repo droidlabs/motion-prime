@@ -15,17 +15,27 @@ module MotionPrime
         rect = CGRectMake(
           computed_left, computed_top, computed_outer_width, computed_outer_height
         )
-        bg_color.uicolor.setFill
-        UIRectFill(rect)
+
+        if computed_options[:layer] && radius = options[:layer][:corner_radius]
+          bezierPath = UIBezierPath.bezierPathWithRoundedRect rect, cornerRadius: radius
+          context = UIGraphicsGetCurrentContext()
+          CGContextSetStrokeColorWithColor(context, bg_color.uicolor.cgcolor)
+          CGContextSetFillColorWithColor(context, bg_color.uicolor.cgcolor)
+          bezierPath.stroke
+          bezierPath.fill
+        else
+          bg_color.uicolor.setFill
+          UIRectFill(rect)
+        end
       end
 
       # render text
-      color = options[:text_color]
-      color.uicolor.set if color
+      color = options[:text_color] || :black
+      color.uicolor.set
       font = options[:font] || :system
       if options[:number_of_lines] != 0
         options[:text].to_s.drawAtPoint(
-          CGPointMake(computed_left, computed_top),
+          CGPointMake(computed_inner_left, computed_inner_top),
           withFont: font.uifont
         )
       else
