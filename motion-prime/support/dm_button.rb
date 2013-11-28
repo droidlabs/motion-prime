@@ -1,7 +1,7 @@
 class DMButton < UIButton
-  include MotionPrime::KeyValueStore
-  DEFAULT_PADDING_LEFT = 5
-  attr_accessor :paddingLeft, :paddingRight, :paddingTop, :padding, :sizeToFit
+  include MotionPrime::SupportKeyValueStore
+  include MotionPrime::SupportPaddingAttribute
+  attr_accessor :sizeToFit
 
   def setTitle(value)
     setTitle value, forState: UIControlStateNormal
@@ -16,16 +16,12 @@ class DMButton < UIButton
     super
   end
 
-  def padding_left
-    self.paddingLeft || self.padding || DEFAULT_PADDING_LEFT
+  def default_padding_left
+    5
   end
 
-  def padding_right
-    self.paddingRight || padding_left || DEFAULT_PADDING_LEFT
-  end
-
-  def padding_top
-    self.paddingTop || self.padding || default_padding_top
+  def default_padding_right
+    5
   end
 
   def default_padding_top # to center title label
@@ -33,18 +29,20 @@ class DMButton < UIButton
     (self.bounds.size.height - single_line_height)/2 + 1
   end
 
-  def drawPadding(rect)
-    return if @custom_title_inset_drawn || [padding_top, padding_left, padding_right].all?(&:zero?)
+  def padding_bottom
+    self.bounds.size.height - (self.font.pointSize + padding_top)
+  end
 
-    height_diff = self.bounds.size.height - (self.font.pointSize + padding_top*2)
-    self.setTitleEdgeInsets UIEdgeInsetsMake(
-      padding_top, padding_left,
-      padding_top + height_diff, padding_right
-    )
+  def apply_padding!(rect)
+    self.setTitleEdgeInsets(padding_insets)
+  end
+
+  def apply_padding?
+    super && !@custom_title_inset_drawn
   end
 
   def drawRect(rect)
-    drawPadding(rect)
+    apply_padding(rect)
     super
   end
 end

@@ -27,7 +27,7 @@ module MotionPrime
     end
 
     def padding_right
-      self.paddingRight || padding_left || default_padding_right
+      self.paddingRight || self.padding || default_padding_right
     end
 
     def padding_top
@@ -36,6 +36,10 @@ module MotionPrime
 
     def padding_bottom
       self.paddingBottom || self.padding || default_padding_bottom
+    end
+
+    def padding_insets
+      UIEdgeInsetsMake(padding_top, padding_left, padding_bottom, padding_right)
     end
 
     def apply_padding(rect)

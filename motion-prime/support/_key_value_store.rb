@@ -1,5 +1,5 @@
 module MotionPrime
-  module KeyValueStore
+  module SupportKeyValueStore
     extend ::MotionSupport::Concern
 
     # Key-Value accessors

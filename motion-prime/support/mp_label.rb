@@ -3,8 +3,7 @@ class MPLabel < UILabel
   include MotionPrime::SupportPaddingAttribute
 
   def drawTextInRect(rect)
-    insets = UIEdgeInsetsMake(padding_top, padding_left, padding_bottom, padding_right)
-    rect = UIEdgeInsetsInsetRect(rect, insets)
+    rect = UIEdgeInsetsInsetRect(rect, padding_insets)
     super(rect)
   end
 end
