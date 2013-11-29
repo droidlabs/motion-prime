@@ -31,9 +31,5 @@ module MotionPrime
 
       rect.size.width
     end
-
-    def content_outer_height
-      content_height + computed_inner_top + computed_inner_bottom
-    end
   end
 end

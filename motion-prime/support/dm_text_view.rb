@@ -2,7 +2,7 @@
 # * support padding, padding_left, padding_right options
 # * support placeholder, placeholder_color, placeholder_font options
 class DMTextView < UITextView
-  include MotionPrime::KeyValueStore
+  include MotionPrime::SupportKeyValueStore
   DEFAULT_PADDING_LEFT = 7
 
   attr_accessor :paddingLeft, :paddingTop, :padding,

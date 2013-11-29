@@ -1,5 +1,6 @@
 module MotionPrime
   class ButtonElement < BaseElement
+    include MotionPrime::ElementContentPaddingMixin
     include MotionPrime::ElementFieldDimensionsMixin
 
     after_render :size_to_fit
@@ -7,7 +8,7 @@ module MotionPrime
     def size_to_fit
       if computed_options[:size_to_fit] || style_options[:size_to_fit]
         if computed_options[:width]
-          view.setHeight computed_height
+          view.setHeight content_outer_height
         end
       end
     end

@@ -3,7 +3,7 @@
 # * support placeholder_color, placeholder_font options
 class DMTextField < UITextField
   DEFAULT_PADDING_LEFT = 5
-  include MotionPrime::KeyValueStore
+  include MotionPrime::SupportKeyValueStore
 
   attr_accessor :paddingLeft, :paddingRight, :paddingTop, :padding,
     :placeholderColor, :placeholderFont

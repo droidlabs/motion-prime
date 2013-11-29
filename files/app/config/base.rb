@@ -9,5 +9,11 @@ Prime::Config.api do |api|
   api.client_secret = ""
 end
 
+Prime::Config.sidebar do |sidebar|
+  sidebar.background_image = "images/sidebar/bg.jpg".uiimage
+end
+
+Prime::Config.font.name = "Ubuntu"
+
 # setup model's store
 Prime::Store.connect

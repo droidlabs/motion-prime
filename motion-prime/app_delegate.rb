@@ -21,7 +21,7 @@ module MotionPrime
 
     def open_screen(screen, options = {})
       if options[:sidebar]
-        open_with_sidebar(content, options.delete(:sidebar), options)
+        open_with_sidebar(screen, options.delete(:sidebar), options)
       elsif options[:root]
         open_root_screen(screen)
       else
