@@ -83,7 +83,7 @@ module MotionPrime
       index = opts.delete(:at)
       options = build_options_for_element(opts)
       options[:name] ||= key
-      options[:type] ||= options[:text] ? :label : :view
+      options[:type] ||= (options[:text] || options[:attributed_text_options]) ? :label : :view
       element = MotionPrime::BaseElement.factory(options.delete(:type), options)
       if index
         self.elements = Hash[self.elements.to_a.insert index, [key, element]]

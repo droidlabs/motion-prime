@@ -107,7 +107,10 @@ module MotionPrime
       # ignore options
       return if key == 'size_to_fit' && view.is_a?(UILabel)
       return if (key == 'url' || key == 'default') && view.is_a?(UIImageView)
-      return if %w[max_width min_width height_to_fit container].include? key.to_s
+      return if %w[
+        max_width max_outer_width min_width min_outer_width
+        max_height max_outer_height min_height min_outer_width
+        height_to_fit container].include? key.to_s
 
       # apply options
       if key.end_with?('title_color')

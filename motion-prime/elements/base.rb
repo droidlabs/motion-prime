@@ -48,7 +48,7 @@ module MotionPrime
       compute_style_options(options, block_options)
       @computed_options.merge!(options)
       @computed_options.merge!(block_options)
-      normalize_options(@computed_options, section, %w[text font title_label padding padding_left padding_right max_width width left right])
+      normalize_options(@computed_options, section, %w[text placeholder font title_label padding padding_left padding_right min_width min_outer_width max_width max_outer_width width left right])
     end
 
     # Compute options sent inside block, e.g.
@@ -95,8 +95,6 @@ module MotionPrime
     def style_options
       Styles.for(styles)
     end
-
-    private
 
     class << self
       def factory(type, options = {})

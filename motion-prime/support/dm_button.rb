@@ -16,17 +16,19 @@ class DMButton < UIButton
     super
   end
 
-  def default_padding_left
+  def self.default_padding_left
     5
   end
 
-  def default_padding_right
+  def self.default_padding_right
     5
   end
 
-  def default_padding_top # to center title label
-    single_line_height = self.font.pointSize
-    (self.bounds.size.height - single_line_height)/2 + 1
+  def padding_top # to center title label
+    self.paddingTop || self.padding || begin
+      single_line_height = self.font.pointSize
+      (self.bounds.size.height - single_line_height)/2 + 1
+    end
   end
 
   def padding_bottom

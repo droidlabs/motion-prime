@@ -2,11 +2,9 @@
 # * support padding, padding_left, padding_right options
 # * support placeholder_color, placeholder_font options
 class DMTextField < UITextField
-  DEFAULT_PADDING_LEFT = 5
   include MotionPrime::SupportKeyValueStore
-
-  attr_accessor :paddingLeft, :paddingRight, :paddingTop, :padding,
-    :placeholderColor, :placeholderFont
+  include MotionPrime::SupportPaddingAttribute
+  attr_accessor :placeholderColor, :placeholderFont
 
   # placeholder position
   def textRectForBounds(bounds)
@@ -25,21 +23,19 @@ class DMTextField < UITextField
     self.placeholder.drawInRect(rect, withFont: font)
   end
 
-  def padding_left
-    self.paddingLeft || self.padding || DEFAULT_PADDING_LEFT
+  def padding_top # to center title label
+    self.paddingTop || self.padding || begin
+      single_line_height = self.font.pointSize
+      (self.bounds.size.height - single_line_height)/2 + 2
+    end
   end
 
-  def padding_right
-    self.paddingRight || self.padding_left
+  def self.default_padding_left
+    5
   end
 
-  def padding_top
-    self.paddingTop || self.padding || default_padding_top
-  end
-
-  def default_padding_top # to center title label
-    single_line_height = self.font.pointSize
-    (self.bounds.size.height - single_line_height)/2 + 2
+  def self.default_padding_right
+    5
   end
 
   private
@@ -50,5 +46,4 @@ class DMTextField < UITextField
         bounds.origin.x + padding_left, bounds.origin.y + padding_top,
         bounds.size.width - (padding_left + padding_right), bounds.size.height - padding_top*2)
     end
-
 end

@@ -5,7 +5,7 @@ module MotionPrime
     include MotionPrime::ElementTextDimensionsMixin
 
     def view_class
-      "UILabel"
+      "MPLabel"
     end
   end
 end

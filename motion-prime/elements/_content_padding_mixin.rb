@@ -1,23 +1,31 @@
 module MotionPrime
   module ElementContentPaddingMixin
     def content_padding_left
-      computed_options[:padding_left] ||
-      computed_options[:padding] || view.try(:default_padding_left) || 0
+      view.try(:padding_left) ||
+        computed_options[:padding_left] ||
+        computed_options[:padding] ||
+        view_class.constantize.default_padding_left || 0
     end
 
     def content_padding_right
-      computed_options[:padding_right] ||
-      computed_options[:padding] || view.try(:default_padding_right) || 0
+      view.try(:padding_right) ||
+        computed_options[:padding_right] ||
+        computed_options[:padding] ||
+        view_class.constantize.default_padding_right || 0
     end
 
     def content_padding_top
-      computed_options[:padding_top] ||
-      computed_options[:padding] || view.try(:default_padding_top) || 0
+      view.try(:padding_top) ||
+        computed_options[:padding_top] ||
+        computed_options[:padding] ||
+        view_class.constantize.default_padding_top || 0
     end
 
     def content_padding_bottom
-      computed_options[:padding_bottom] ||
-      computed_options[:padding] || view.try(:default_padding_bottom) || 0
+      view.try(:padding_bottom) ||
+        computed_options[:padding_bottom] ||
+        computed_options[:padding] ||
+        view_class.constantize.default_padding_bottom || 0
     end
 
     def content_padding_height
@@ -29,11 +37,13 @@ module MotionPrime
     end
 
     def content_outer_height
-      content_padding_height + content_height
+      height = content_padding_height + content_height
+      [[height, computed_options[:min_outer_height]].compact.max, computed_options[:max_outer_height]].compact.min
     end
 
     def content_outer_width
-      content_padding_width + content_width
+      width = content_padding_width + content_width
+      [[width, computed_options[:min_outer_width]].compact.max, computed_options[:max_outer_width]].compact.min
     end
   end
 end

@@ -52,6 +52,7 @@ class ApiClient
   end
 
   def resource_url(path)
+    # return if path.blank?
     "#{MotionPrime::Config.api.base}#{path}"
   end
 
