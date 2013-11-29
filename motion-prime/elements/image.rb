@@ -7,6 +7,7 @@ module MotionPrime
 
     def fetch_image
       return unless computed_options[:url]
+      raise "You must set default image for `#{name}`" unless computed_options[:default]
       view.setImageWithURL NSURL.URLWithString(computed_options[:url]),
                         placeholderImage: computed_options[:default].uiimage
     end

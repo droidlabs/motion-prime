@@ -14,7 +14,7 @@ module MotionPrime
       if block_given?
         raise "Only style names are available for nested styles, received: `#{args.inspect}`. Namespace: `#{@namespace}`" if options.present?
         names.each do |name|
-          puts namespace = [@namespace, name].compact.join('_')
+          namespace = [@namespace, name].compact.join('_')
           self.class.new(namespace).instance_eval(&block)
         end
       else

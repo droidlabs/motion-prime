@@ -8,7 +8,7 @@ module MotionPrime
     def size_to_fit
       if computed_options[:size_to_fit] || style_options[:size_to_fit]
         if computed_options[:width]
-          view.setHeight content_height + 2 # TODO maybe set width too as it can be wider
+          view.setHeight([content_height + 2, computed_options[:height]].compact.min) # TODO maybe set width too as it can be wider
         else
           view.sizeToFit
         end
