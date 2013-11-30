@@ -11,6 +11,7 @@ module MotionPrime
       options = builder.options.merge(calculate_frame: true, bounds: bounds)
       view = builder.view
       if render_target = options.delete(:render_target)
+        options[:bounds] = render_target.bounds
         render_target.addSubview(view)
       elsif view_stack.any?
         view_stack.last.addSubview(view)

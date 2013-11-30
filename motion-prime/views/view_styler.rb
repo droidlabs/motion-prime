@@ -36,6 +36,7 @@ module MotionPrime
         options[:frame] = bounds
       else
         frame = CGRectZero
+
         max_width = bounds.size.width
         max_height = bounds.size.height
         width = 0.0 if width.nil?
