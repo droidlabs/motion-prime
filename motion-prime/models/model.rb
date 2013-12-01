@@ -74,7 +74,7 @@ module MotionPrime
     #   User.new(name: "Bob", age: 10)
     #
     # @return MotionPrime::BaseModel unsaved model
-    def new(data = {})
+    def new(data = {}, options = {})
       data.keys.each { |k|
         unless self.attributes.member? k.to_sym
           raise StoreError, "'#{k}' is not a defined attribute for this model"

@@ -32,10 +32,12 @@ module MotionPrime
     # @return self
     def add(object_or_array)
       error_ptr = Pointer.new(:id)
+      prepared = prepare_for_store(object_or_array)
+
       if object_or_array.is_a?(Array)
-        self.addObjectsFromArray(prepare_for_store(object_or_array), error:error_ptr)
+        self.addObjectsFromArray(prepared, error:error_ptr)
       else
-        self.addObject(prepare_for_store(object_or_array), error:error_ptr)
+        self.addObject(prepared, error:error_ptr)
       end
       raise StoreError, error_ptr[0].description if error_ptr[0]
       self
@@ -45,9 +47,12 @@ module MotionPrime
 
     def prepare_for_store(object)
       if object.is_a?(Array)
-        object.map { |entity| prepare_for_store(entity) }
+        object.map { |entity| prepare_for_store(entity) }.compact
       else
         object.bag_key = self.key
+        if object.id.present? && self.store && self.find(id: object.id).any?
+          raise StoreError, "duplicated item added `#{object.class_name_without_kvo}` with `id` = #{object.id}"
+        end
         object
       end
     end

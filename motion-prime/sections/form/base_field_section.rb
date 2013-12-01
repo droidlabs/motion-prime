@@ -56,8 +56,8 @@ module MotionPrime
       # focus on text field
       return unless begin_editing
       elements.values.each do |element|
-        if element.view.is_a?(UITextField)
-          element.view.becomeFirstResponder && return
+        if element.view.is_a?(UITextField) || element.view.is_a?(UITextView)
+          element.view.becomeFirstResponder and return
         end
       end
       self

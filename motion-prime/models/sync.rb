@@ -116,6 +116,7 @@ module MotionPrime
           self.send(:"#{key}=", value)
         end
       end
+      self
     end
 
     def fetch_associations(sync_options = {}, &block)
@@ -153,8 +154,8 @@ module MotionPrime
 
       use_callback = block_given?
       puts "SYNC: started sync for #{key} in #{self.class_name_without_kvo}"
-      api_client.get normalize_sync_url(options[:sync_url]) do |data, status_code|
-        data = data[options[:sync_key]] if options[:sync_key]
+      api_client.get normalize_sync_url(options[:sync_url]) do |response, status_code|
+        data = options.has_key?(:sync_key) ? response[options[:sync_key]] : response
         if data
           # Update/Create existing records
           data.each do |attributes|
@@ -174,10 +175,10 @@ module MotionPrime
           end
           save if sync_options[:save]
           puts "SYNC: finished sync for #{key} in #{self.class_name_without_kvo}"
-          block.call(data, status_code) if use_callback
+          block.call(data, status_code, response) if use_callback
         else
           puts "SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}"
-          block.call(data, status_code) if use_callback
+          block.call(data, status_code, response) if use_callback
         end
       end
     end
@@ -185,8 +186,8 @@ module MotionPrime
     def fetch_has_one(key, options = {}, &block)
       use_callback = block_given?
       puts "SYNC: started sync for #{key} in #{self.class_name_without_kvo}"
-      api_client.get normalize_sync_url(options[:sync_url]) do |data, status_code|
-        data = data[options[:sync_key]] if options[:sync_key]
+      api_client.get normalize_sync_url(options[:sync_url]) do |response, status_code|
+        data = options.has_key?(:sync_key) ? response[options[:sync_key]] : response
         if data.present?
           model = self.send(key)
           unless model
@@ -195,10 +196,10 @@ module MotionPrime
           end
           model.fetch_with_attributes(data)
           model.save if sync_options[:save]
-          block.call(data, status_code) if use_callback
+          block.call(data, status_code, response) if use_callback
         else
           puts "SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}"
-          block.call(data, status_code) if use_callback
+          block.call(data, status_code, response) if use_callback
         end
       end
     end
@@ -240,6 +241,14 @@ module MotionPrime
   end
 
   module ModelSyncClassMethods
+    def new(data = {}, options = {})
+      model = super
+      if fetch_attributes = options[:fetch_attributes]
+        model.fetch_with_attributes(fetch_attributes)
+      end
+      model
+    end
+
     def sync_url(url = nil, &block)
       if url || block_given?
         self._sync_url = url || block

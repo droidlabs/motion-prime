@@ -147,7 +147,7 @@ module MotionPrime
     end
 
     def keyboard_will_show
-      return if table_view.contentSize.height + table_view.top <= UIScreen.mainScreen.bounds.size.height
+      return if table_view.contentSize.height + table_view.top <= UIScreen.mainScreen.bounds.size.height - KEYBOARD_HEIGHT_PORTRAIT
       current_inset = table_view.contentInset
       current_inset.bottom = KEYBOARD_HEIGHT_PORTRAIT + (self.table_element.computed_options[:bottom_content_offset] || 0)
       table_view.contentInset = current_inset
@@ -164,12 +164,15 @@ module MotionPrime
     def on_input_edit(text_field); end
     def on_input_return(text_field)
       text_field.resignFirstResponder
-    end;
+    end
     def textFieldShouldReturn(text_field)
       on_input_return(text_field)
     end
     def textFieldDidBeginEditing(text_field)
       on_input_edit(text_field)
+    end
+    def textViewDidBeginEditing(text_view)
+      on_input_edit(text_view)
     end
 
     def textView(text_view, shouldChangeTextInRange:range, replacementText:string)
