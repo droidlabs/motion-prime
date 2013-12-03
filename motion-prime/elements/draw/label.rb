@@ -2,6 +2,7 @@ motion_require '../draw.rb'
 module MotionPrime
   class LabelDrawElement < DrawElement
     include MotionPrime::ElementTextDimensionsMixin
+    include MotionPrime::ElementContentPaddingMixin
 
     def draw_in(rect)
       options = computed_options
@@ -13,7 +14,7 @@ module MotionPrime
       bg_color = options[:background_color]
       if bg_color
         rect = CGRectMake(
-          computed_left, computed_top, computed_outer_width, computed_outer_height
+          computed_left, computed_top, computed_width, computed_height
         )
 
         if computed_options[:layer] && radius = options[:layer][:corner_radius]
@@ -55,9 +56,9 @@ module MotionPrime
 
     def size_to_fit_if_needed
       if computed_options[:size_to_fit]
-        @computed_options[:width] = content_width
+        @computed_options[:width] = content_outer_width
         if computed_options[:width]
-          @computed_options[:height] = content_height
+          @computed_options[:height] = content_outer_height
         end
         reset_computed_values
       end

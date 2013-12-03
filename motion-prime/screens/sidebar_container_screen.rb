@@ -60,7 +60,7 @@ module MotionPrime
       def prepare_controller(controller)
         controller = setup_screen_for_open(controller, {})
         if content_controller.nil?
-          controller.ensure_wrapper_controller_in_place
+          controller.wrap_in_navigation if controller.respond_to?(:wrap_in_navigation)
           controller.send(:on_screen_load) if controller.respond_to?(:on_screen_load)
           controller = controller.main_controller if controller.respond_to?(:main_controller)
         else

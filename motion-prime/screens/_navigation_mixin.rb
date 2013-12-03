@@ -1,17 +1,14 @@
 module MotionPrime
   module ScreenNavigationMixin
-    def app_delegate
-      UIApplication.sharedApplication.delegate
-    end
+    # Open screen as child for current screen if current screen have navigation or new screen is modal.
+    # Otherwise will create screen using app_delegate.open_screen.
+    # Available options:
+    #   animated: open screen with animation.
+    #   modal: open screen as model
 
-    def show_sidebar
-      app_delegate.show_sidebar
-    end
-
-    def hide_sidebar
-      app_delegate.hide_sidebar
-    end
-
+    # @param screen [MotionPrime::BaseScreen] Screen to be opened
+    # @param args [Hash] Options for opening screen
+    # @return [MotionPrime::BaseScreen]
     def open_screen(screen, args = {})
       if args[:modal] || has_navigation?
         screen = setup_screen_for_open(screen, args)
@@ -25,8 +22,10 @@ module MotionPrime
       else
         app_delegate.open_screen(screen.main_controller)
       end
+      screen
     end
 
+    
     def close_screen(args = {})
       args[:animated] = args.has_key?(:animated) ? args[:animated] : true
       # Pop current view, maybe with arguments, if in navigation controller
@@ -47,11 +46,26 @@ module MotionPrime
       end
     end
 
-    def ensure_wrapper_controller_in_place(args = {})
-      # Wrap in a NavigationController?
-      if wrap_in_navigation? && !args[:modal]
-        add_navigation_controller
+    def wrap_in_navigation?
+      options[:navigation]
+    end
+
+    def wrap_in_navigation
+      if wrap_in_navigation?
+        wrap_in_navigation!
       end
+    end
+
+    def has_navigation?
+      !navigation_controller.nil?
+    end
+
+    def navigation_controller
+      @navigation_controller ||= self.navigationController
+    end
+
+    def navigation_controller=(val)
+      @navigation_controller = val
     end
 
     private
@@ -92,19 +106,7 @@ module MotionPrime
         send_on_return(args)
       end
 
-      def has_navigation?
-        !navigation_controller.nil?
-      end
-
-      def navigation_controller
-        @navigation_controller ||= self.navigationController
-      end
-
-      def navigation_controller=(val)
-        @navigation_controller = val
-      end
-
-      def add_navigation_controller
+      def wrap_in_navigation!
         self.navigation_controller = NavigationController.alloc.initWithRootViewController(self)
       end
   end

@@ -20,9 +20,10 @@ module MotionPrime
     end
 
     def open_screen(screen, options = {})
+      screen = create_tab_bar(screen) if screen.is_a?(Array)
       if options[:sidebar]
         open_with_sidebar(screen, options.delete(:sidebar), options)
-      elsif options[:root]
+      elsif options[:root] || !self.window
         open_root_screen(screen)
       else
         open_content_screen(screen)
@@ -32,7 +33,7 @@ module MotionPrime
     # TODO: move to private methods
     def open_root_screen(screen)
       screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
-      screen.ensure_wrapper_controller_in_place if screen.respond_to?(:ensure_wrapper_controller_in_place)
+      screen.wrap_in_navigation if screen.respond_to?(:wrap_in_navigation)
 
       screen = screen.main_controller if screen.respond_to?(:main_controller)
 
@@ -59,7 +60,7 @@ module MotionPrime
     end
 
     def sidebar?
-      self.window.rootViewController.is_a?(SidebarContainerScreen)
+      self.window && self.window.rootViewController.is_a?(SidebarContainerScreen)
     end
 
     def show_sidebar
@@ -81,5 +82,10 @@ module MotionPrime
       @current_user = nil
       NSNotificationCenter.defaultCenter.postNotificationName(:on_current_user_reset, object: user_was)
     end
+
+    private
+      def create_tab_bar(screens)
+        MotionPrime::TabBarController.new(screens)
+      end
   end
 end

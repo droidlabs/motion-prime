@@ -1,10 +1,17 @@
-=== 0.3.1.beta
+=== 0.3.3.beta
+* Screen tab bar support
+
+=== 0.3.2
+* Refactor screens
+* Fix paddings for draw sections
+* Draw label now supports corner radius
+
+=== 0.3.1
 * Added universal AppDelegate#open_screen method for opening screens.
 * Old AppDelegate#open_screen method renamed to AppDelegate#open_content_screen
 * Ability to add inherited styles
-* Small refactoring
 * Update project template
-
+* Small refactoring
 
 === 0.3.0
 * Added iOS 7 support
