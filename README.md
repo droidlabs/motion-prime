@@ -66,6 +66,15 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
+## Documentation
+
+We are using Docco (http://jashkenas.github.io/docco/) to generate documentation.
+To update documentations, please install the tool and run 
+
+```
+$ cd doc && docco code/*.rb
+```
+
 ## Thanks for using MotionPrime!
 
 Hope, you'll enjoy MotionPrime!
