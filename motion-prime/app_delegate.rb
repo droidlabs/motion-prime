@@ -32,7 +32,7 @@ module MotionPrime
     # TODO: move to private methods
     def open_root_screen(screen)
       screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
-      screen.ensure_wrapper_controller_in_place if screen.respond_to?(:ensure_wrapper_controller_in_place)
+      screen.wrap_in_navigation if screen.respond_to?(:wrap_in_navigation)
 
       screen = screen.main_controller if screen.respond_to?(:main_controller)
 
