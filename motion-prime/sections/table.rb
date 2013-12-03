@@ -67,6 +67,7 @@ module MotionPrime
       suffixes = [type]
       if cell.is_a?(BaseFieldSection)
         suffixes << cell.default_name
+        suffixes << :"field_#{cell.name}"
       elsif cell.respond_to?(:cell_name)
         suffixes << cell.cell_name
       end

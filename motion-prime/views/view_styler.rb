@@ -9,13 +9,15 @@ module MotionPrime
     end
 
     def apply
-      convert_primitives_to_objects(options)
-      setValuesForKeysWithDictionary(options)
+      converted_options = convert_primitives_to_objects(options)
+      setValuesForKeysWithDictionary(converted_options)
     end
 
     def convert_primitives_to_objects(options)
-      options.each do |k,v|
-        options[k] = STRUCTS_MAP[v.class].call(v) if STRUCTS_MAP.has_key?(v.class)
+      options.inject({}) do |result, (k, v)|
+        v = STRUCTS_MAP[v.class].call(v) if STRUCTS_MAP.has_key?(v.class)
+        result[k] = v
+        result
       end
     end
 
@@ -111,7 +113,7 @@ module MotionPrime
       return if %w[
         max_width max_outer_width min_width min_outer_width
         max_height max_outer_height min_height min_outer_width
-        height_to_fit container].include? key.to_s
+        height_to_fit container parent_frame].include? key.to_s
 
       # apply options
       if key.end_with?('title_color')
@@ -152,6 +154,17 @@ module MotionPrime
         view.autocapitalizationType = UITextAutocapitalizationTypeNone if value === false
       elsif key == 'keyboard_type'
         view.setKeyboardType value.uikeyboardtype
+      elsif key == 'rounded_corners'
+        radius = value[:radius].to_f
+        corner_consts = {top_left: UIRectCornerTopLeft, bottom_left: UIRectCornerBottomLeft, bottom_right: UIRectCornerBottomRight, top_right: UIRectCornerTopRight}
+        corners = value[:corners].inject(0) { |result, corner| result|corner_consts[corner] }
+        size = options[:parent_frame].size
+        bounds = CGRectMake(0, 0, size.width, size.height)
+        mask_path = UIBezierPath.bezierPathWithRoundedRect(bounds, byRoundingCorners: corners, cornerRadii: CGSizeMake(radius, radius))
+        mask_layer = CAShapeLayer.layer
+        mask_layer.frame = bounds
+        mask_layer.path = mask_path.CGPath
+        view.mask = mask_layer
       elsif key == 'mask'
         radius = value[:radius]
         bounds = CGRectMake(0, 0, value[:width], value[:height])
@@ -160,11 +173,6 @@ module MotionPrime
         mask_layer.frame = bounds
         mask_layer.path = mask_path.CGPath
         view.layer.mask = mask_layer
-        # TODO: apply for corner_radius_top/bottom
-        # CAShapeLayer *shape = [[CAShapeLayer alloc] init];
-        # shape.path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height) byRoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight cornerRadii:CGSizeMake(10, 10)].CGPath;
-        # self.layer.mask = shape;
-        # self.layer.masksToBounds = YES;
       elsif key == 'attributed_text_options'
         attributes = {}
         if line_spacing = value[:line_spacing]
@@ -190,7 +198,7 @@ module MotionPrime
         gradient.locations = value[:locations] if value[:locations]
         view.layer.insertSublayer(gradient, atIndex: 0)
       elsif value.is_a?(Hash)
-        self.class.new(view.send(key.camelize(:lower).to_sym), nil, value).apply
+        self.class.new(view.send(key.camelize(:lower).to_sym), nil, value.merge(parent_frame: options[:frame] || options[:parent_frame])).apply
       else
         view.setValue value, forKey: key.camelize(:lower)
       end

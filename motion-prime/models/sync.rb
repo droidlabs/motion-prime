@@ -155,7 +155,7 @@ module MotionPrime
       use_callback = block_given?
       puts "SYNC: started sync for #{key} in #{self.class_name_without_kvo}"
       api_client.get normalize_sync_url(options[:sync_url]) do |response, status_code|
-        data = options.has_key?(:sync_key) ? response[options[:sync_key]] : response
+        data = options[:sync_key] && response ? response[options[:sync_key]] : response
         if data
           # Update/Create existing records
           data.each do |attributes|

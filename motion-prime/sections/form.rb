@@ -20,22 +20,23 @@ module MotionPrime
 
     class_attribute :text_field_limits, :text_view_limits
     class_attribute :fields_options, :section_header_options
-    attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :section_headers
+    attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :section_headers, :section_header_options
 
     def table_data
       if @groups_count == 1
         fields.values
       else
         section_indexes = []
-        fields.inject([]) do |result, (key, field)|
+        data = fields.inject([]) do |result, (key, field)|
           section = self.class.fields_options[key][:group].to_i
-
           section_indexes[section] ||= 0
           result[section] ||= []
           result[section][section_indexes[section]] = field
           section_indexes[section] += 1
           result
         end
+        self.section_header_options.delete_if.each_with_index { |opts, id| data[id].nil? }
+        data.compact
       end
     end
 
@@ -205,18 +206,16 @@ module MotionPrime
     end
 
     def render_field?(name, options)
-      condition = options.delete(:if)
-      if condition.nil?
-        true
-      elsif condition.is_a?(Proc)
+      return true unless condition = options[:if]
+      if condition.is_a?(Proc)
         self.instance_eval(&condition)
       else
-        condition
+        condition.to_proc.call(self)
       end
     end
 
     def render_header(section)
-      return unless options = self.class.section_header_options.try(:[], section)
+      return unless options = self.section_header_options.try(:[], section)
       self.section_headers[section] ||= BaseHeaderSection.new(options.merge(table: self))
     end
 
@@ -265,6 +264,12 @@ module MotionPrime
       end
     end
 
+    def reload_data
+      @groups_count = nil
+      init_form_fields
+      super
+    end
+
     private
       def init_form_fields
         self.fields = {}
@@ -273,12 +278,18 @@ module MotionPrime
         (self.class.fields_options || []).each do |key, field|
           next unless render_field?(key, field)
           section_id = field[:group].to_i
-          section_indexes[section_id] ||= 0
           @groups_count = [@groups_count || 1, section_id + 1].max
           self.fields[key] = load_field(field)
+
+          section_indexes[section_id] ||= 0
           self.field_indexes[key] = "#{section_id}_#{section_indexes[section_id]}"
           section_indexes[section_id] += 1
         end
+        init_form_headers
+      end
+
+      def init_form_headers
+        self.section_header_options = Array.wrap(self.class.section_header_options).clone
       end
   end
 end

@@ -2,8 +2,16 @@ motion_require '../views/styles.rb'
 MotionPrime::Styles.define :base_form do
   style :header, container: {height: 25}
   style :header_label,
-    left: 0, right: 0, size_to_fit: true,
-    bottom: 20, top: nil
+    left: 0,
+    bottom: 5,
+    top: nil,
+    width: 320,
+    size_to_fit: true
+  style :header_hint,
+    left: 0,
+    bottom: 5,
+    top: nil,
+    width: 320
 
   style :field,
     selection_style: UITableViewCellSelectionStyleNone,
