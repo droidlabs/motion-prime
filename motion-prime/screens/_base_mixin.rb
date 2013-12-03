@@ -10,7 +10,7 @@ module MotionPrime
     include MotionPrime::ScreenOrientationsMixin
     include MotionPrime::ScreenNavigationMixin
 
-    attr_accessor :parent_screen, :modal, :params, :main_section, :options
+    attr_accessor :parent_screen, :modal, :params, :main_section, :options, :tab_bar
     class_attribute :current_screen
 
     included do

@@ -1,3 +1,6 @@
+=== 0.3.3.beta
+* Screen tab bar support
+
 === 0.3.2
 * Refactor screens
 * Fix paddings for draw sections
