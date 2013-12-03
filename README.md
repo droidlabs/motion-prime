@@ -69,7 +69,8 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
 ## Documentation
 
 We are using Docco (http://jashkenas.github.io/docco/) to generate documentation.
-To update documentations, please install the tool and run 
+
+Please install the tool and run this to update documentation:
 
 ```
 $ cd doc && docco code/*.rb

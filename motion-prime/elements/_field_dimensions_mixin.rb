@@ -1,19 +1,7 @@
 module MotionPrime
   module ElementFieldDimensionsMixin
-    def text_value
-      if button?
-        text = view ? view.titleLabel.text : computed_options[:title]
-      else
-        text = view ? view.text : computed_options[:text]
-      end.to_s
-    end
-
     def content_text
-      text = text_value
-      if !button? && text.empty?
-        text = computed_options[:placeholder]
-      end
-      text.to_s
+      (button? ? button_text : input_text).to_s
     end
 
     def font
@@ -52,6 +40,22 @@ module MotionPrime
     end
 
     private
+      def button_text
+        view ? view.titleLabel.text : computed_options[:title]
+      end
+
+      def input_text
+        input_value_text.empty? ? input_placeholder_text : input_value_text
+      end
+
+      def input_value_text
+        view ? view.text : computed_options[:text]
+      end
+
+      def input_placeholder_text
+        computed_options[:placeholder]
+      end
+
       def button?
         self.is_a?(ButtonElement)
       end
