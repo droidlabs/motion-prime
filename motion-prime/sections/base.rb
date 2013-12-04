@@ -40,15 +40,23 @@ module MotionPrime
     end
 
     def container_options
-      @normalized_container_options or begin
-        # priority: class; from styles; passed directly
-        raw_container_options = self.class.container_options.try(:clone) || {}
-        passed_container_options = options.delete(:container) || {}
-        raw_container_options.merge!(passed_container_options)
-        @normalized_container_options = normalize_options(raw_container_options)
-        style_container_options = style_options.delete(:container) || {}
-        @normalized_container_options.merge!(style_container_options.except(*passed_container_options.keys))
+      @container_options ||= (style_options.delete(:container) || {}).merge(base_container_options)
+    end
+
+    def base_container_options
+      @base_container_options ||= begin
+        container_options = self.class.container_options.try(:clone) || {}
+        container_options.merge!(options.delete(:container) || {})
+        normalize_options(container_options)
       end
+    end
+
+    def container_height
+      container_options[:height] || DEFAULT_CONTENT_HEIGHT
+    end
+
+    def container_styles
+      base_container_options[:styles]
     end
 
     def default_name
@@ -141,14 +149,6 @@ module MotionPrime
       elements.values.each do |element|
         element.view.hidden = false
       end
-    end
-
-    def container_height
-      container_options[:height] || DEFAULT_CONTENT_HEIGHT
-    end
-
-    def container_styles
-      container_options[:styles]
     end
 
     def on_keyboard_show; end

@@ -57,7 +57,6 @@ module MotionPrime
 
     def render_cell(index, table)
       field = rows_for_section(index.section)[index.row]
-      # styles: cell_styles(field).values.flatten
       screen.table_view_cell section: field, reuse_identifier: cell_name(table, index), parent_view: table_view do |cell_view|
         field.cell_view = cell_view if field.respond_to?(:cell_view)
         field.render(to: screen)

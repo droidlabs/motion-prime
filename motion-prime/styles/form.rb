@@ -79,7 +79,7 @@ MotionPrime::Styles.define :base_form do
     title_label: {
       font: proc { MotionPrime::Config.font.name.uifont(16) }
     }
-  style :select_field_arrow,
+  style :select_field_image,
     image: "images/forms/select_arrow.png",
     top: 40,
     right: 5,
@@ -93,7 +93,7 @@ MotionPrime::Styles.define :base_form do
     left: 20,
     right: 20
 
-  style :with_sections_select_field_arrow,
+  style :with_sections_select_field_image,
     right: 25
 
   style :with_sections_switch_field_input,

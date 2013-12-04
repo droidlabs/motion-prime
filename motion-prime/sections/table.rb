@@ -73,7 +73,6 @@ module MotionPrime
       # table_name = `categories`
       # type = `cell` (always true)
       # table_cell_name = `title`
-
       type = cell.respond_to?(:cell_type) ? cell.cell_type : 'cell'
 
       suffixes = [type]
@@ -98,9 +97,10 @@ module MotionPrime
       # form: <form_name>_form_<type>, <form_name>_form_<field_type>, user_form_<type>_email = `user_form_field`, `user_form_string_field`, `user_form_field_email`
       styles[:specific] = build_styles_chain(table_styles[:specific], suffixes)
 
-      if cell.respond_to?(:container_styles) && cell.container_styles.present?
-        styles[:specific] += Array.wrap(cell.container_styles)
+      if respond_to?(:container_styles) && container_styles.present?
+        @section_styles[:specific] += Array.wrap(container_styles)
       end
+
       styles
     end
 
@@ -155,7 +155,6 @@ module MotionPrime
           reuse_identifier: cell_name(table, index)
         )
       else
-        # styles: cell_styles(item).values.flatten
         screen.table_view_cell section: item, reuse_identifier: cell_name(table, index), parent_view: table_view do
           item.render(to: screen)
         end

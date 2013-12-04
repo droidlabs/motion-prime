@@ -1,29 +1,25 @@
 module MotionPrime
   module ElementContentPaddingMixin
     def content_padding_left
-      view.try(:padding_left) ||
-        computed_options[:padding_left] ||
+      computed_options[:padding_left] ||
         computed_options[:padding] ||
         default_padding_for(:left) || 0
     end
 
     def content_padding_right
-      view.try(:padding_right) ||
-        computed_options[:padding_right] ||
+      computed_options[:padding_right] ||
         computed_options[:padding] ||
         default_padding_for(:right) || 0
     end
 
     def content_padding_top
-      view.try(:padding_top) ||
-        computed_options[:padding_top] ||
+      computed_options[:padding_top] ||
         computed_options[:padding] ||
         default_padding_for(:top) || 0
     end
 
     def content_padding_bottom
-      view.try(:padding_bottom) ||
-        computed_options[:padding_bottom] ||
+      computed_options[:padding_bottom] ||
         computed_options[:padding] ||
         default_padding_for(:bottom) || 0
     end
