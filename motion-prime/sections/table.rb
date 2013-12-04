@@ -61,21 +61,42 @@ module MotionPrime
     end
 
     def cell_styles(cell)
-      # type: cell/field/header
+      # type = [`cell`, `header`, `field`]
+
+      # UserFormSection example: field :email, type: :string
+      # form_name = `user`
+      # type = `field`
+      # field_name = `email`
+      # field_type = `string_field`
+
+      # CategoriesTableSection example: table is a `CategoryTableSection`, cell is a `CategoryTitleSection`, element :icon, type: :image
+      # table_name = `categories`
+      # type = `cell` (always true)
+      # table_cell_name = `title`
+
       type = cell.respond_to?(:cell_type) ? cell.cell_type : 'cell'
 
       suffixes = [type]
       if cell.is_a?(BaseFieldSection)
         suffixes << cell.default_name
-        suffixes << :"field_#{cell.name}"
-      elsif cell.respond_to?(:cell_name)
+      end
+
+      styles = {}
+      # table: base_table_<type>
+      # form: base_form_<type>, base_form_<field_type>
+      styles[:common] = build_styles_chain(table_styles[:common], suffixes)
+
+      if cell.is_a?(BaseFieldSection)
+        # form cell: _<type>_<field_name> = `_field_email`
+        suffixes << :"#{type}_#{cell.name}" if cell.name
+      elsif cell.respond_to?(:cell_name) # BaseCellSection
+        # table cell: _<table_cell_name> = `_title`
         suffixes << cell.cell_name
       end
 
-      styles = {
-        common: build_styles_chain(table_styles[:common], suffixes),
-        specific: build_styles_chain(table_styles[:specific], suffixes)
-      }
+      # table: <table_name>_table_<type>, <table_name>_table_<table_cell_name> = `categories_table_cell`, `categories_table_title`
+      # form: <form_name>_form_<type>, <form_name>_form_<field_type>, user_form_<type>_email = `user_form_field`, `user_form_string_field`, `user_form_field_email`
+      styles[:specific] = build_styles_chain(table_styles[:specific], suffixes)
 
       if cell.respond_to?(:container_styles) && cell.container_styles.present?
         styles[:specific] += Array.wrap(cell.container_styles)
@@ -134,7 +155,8 @@ module MotionPrime
           reuse_identifier: cell_name(table, index)
         )
       else
-        screen.table_view_cell section: item, styles: cell_styles(item).values.flatten, reuse_identifier: cell_name(table, index), parent_view: table_view do
+        # styles: cell_styles(item).values.flatten
+        screen.table_view_cell section: item, reuse_identifier: cell_name(table, index), parent_view: table_view do
           item.render(to: screen)
         end
       end

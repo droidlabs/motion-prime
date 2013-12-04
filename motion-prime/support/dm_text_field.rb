@@ -26,7 +26,7 @@ class DMTextField < UITextField
   def padding_top # to center title label
     self.paddingTop || self.padding || begin
       single_line_height = self.font.pointSize
-      (self.bounds.size.height - single_line_height)/2 + 2
+      (self.bounds.size.height - single_line_height)/2 + 1
     end
   end
 

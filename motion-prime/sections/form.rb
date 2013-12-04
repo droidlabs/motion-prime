@@ -57,7 +57,8 @@ module MotionPrime
 
     def render_cell(index, table)
       field = rows_for_section(index.section)[index.row]
-      screen.table_view_cell section: field, styles: cell_styles(field).values.flatten, reuse_identifier: cell_name(table, index), parent_view: table_view do |cell_view|
+      # styles: cell_styles(field).values.flatten
+      screen.table_view_cell section: field, reuse_identifier: cell_name(table, index), parent_view: table_view do |cell_view|
         field.cell_view = cell_view if field.respond_to?(:cell_view)
         field.render(to: screen)
       end
@@ -177,16 +178,12 @@ module MotionPrime
     end
 
     def textView(text_view, shouldChangeTextInRange:range, replacementText:string)
-      limit = (self.class.text_view_limits || {}).find do |field_name, limit|
-        view("#{field_name}:input")
-      end.try(:last)
-      return true unless limit
-      allow_string_replacement?(text_view, limit, range, string)
+      textField(text_view, shouldChangeCharactersInRange:range, replacementString:string)
     end
 
     def textField(text_field, shouldChangeCharactersInRange:range, replacementString:string)
       limit = (self.class.text_field_limits || {}).find do |field_name, limit|
-        view("#{field_name}:input")
+        view("#{field_name}:input") == text_field
       end.try(:last)
       return true unless limit
       allow_string_replacement?(text_field, limit, range, string)

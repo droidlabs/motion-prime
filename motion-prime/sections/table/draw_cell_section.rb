@@ -1,5 +1,5 @@
 module MotionPrime
-  class BaseCellSection < BaseSection
+  class DrawCellSection < DrawSection
     include CellSectionMixin
   end
 end

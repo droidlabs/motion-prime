@@ -23,6 +23,7 @@ module MotionPrime
     define_callbacks :render
 
     def initialize(options = {})
+      super
       @options = options
       @model = options[:model]
       @name = options[:name] ||= default_name

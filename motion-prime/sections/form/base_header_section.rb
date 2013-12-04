@@ -16,10 +16,6 @@ module MotionPrime
       @options[name].present?
     end
 
-    def section_styles
-      table.cell_styles(self)
-    end
-
     def container_height
       container_options[:height] || DEFAULT_HEADER_HEIGHT
     end
