@@ -60,7 +60,7 @@ module MotionPrime
 
     def compute_style_options(*style_sources)
       has_errors = section.respond_to?(:observing_errors?) && observing_errors? && has_errors?
-      is_cell_section = section.is_a?(BaseCellSection)
+      is_cell_section = section.is_a?(BaseCellSection) || section.is_a?(DrawCellSection)
 
       @styles = []
       if is_cell_section

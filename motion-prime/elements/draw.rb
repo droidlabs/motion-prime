@@ -40,6 +40,13 @@ module MotionPrime
 
     def computed_width
       @computed_width ||= begin
+        computed_outer_width - (computed_padding_left + computed_padding_right)
+      end
+    end
+
+    # content width + content padding
+    def computed_outer_width
+      @computed_outer_width ||= begin
         width = computed_options[:width]
         width = 0.0 if width.nil?
 
@@ -49,18 +56,19 @@ module MotionPrime
         else
           width > computed_max_width ? computed_max_width : width
         end
-      end
-    end
 
-    # content width + content padding
-    def computed_outer_width
-      @computed_outer_width ||= begin
-        computed_width + computed_padding_left + computed_padding_right
       end
     end
 
     def computed_height
       @computed_height ||= begin
+        computed_outer_height - (computed_padding_top + computed_padding_bottom)
+      end
+    end
+
+    # content height + content padding
+    def computed_outer_height
+      @computed_outer_height ||= begin
         height = computed_options[:height]
         height = 0.0 if height.nil?
 
@@ -73,13 +81,6 @@ module MotionPrime
       end
     end
 
-    # content height + content padding
-    def computed_outer_height
-      @computed_outer_height ||= begin
-        computed_height + computed_padding_top + computed_padding_bottom
-      end
-    end
-
     def computed_left
       @computed_left ||= begin
         left = computed_options[:left]
@@ -87,7 +88,7 @@ module MotionPrime
         return left if left
         return 0 if right.nil?
 
-        computed_max_width - (computed_width + right)
+        computed_max_width - (computed_outer_width + right)
       end
     end
 

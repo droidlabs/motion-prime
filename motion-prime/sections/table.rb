@@ -92,7 +92,6 @@ module MotionPrime
         # table cell: _<table_cell_name> = `_title`
         suffixes << cell.cell_name
       end
-
       # table: <table_name>_table_<type>, <table_name>_table_<table_cell_name> = `categories_table_cell`, `categories_table_title`
       # form: <form_name>_form_<type>, <form_name>_form_<field_type>, user_form_<type>_email = `user_form_field`, `user_form_string_field`, `user_form_field_email`
       styles[:specific] = build_styles_chain(table_styles[:specific], suffixes)

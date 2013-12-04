@@ -12,20 +12,30 @@ module MotionPrime
 
       # render background
       bg_color = options[:background_color]
-      if bg_color
+      border_width = options[:layer].try(:[], :border_width).to_f
+      border_color = options[:layer].try(:[], :border_color) || bg_color || :black
+      if bg_color || border_width > 0
         rect = CGRectMake(
-          computed_left, computed_top, computed_width, computed_height
+          computed_left, computed_top, computed_outer_width, computed_outer_height
         )
 
         if computed_options[:layer] && radius = options[:layer][:corner_radius]
           bezierPath = UIBezierPath.bezierPathWithRoundedRect rect, cornerRadius: radius
           context = UIGraphicsGetCurrentContext()
-          CGContextSetStrokeColorWithColor(context, bg_color.uicolor.cgcolor)
-          CGContextSetFillColorWithColor(context, bg_color.uicolor.cgcolor)
+          if bg_color
+            CGContextSetFillColorWithColor(context, bg_color.uicolor.cgcolor)
+            if border_width.zero?
+              border_width = 1
+              border_color = bg_color
+            end
+          end
+          CGContextSetLineWidth(context, border_width)
+          CGContextSetStrokeColorWithColor(context, border_color.uicolor.cgcolor)
           bezierPath.stroke
           bezierPath.fill
         else
-          bg_color.uicolor.setFill
+          bg_color.uicolor.setFill if bg_color
+          border_color_color.uicolor.setStroke if border_color
           UIRectFill(rect)
         end
       end

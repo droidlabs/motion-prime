@@ -48,8 +48,8 @@ module MotionPrime
         layer.frame = CGRectMake(0, 0, image.size.width, image.size.height)
         layer.contents = image.CGImage
 
+        layer.masksToBounds = computed_options[:layer][:masks_to_bounds] || computed_options[:clips_to_bounds]
         if radius = computed_options[:layer][:corner_radius]
-          layer.masksToBounds = true
           k = image.size.width / rect.size.width
           radius = radius * k
           layer.cornerRadius = radius
