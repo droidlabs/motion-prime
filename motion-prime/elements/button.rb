@@ -1,7 +1,7 @@
 module MotionPrime
   class ButtonElement < BaseElement
     include MotionPrime::ElementContentPaddingMixin
-    include MotionPrime::ElementFieldDimensionsMixin
+    include MotionPrime::ElementContentTextMixin
 
     after_render :size_to_fit
 

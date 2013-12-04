@@ -1,7 +1,7 @@
 module MotionPrime
   class LabelElement < BaseElement
     include MotionPrime::ElementContentPaddingMixin
-    include MotionPrime::ElementTextDimensionsMixin
+    include MotionPrime::ElementContentTextMixin
 
     before_render :size_to_fit_if_needed
     after_render :size_to_fit

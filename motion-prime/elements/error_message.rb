@@ -2,7 +2,7 @@ motion_require './label'
 module MotionPrime
   class ErrorMessageElement < LabelElement
     include MotionPrime::ElementContentPaddingMixin
-    include MotionPrime::ElementTextDimensionsMixin
+    include MotionPrime::ElementContentTextMixin
 
     def view_class
       "MPLabel"
