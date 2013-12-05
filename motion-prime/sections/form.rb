@@ -170,7 +170,7 @@ module MotionPrime
       on_input_return(text_field)
     end
     def textFieldShouldBeginEditing(text_field)
-      text_field.respond_to?(:readonly) ? text_field.readonly : true
+      text_field.respond_to?(:readonly) ? !text_field.readonly : true
     end
     def textFieldDidBeginEditing(text_field)
       on_input_edit(text_field)
