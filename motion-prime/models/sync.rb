@@ -38,6 +38,9 @@ module MotionPrime
         should_fetch
       end
 
+      should_fetch = persisted? if should_fetch.nil?
+      should_update ||= new_record? unless should_fetch
+
       method = sync_options[:method]
       method ||= if should_update
         persisted? ? :put : :post
@@ -50,9 +53,6 @@ module MotionPrime
         should_fetch = false
         should_update = false
       end
-
-      should_fetch = !new_record? if should_fetch.nil?
-      should_update ||= new_record? unless should_fetch
 
       fetch_with_url url do |data, status_code|
         save if sync_options[:save]

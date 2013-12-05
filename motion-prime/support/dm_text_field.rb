@@ -4,7 +4,7 @@
 class DMTextField < UITextField
   include MotionPrime::SupportKeyValueStore
   include MotionPrime::SupportPaddingAttribute
-  attr_accessor :placeholderColor, :placeholderFont
+  attr_accessor :placeholderColor, :placeholderFont, :readonly
 
   # placeholder position
   def textRectForBounds(bounds)

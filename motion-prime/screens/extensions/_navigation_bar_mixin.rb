@@ -32,6 +32,13 @@ module MotionPrime
       end
     end
 
+    def set_navigation_right_image(args = {})
+      url = args.delete(:url)
+      view = add_view(UIImageView, args)
+      view.setImageWithURL NSURL.URLWithString(url), placeholderImage: nil
+      navigationItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithCustomView(view)
+    end
+
     def create_navigation_button(title, args = {})
       args[:style]  ||= UIBarButtonItemStylePlain
       args[:target] ||= self
