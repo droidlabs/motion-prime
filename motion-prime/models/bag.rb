@@ -50,7 +50,7 @@ module MotionPrime
         object.map { |entity| prepare_for_store(entity) }.compact
       else
         object.bag_key = self.key
-        if object.id.present? && self.store && self.find(id: object.id).any?
+        if object.id.present? && self.store && self.find(id: object.id, bag_key: self.key).any?
           raise StoreError, "duplicated item added `#{object.class_name_without_kvo}` with `id` = #{object.id}"
         end
         object

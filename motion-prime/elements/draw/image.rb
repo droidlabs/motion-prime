@@ -1,15 +1,23 @@
 motion_require '../draw.rb'
 module MotionPrime
   class ImageDrawElement < DrawElement
+    include DrawBackgroundMixin
     attr_accessor :image_data
+
     def draw_in(rect)
       return if computed_options[:hidden]
+      options = computed_options
       image_rect = CGRectMake(
         computed_left,
         computed_top,
         computed_width,
         computed_height
       )
+
+      border_width = options[:layer].try(:[], :border_width).to_f
+      background_rect = CGRectInset(image_rect, -border_width*0.5, -border_width*0.5)
+      draw_background_in(background_rect, options)
+
       # draw already initialized image
       if image_data
         draw_with_layer(image_data, image_rect)

@@ -1,44 +1,22 @@
 motion_require '../draw.rb'
 module MotionPrime
   class LabelDrawElement < DrawElement
-    include MotionPrime::ElementContentPaddingMixin
-    include MotionPrime::ElementContentTextMixin
+    include ElementContentTextMixin
+    include DrawBackgroundMixin
+
+    def default_padding_for(side)
+      return super unless side.to_s == 'top'
+      @padding_top || 0
+    end
 
     def draw_in(rect)
+      return if computed_options[:hidden]
+      size_to_fit_if_needed or set_text_position
       options = computed_options
-      return if options[:hidden]
 
-      size_to_fit_if_needed
-
-      # render background
-      bg_color = options[:background_color]
-      border_width = options[:layer].try(:[], :border_width).to_f
-      border_color = options[:layer].try(:[], :border_color) || bg_color || :black
-      if bg_color || border_width > 0
-        rect = CGRectMake(
-          computed_left, computed_top, computed_outer_width, computed_outer_height
-        )
-
-        if computed_options[:layer] && radius = options[:layer][:corner_radius]
-          bezierPath = UIBezierPath.bezierPathWithRoundedRect rect, cornerRadius: radius
-          context = UIGraphicsGetCurrentContext()
-          if bg_color
-            CGContextSetFillColorWithColor(context, bg_color.uicolor.cgcolor)
-            if border_width.zero?
-              border_width = 1
-              border_color = bg_color
-            end
-          end
-          CGContextSetLineWidth(context, border_width)
-          CGContextSetStrokeColorWithColor(context, border_color.uicolor.cgcolor)
-          bezierPath.stroke
-          bezierPath.fill
-        else
-          bg_color.uicolor.setFill if bg_color
-          border_color_color.uicolor.setStroke if border_color
-          UIRectFill(rect)
-        end
-      end
+      # render background and border
+      background_rect = CGRectMake(computed_left, computed_top, computed_outer_width, computed_outer_height)
+      draw_background_in(background_rect, options)
 
       # render text
       color = (options[:text_color] || :black).uicolor
@@ -64,10 +42,11 @@ module MotionPrime
         attributes[NSForegroundColorAttributeName] = color
         attributes[NSFontAttributeName] = font
 
-        label_text = NSAttributedString.alloc.initWithString(label_text, attributes: attributes)
+        label_text = NSMutableAttributedString.alloc.initWithString(label_text, attributes: attributes)
         if underline_range = options[:underline]
-          label_text = NSMutableAttributedString.alloc.initWithAttributedString(label_text)
-          label_text.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
+          # FIXME
+          # label_text = NSMutableAttributedString.alloc.initWithAttributedString(label_text)
+          # label_text.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
         end
 
         rect ? label_text.drawInRect(rect) : label_text.drawAtPoint(top_left_corner)
@@ -92,11 +71,14 @@ module MotionPrime
           @computed_options[:height] = content_outer_height
         end
         reset_computed_values
+        true
       end
     end
 
-    def default_padding_for(side)
-      0
+    def set_text_position
+      if computed_options.slice(:padding_top, :padding_bottom, :padding).none?
+        computed_options[:width] ||= computed_width
+      end
     end
   end
 end
