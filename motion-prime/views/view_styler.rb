@@ -1,6 +1,7 @@
 module MotionPrime
   class ViewStyler
     include FrameCalculatorMixin
+    include HasStyles
 
     attr_reader :view, :options
 
@@ -41,6 +42,7 @@ module MotionPrime
     def setValue(value, forUndefinedKey: key)
       # return if value.nil?
       # ignore options
+      return if options[:section].is_a?(DrawSection) && %w[gradient].include?(key.to_s)
       return if key == 'size_to_fit' && view.is_a?(UILabel)
       return if (key == 'url' || key == 'default') && view.is_a?(UIImageView)
       return if %w[
@@ -126,10 +128,7 @@ module MotionPrime
           view.attributedText = attributedString
         end
       elsif key == 'gradient'
-        gradient = CAGradientLayer.layer
-        gradient.frame = CGRectMake(value[:frame_x].to_f, value[:frame_y].to_f, value[:frame_width].to_f, value[:frame_height].to_f)
-        gradient.colors = value[:colors].map(&:uicolor).map(&:cgcolor)
-        gradient.locations = value[:locations] if value[:locations]
+        gradient = prepare_gradient(value)
         view.layer.insertSublayer(gradient, atIndex: 0)
       elsif value.is_a?(Hash)
         self.class.new(view.send(key.camelize(:lower).to_sym), nil, value.merge(parent_frame: options[:frame] || options[:parent_frame])).apply
