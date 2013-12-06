@@ -27,7 +27,7 @@ module MotionPrime
 
     def render!
       options = view_style_options
-      options.merge!(section: WeakRef.new(self), background_color: :clear, section_name: name)
+      options.merge!(section: WeakRef.new(self), background_color: :clear)
 
       if container_options[:as].to_s == 'cell'
         @container_view = screen.add_view DMCellWithSection, options.merge({
