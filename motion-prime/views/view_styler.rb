@@ -46,6 +46,7 @@ module MotionPrime
       return if key == 'size_to_fit' && view.is_a?(UILabel)
       return if (key == 'url' || key == 'default') && view.is_a?(UIImageView)
       return if %w[
+        styles
         width height top right bottom left value_type
         max_width max_outer_width min_width min_outer_width
         max_height max_outer_height min_height min_outer_width

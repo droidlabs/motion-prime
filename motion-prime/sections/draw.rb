@@ -26,19 +26,21 @@ module MotionPrime
     end
 
     def render!
+      options = view_style_options
+      options.merge!(section: WeakRef.new(self), background_color: :clear, section_name: name)
+
       if container_options[:as].to_s == 'cell'
-        @container_view = screen.add_view DMCellWithSection, {
-          section: self, background_color: :clear, styles: container_options[:styles],
-          reuse_identifier: container_options[:reuse_identifier]
-        }
+        @container_view = screen.add_view DMCellWithSection, options.merge({
+          reuse_identifier: container_options[:reuse_identifier],
+          parent_view: (table if respond_to?(:table))
+        })
       else
-        @container_view = screen.add_view DMViewWithSection, {
-          section: self, background_color: :clear, styles: container_options[:styles],
-          width: container_options[:width] || 320,
+        @container_view = screen.add_view DMViewWithSection, options.merge({
+          width: container_options[:width] || 320, # TODO: remove these options (use styles)
           height: container_options[:height] || 100,
           top: container_options[:top] || 0,
           left: container_options[:left] || 0
-        }
+        })
       end
     end
 
@@ -62,9 +64,16 @@ module MotionPrime
       end
     end
 
+    def view_style_options
+      @view_style_options ||= begin
+        options = Styles.for(container_options[:styles])
+        normalize_options(options)
+        options
+      end
+    end
+
     def draw_background(rect)
-      style_options = Styles.extend_and_normalize_options(styles: container_options[:styles])
-      if gradient_options = style_options[:gradient]
+      if gradient_options = view_style_options[:gradient]
         start_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMinY(rect))
         end_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect))
 
@@ -75,7 +84,7 @@ module MotionPrime
         gradient = prepare_gradient(gradient_options)
         CGContextDrawLinearGradient(context, gradient, start_point, end_point, 0)
         # CGContextRestoreGState(context)
-      elsif background_color = (container_options[:background_color] || style_options[:background_color])
+      elsif background_color = (container_options[:background_color] || view_style_options[:background_color])
         background_color.uicolor.setFill
         UIRectFill(rect)
       end
