@@ -1,4 +1,4 @@
-=== 0.3.3.beta
+=== 0.3.3
 * Screen tab bar support
 
 === 0.3.2
