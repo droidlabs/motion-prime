@@ -36,7 +36,7 @@ module MotionPrime
           if @status_for_updated == :rendered
             reload_section
           else
-            load_section
+            load_section!
             form.table_view.reloadData
           end
         end
@@ -61,7 +61,7 @@ module MotionPrime
       end
       self
     rescue
-      puts "can't focus on element #{self.class_name_without_kvo}"
+      NSLog("can't focus on element #{self.class_name_without_kvo}")
     end
 
     def blur
@@ -72,7 +72,7 @@ module MotionPrime
       end
       self
     rescue
-      puts "can't blur on element #{self.class_name_without_kvo}"
+      NSLog("can't blur on element #{self.class_name_without_kvo}")
     end
 
     def bind_text_input

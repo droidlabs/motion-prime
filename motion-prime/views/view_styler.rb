@@ -42,11 +42,11 @@ module MotionPrime
     def setValue(value, forUndefinedKey: key)
       # return if value.nil?
       # ignore options
-      return if options[:section].is_a?(DrawSection) && %w[gradient].include?(key.to_s)
+      return if key == 'section' && !view.respond_to?(:section=)
       return if key == 'size_to_fit' && view.is_a?(UILabel)
       return if (key == 'url' || key == 'default') && view.is_a?(UIImageView)
       return if %w[
-        styles
+        styles has_drawn_content
         width height top right bottom left value_type
         max_width max_outer_width min_width min_outer_width
         max_height max_outer_height min_height min_outer_width

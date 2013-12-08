@@ -8,7 +8,7 @@ class ApiClient
   def parse_json(text)
     BW::JSON.parse(text)
   rescue
-    puts "Can't parse json: #{text}"
+    NSLog("Can't parse json: #{text}")
     false
   end
 

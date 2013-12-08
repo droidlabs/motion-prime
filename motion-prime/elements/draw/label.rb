@@ -9,10 +9,19 @@ module MotionPrime
       @padding_top || 0
     end
 
+    # def content_height
+    #   200
+    # end
+
+    # def content_width
+    #   100
+    # end
+
     def draw_in(rect)
-      return if computed_options[:hidden]
       size_to_fit_if_needed or set_text_position
       options = computed_options
+
+      return if computed_options[:hidden]
 
       # render background and border
       background_rect = CGRectMake(computed_left, computed_top, computed_outer_width, computed_outer_height)
@@ -22,7 +31,7 @@ module MotionPrime
       color = (options[:text_color] || :black).uicolor
       font = (options[:font] || :system).uifont
       alignment = (options.has_key?(:text_alignment) ? options[:text_alignment] : :left).uitextalignment
-      line_break_mode = (options.has_key?(:line_break_mode) ? options[:line_break_mode] : :wordwrap).uilinebreakmode
+      line_break_mode = (options.has_key?(:line_break_mode) ? options[:line_break_mode] : :tailtruncation).uilinebreakmode
       label_text = options[:text].to_s
 
       top_left_corner = CGPointMake(computed_inner_left, computed_inner_top)
@@ -66,9 +75,9 @@ module MotionPrime
 
     def size_to_fit_if_needed
       if computed_options[:size_to_fit]
-        @computed_options[:width] ||= content_outer_width
+        computed_options[:width] ||= content_outer_width
         if computed_options[:width]
-          @computed_options[:height] = content_outer_height
+          computed_options[:height] ||= content_outer_height
         end
         reset_computed_values
         true

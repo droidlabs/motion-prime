@@ -101,6 +101,10 @@ module MotionPrime
           },
           'UITableViewCell' => Proc.new{|klass, options|
             style = options.delete(:style) || UITableViewCellStyleDefault
+            if options[:has_drawn_content]
+              options[:background_color] = :clear
+              options.delete(:gradient)
+            end
             klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
           },
           'UISearchBar' => Proc.new{|klass, options|

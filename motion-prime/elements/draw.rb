@@ -47,13 +47,18 @@ module MotionPrime
     def computed_right; computed_left + computed_width end
     def computed_inner_right; computed_right - content_padding_right end
 
-
-    def reset_computed_values
-      @computed_frame = nil
+    def bind_gesture(action, receiver = nil)
+      section.bind_gesture_on_container_for(self, action, receiver)
     end
+
+    private
+      def reset_computed_values
+        @computed_frame = nil
+      end
 
     class << self
       def factory(type, options = {})
+        return unless %w[View Label Image].include?(type.classify)
         class_name = "#{type.classify}DrawElement"
         "MotionPrime::#{class_name}".constantize.new(options)
       end

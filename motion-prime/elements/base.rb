@@ -20,7 +20,7 @@ module MotionPrime
       @name = options[:name]
       @block = options[:block]
       @view_class = options[:view_class] || "UIView"
-      @view_name = self.class_name_without_kvo.demodulize.underscore.gsub('_element', '')
+      @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
     end
 
     def render(options = {}, &block)
@@ -31,8 +31,10 @@ module MotionPrime
     end
 
     def render!(&block)
-      @view = screen.add_view view_class.constantize, computed_options, &block
-      @view
+      screen.add_view view_class.constantize, computed_options do |view|
+        @view = view
+        block.try(:call, view, self)
+      end
     end
 
     # Lazy-computing options
@@ -45,7 +47,7 @@ module MotionPrime
       @computed_options ||= {}
       block_options = compute_block_options || {}
       compute_style_options(options, block_options)
-      @computed_options.merge!(options.except(:section, :name, :block, :view_class))
+      @computed_options.merge!(options.except(:name, :block, :view_class))
       @computed_options.merge!(block_options)
       normalize_options(@computed_options, section, %w[text placeholder font title_label padding padding_left padding_right min_width min_outer_width max_width max_outer_width width left right])
     end
@@ -141,6 +143,13 @@ module MotionPrime
 
     def show
       view.hidden = false
+    end
+
+    def bind_gesture(action, receiver = nil)
+      receiver ||= self
+      single_tap = UITapGestureRecognizer.alloc.initWithTarget(receiver, action: action)
+      view.addGestureRecognizer single_tap
+      view.setUserInteractionEnabled true
     end
 
     class << self

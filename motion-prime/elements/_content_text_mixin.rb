@@ -9,18 +9,22 @@ module MotionPrime
     end
 
     def content_width
-      min, max = computed_options[:min_width].to_f, computed_options[:max_width]
-      return min if content_text.blank?
+      @content_width ||= begin
+        min, max = computed_options[:min_width].to_f, computed_options[:max_width]
+        return min if content_text.blank?
 
-      rect = get_content_rect(Float::MAX)
-      [[rect.size.width.ceil, max].compact.min, min].max.ceil
+        rect = get_content_rect(Float::MAX)
+        [[rect.size.width.ceil, max].compact.min, min].max.ceil
+      end
     end
 
     def content_height
-      min, max = computed_options[:min_height].to_f, computed_options[:max_height]
-      return min if content_text.blank?
-      rect = get_content_rect(computed_options[:width])
-      [[rect.size.height.ceil, max].compact.min, min].max.ceil
+      @content_height ||= begin
+        min, max = computed_options[:min_height].to_f, computed_options[:max_height]
+        return min if content_text.blank?
+        rect = get_content_rect(computed_options[:width])
+        [[rect.size.height.ceil, max].compact.min, min].max.ceil
+      end
     end
 
     private

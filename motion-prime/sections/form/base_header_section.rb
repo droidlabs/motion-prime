@@ -1,7 +1,6 @@
 motion_require '../table/base_cell_section'
 module MotionPrime
   class BaseHeaderSection < BaseCellSection
-    include CellSection
     DEFAULT_HEADER_HEIGHT = 20
 
     element :title, text: proc { @options[:title] }

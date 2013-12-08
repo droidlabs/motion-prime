@@ -31,7 +31,7 @@ module MotionPrime
         if has_attribute?(k)
           assign_attribute(k, v) unless options[:skip_nil_values] && v.nil?
         elsif options[:check_attribute_presence]
-          puts "unknown attribute: #{k}"
+          NSLog("unknown attribute: #{k}")
         else
           raise(NoMethodError, "unknown attribute: #{k}")
         end

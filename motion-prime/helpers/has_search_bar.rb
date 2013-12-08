@@ -16,7 +16,7 @@ module MotionPrime
       @search_callback = block
       search_bar
     rescue
-      puts "can't add search bar to #{self.class_name_without_kvo}"
+      NSLog("can't add search bar to #{self.class_name_without_kvo}")
     end
 
     def create_search_bar(options = {})

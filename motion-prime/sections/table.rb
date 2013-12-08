@@ -5,6 +5,7 @@ module MotionPrime
     include HasStyleChainBuilder
     include HasSearchBar
 
+    class_attribute :async_data_options
     attr_accessor :table_element, :did_appear
     before_render :render_table
 
@@ -12,42 +13,38 @@ module MotionPrime
       []
     end
 
+    def async_data?
+      self.class.async_data_options
+    end
+
     def data
-      @data ||= table_data.tap { |cells| set_cells_table(cells) }
+      @data || set_table_data
     end
 
-    def set_cells_table(cells)
-      cells.each { |cell| cell.table = self if cell.respond_to?(:table=) }
-    end
-
-    def data_stamp_for(id)
-      @data_stamp[id]
-    end
-
-    def set_data_stamp(cell_ids)
-      @data_stamp ||= {}
-      [*cell_ids].each { |id| @data_stamp[id] = Time.now.to_f }
-    end
-
-    def reset_data_stamps
-      keys = data.each_with_index.map do |row, id|
-        if row.is_a?(Array)
-          section = id
-          rows = (0...row.count)
-        else
-          section = 0
-          rows = [id]
-        end
-        rows.map { |row| "#{section}_#{row}" }
-      end.flatten
-      set_data_stamp(keys)
+    def set_table_data
+      cells = async_data? ? load_sections_async : table_data
+      set_cells_table(cells)
+      @data = cells
+      reset_data_stamps
+      load_sections unless async_data?
+      @data
     end
 
     def reload_data
+      reset_data
+      table_view.reloadData
+    end
+
+    def refresh_if_needed
+      table_view.reloadData if @data.nil?
+    end
+
+    def reset_data
       @did_appear = false
       @data = nil
-      reset_data_stamps
-      table_view.reloadData
+      @async_loaded_data = nil
+      @loaded_cell_index = nil
+      @data_stamp = nil
     end
 
     def table_styles
@@ -104,13 +101,16 @@ module MotionPrime
     end
 
     def render_table
-      reset_data_stamps
+      # reset_data_stamps
       options = {
         styles: table_styles.values.flatten,
         delegate: self,
         data_source: self,
         style: (UITableViewStyleGrouped unless flat_data?)
       }
+      if async_data? && self.class.async_data_options.has_key?(:estimated_row_height)
+        options[:estimated_row_height] = self.class.async_data_options[:estimated_row_height]
+      end
       self.table_element = screen.table_view(options)
     end
 
@@ -126,10 +126,6 @@ module MotionPrime
       table_view.try(:show)
     end
 
-    def numberOfSectionsInTableView(tableView)
-      number_of_sections
-    end
-
     def number_of_sections
       has_many_sections? ? data.count : 1
     end
@@ -142,44 +138,23 @@ module MotionPrime
       rows_for_section(index.section)[index.row]
     end
 
-
     def render_cell(index, table)
       item = row_by_index(index)
 
-      # DrawSection allows as to draw inside the cell view, so we can setup
-      # to use cell view as container
-      if item.is_a?(MotionPrime::DrawSection)
-        item.render(to: screen, as: :cell,
-          styles: cell_styles(item).values.flatten,
-          reuse_identifier: cell_name(table, index)
-        )
-      else
-        screen.table_view_cell section: item, reuse_identifier: cell_name(table, index), parent_view: table_view do
-          item.render(to: screen)
-        end
+      screen.table_view_cell section: item, reuse_identifier: cell_name(table, index), parent_view: table_view, has_drawn_content: true do |container_view, container_element|
+        # DrawSection allows as to draw inside the cell view, so we can setup
+        # to use cell view as container
+        item.container_element = container_element
+        item.render(to: screen)
       end
     end
 
-    def on_click(table, index)
-    end
-
-    def on_appear; end
     def on_row_render(cell, index); end
+    def on_appear; end
+    def on_click(table, index); end
 
-    def cell_name(table, index)
-      record = row_by_index(index)
-      if record && record.model &&
-         record.model.respond_to?(:id) && record.model.id.present?
-        "cell_#{record.model.id}_#{data_stamp_for("#{index.section}_#{index.row}")}"
-      else
-        "cell_#{index.section}_#{index.row}_#{data_stamp_for("#{index.section}_#{index.row}")}"
-      end
-    end
-
-    def cached_cell(index, table = nil)
-      table ||= self.table_view
-      table.dequeueReusableCellWithIdentifier(cell_name(table, index))
-    end
+    # ALIASES
+    # ---------------------
 
     # def tableView(table, viewForFooterInSection: section) # cause bug in ios7.0.0-7.0.2
     #   UIView.new
@@ -188,8 +163,9 @@ module MotionPrime
     #   0.1
     # end
 
-    # ALIASES
-    # ---------------------
+    def numberOfSectionsInTableView(tableView)
+      number_of_sections
+    end
 
     def tableView(table, cellForRowAtIndexPath:index)
       @rendered_cells ||= []
@@ -198,6 +174,8 @@ module MotionPrime
       cell = cached_cell(index, table) || render_cell(index, table).tap do |cell|
         @rendered_cells[index.section][index.row] = cell
         on_row_render(cell, index)
+
+        preload_sections_for(index)
       end
 
       # run table view is appeared callback if needed
@@ -215,8 +193,14 @@ module MotionPrime
       on_click(table, index)
     end
 
-    def tableView(table, heightForRowAtIndexPath:index)
-      rows_for_section(index.section)[index.row].container_height
+    def tableView(table, heightForRowAtIndexPath: index)
+      # pp 'loading height for', index
+      load_cell_by_index(index)
+      cell = rows_for_section(index.section)[index.row]
+      # puts "req h for #{index}"
+      a = cell.container_height
+      # puts 'done'
+      a
     end
 
     def flat_data?
@@ -226,5 +210,109 @@ module MotionPrime
     def rows_for_section(section)
       flat_data? ? data : data[section]
     end
+
+    def self.async_table_data(options = {})
+      self.async_data_options = options
+    end
+
+    private
+      def load_sections_async
+        @async_loaded_data || begin
+          # NSLog("Loading async #{self.class.name}" + Time.now.to_f.to_s)
+          BW::Reactor.schedule_on_main do
+            @async_loaded_data = table_data
+            @data = nil
+            # reset_data_stamps
+            table_view.reloadData
+          end
+          []
+        end
+      end
+
+      def cell_name(table, index)
+        record = row_by_index(index)
+        if record && record.model &&
+           record.model.respond_to?(:id) && record.model.id.present?
+          "cell_#{record.model.id}_#{data_stamp_for("#{index.section}_#{index.row}")}"
+        else
+          "cell_#{index.section}_#{index.row}_#{data_stamp_for("#{index.section}_#{index.row}")}"
+        end
+      end
+
+      def cached_cell(index, table = nil)
+        table ||= self.table_view
+        table.dequeueReusableCellWithIdentifier(cell_name(table, index))
+      end
+
+      def set_cells_table(cells)
+        cells.each { |cell| cell.table = self if cell.respond_to?(:table=) }
+      end
+
+      def load_cell_by_index(index)
+        cell = rows_for_section(index.section)[index.row]
+        return unless cell.load_section(index: index) # return if already loaded
+        if async_data?
+          @loaded_cell_index = max_index(@loaded_cell_index, index)
+          # NSLog("#{index} #{self.class.name.to_s} loaded from table #{Time.now.to_f}")
+        end
+      end
+
+      def max_index(*indexes)
+        [*indexes].compact.max { |a, b| (a.section <=> b.section) + (a.row <=> b.row) }
+      end
+
+      def data_stamp_for(id)
+        @data_stamp[id]
+      end
+
+      def set_data_stamp(cell_ids)
+        @data_stamp ||= {}
+        [*cell_ids].each { |id| @data_stamp[id] = Time.now.to_f }
+      end
+
+      def reset_data_stamps
+        keys = @data.each_with_index.map do |row, id|
+          if row.is_a?(Array)
+            section = id
+            rows = (0...row.count)
+          else
+            section = 0
+            rows = [id]
+          end
+          rows.map { |row| "#{section}_#{row}" }
+        end.flatten
+        set_data_stamp(keys)
+      end
+
+      def load_sections
+        return if async_data?
+        # NSLog("#{self.class.name} loading all")
+        if flat_data?
+          data.each(&:load_section)
+        else
+          data.count.times { |section_data| section_data.each(&:load_section) }
+        end
+      end
+
+      def preload_sections_for(index)
+        return unless async_data?
+        preload_rows_count = self.class.async_data_options.try(:[], :preload_rows_count)
+        return unless @loaded_cell_index == NSIndexPath.indexPathForRow(index.row + 1, inSection: index.section)
+
+        section = @loaded_cell_index.section
+        next_row = @loaded_cell_index.row + 1
+
+        BW::Reactor.schedule do
+          left_to_load = rows_for_section(section).count - next_row
+
+          NSLog("#{self.class.name} preloading from #{next_row}, cnt: #{[left_to_load, preload_rows_count].compact.min}")
+          [left_to_load, preload_rows_count].compact.min.times do |offset|
+            new_index = NSIndexPath.indexPathForRow(next_row + offset, inSection: section)
+            load_cell_by_index(new_index)
+          end
+          @next_portion_starts_from = next_row + offset
+          @preloader_started = false
+        end
+      end
   end
 end

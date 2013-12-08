@@ -57,8 +57,8 @@ module MotionPrime
 
     def render_cell(index, table)
       field = rows_for_section(index.section)[index.row]
-      screen.table_view_cell section: field, reuse_identifier: cell_name(table, index), parent_view: table_view do |cell_view|
-        field.cell_view = cell_view if field.respond_to?(:cell_view)
+      screen.table_view_cell section: field, reuse_identifier: cell_name(table, index), parent_view: table_view do |container_view, container_element|
+        field.container_element = container_element
         field.render(to: screen)
       end
     end
@@ -67,12 +67,19 @@ module MotionPrime
       field = section.name.to_sym
       index = field_indexes[field].split('_').map(&:to_i)
       path = NSIndexPath.indexPathForRow(index.last, inSection: index.first)
-      table_view.beginUpdates
       section.cell.try(:removeFromSuperview)
 
       fields[field] = load_field(self.class.fields_options[field])
-      @data = nil
+      fields[field].load_section
+      if flat_data?
+        @data[path.row] = fields[field]
+      else
+        @data[path.section][path.row] = fields[field]
+      end
+
       set_data_stamp(field_indexes[field])
+
+      table_view.beginUpdates
       table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
       table_view.endUpdates
     end
@@ -226,8 +233,8 @@ module MotionPrime
     def tableView(table, viewForHeaderInSection: section)
       return unless header = header_for_section(section)
       wrapper = MotionPrime::BaseElement.factory(:view, styles: cell_styles(header).values.flatten, parent_view: table_view)
-      wrapper.render(to: screen) do |cell_view|
-        header.cell_view = cell_view if header.respond_to?(:cell_view)
+      wrapper.render(to: screen) do |container_view, container_element|
+        header.container_element = container_element
         header.render(to: screen)
       end
     end
