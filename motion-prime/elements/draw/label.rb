@@ -9,14 +9,6 @@ module MotionPrime
       @padding_top || 0
     end
 
-    # def content_height
-    #   200
-    # end
-
-    # def content_width
-    #   100
-    # end
-
     def draw_in(rect)
       size_to_fit_if_needed or set_text_position
       options = computed_options
@@ -75,9 +67,9 @@ module MotionPrime
 
     def size_to_fit_if_needed
       if computed_options[:size_to_fit]
-        computed_options[:width] ||= content_outer_width
+        computed_options[:width] ||= cached_content_outer_width
         if computed_options[:width]
-          computed_options[:height] ||= content_outer_height
+          computed_options[:height] ||= cached_content_outer_height
         end
         reset_computed_values
         true
@@ -87,7 +79,7 @@ module MotionPrime
     def set_text_position
       if computed_options.slice(:padding_top, :padding_bottom, :padding).none?
         computed_options[:width] ||= computed_width
-        @padding_top = (computed_outer_height - content_height)/2
+        @padding_top = (computed_outer_height - cached_content_height)/2
         # @padding_top += 1 unless @padding_top.zero?
       end
     end

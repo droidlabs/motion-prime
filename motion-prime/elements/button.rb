@@ -8,7 +8,7 @@ module MotionPrime
     def size_to_fit
       if computed_options[:size_to_fit] || style_options[:size_to_fit]
         if computed_options[:width]
-          view.setHeight content_outer_height
+          view.setHeight cached_content_outer_height
         end
       end
     end

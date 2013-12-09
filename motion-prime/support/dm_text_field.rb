@@ -6,6 +6,15 @@ class DMTextField < UITextField
   include MotionPrime::SupportPaddingAttribute
   attr_accessor :placeholderColor, :placeholderFont, :readonly
 
+
+  def self.default_padding_left
+    5
+  end
+
+  def self.default_padding_right
+    5
+  end
+
   # placeholder position
   def textRectForBounds(bounds)
     calculate_rect_for(bounds)
@@ -28,14 +37,6 @@ class DMTextField < UITextField
       single_line_height = self.font.pointSize
       (self.bounds.size.height - single_line_height)/2 + 1
     end
-  end
-
-  def self.default_padding_left
-    5
-  end
-
-  def self.default_padding_right
-    5
   end
 
   private

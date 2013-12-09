@@ -13,7 +13,7 @@ module MotionPrime
     def size_to_fit
       if computed_options[:size_to_fit] || style_options[:size_to_fit]
         if computed_options[:width]
-          view.setHeight([content_outer_height, computed_options[:height]].compact.min)
+          view.setHeight([cached_content_outer_height, computed_options[:height]].compact.min)
         else
           view.sizeToFit
           # we should re-set values, because sizeToFit do not use padding
@@ -25,7 +25,7 @@ module MotionPrime
 
     def size_to_fit_if_needed
       if computed_options[:size_to_fit] && computed_options[:width]
-        @computed_options[:height_to_fit] = content_outer_height
+        @computed_options[:height_to_fit] = cached_content_outer_height
       end
     end
   end

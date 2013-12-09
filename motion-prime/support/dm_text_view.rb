@@ -3,22 +3,24 @@
 # * support placeholder, placeholder_color, placeholder_font options
 class DMTextView < UITextView
   include MotionPrime::SupportKeyValueStore
-  DEFAULT_PADDING_LEFT = 7
+  include MotionPrime::SupportPaddingAttribute
+  attr_accessor :placeholderColor, :placeholderFont, :placeholder
 
-  attr_accessor :paddingLeft, :paddingTop, :padding,
-    :placeholderColor, :placeholderFont, :placeholder
+  def self.default_padding_left
+    5
+  end
 
-  def padding_top
-    paddingTop || padding || paddingLeft || 5
+  def self.default_padding_right
+    5
   end
 
   def drawPadding(rect)
     # add padding to UITextView
-    padding_left = (self.paddingLeft || self.padding || 5) - 5
+    padding_left = self.padding_left - 5
     padding_top = self.padding_top - 8
     padding = UIEdgeInsetsMake(
       padding_top, padding_left,
-      padding_top, padding_left
+      padding_bottom, padding_right
     )
     self.contentInset = padding
 
@@ -33,10 +35,9 @@ class DMTextView < UITextView
   end
 
   def drawPlaceholder(rect)
-    padding_left = self.paddingLeft || self.padding || 5
     padding = UIEdgeInsetsMake(
       padding_top, padding_left,
-      padding_top, padding_left
+      padding_bottom, padding_right
     )
     if self.placeholder && self.text.blank?
       color = self.placeholderColor || :gray.uicolor

@@ -32,14 +32,22 @@ module MotionPrime
       content_padding_left + content_padding_right
     end
 
-    def content_outer_height
-      height = content_padding_height + content_height
+    def content_outer_height(cached = false)
+      height = content_padding_height + (cached ? cached_content_height : content_height)
       [[height, computed_options[:min_outer_height]].compact.max, computed_options[:max_outer_height]].compact.min
     end
 
-    def content_outer_width
-      width = content_padding_width + content_width
+    def cached_content_outer_height
+      content_outer_height(true)
+    end
+
+    def content_outer_width(cached = false)
+      width = content_padding_width + (cached ? cached_content_width : content_width)
       [[width, computed_options[:min_outer_width]].compact.max, computed_options[:max_outer_width]].compact.min
+    end
+
+    def cached_content_outer_width
+      content_outer_width(true)
     end
 
     def default_padding_for(side)

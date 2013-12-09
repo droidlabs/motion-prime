@@ -50,20 +50,15 @@ module MotionPrime
       self.class.elements_options || {}
     end
 
-    def load_section(opts = {})
+    def load_section
       return if @section_loaded
       if @section_loading
-        return @section_loaded ? false : sleep(0.5)
+        sleep 0.1
+        return @section_loaded ? false : load_section
       end
-
       @section_loading = true
-
-      t1 = Time.now.to_f
       create_elements
-      self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
-      self.elements.values.each(&:computed_options)
-
-      NSLog("#{self.class.name} section loaded #{Time.now.to_f - t1} #{opts[:index].inspect}")
+      @section_loading = false
       return @section_loaded = true
     end
 
@@ -84,6 +79,13 @@ module MotionPrime
       self.elements = {}
       elements_options.each do |key, opts|
         add_element(key, opts)
+      end
+      self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
+    end
+
+    def load_elements
+      self.elements.values.each do |element|
+        element.computed_options if element.respond_to?(:computed_options)
       end
     end
 
@@ -119,10 +121,10 @@ module MotionPrime
     end
 
     def render(container_options = {})
+      self.screen = container_options.delete(:to)
+      self.container_options.merge!(container_options)
       load_section
 
-      self.container_options.merge!(container_options)
-      self.screen = container_options.delete(:to)
       run_callbacks :render do
         render!
       end

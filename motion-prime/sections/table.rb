@@ -21,15 +21,6 @@ module MotionPrime
       @data || set_table_data
     end
 
-    def set_table_data
-      cells = async_data? ? load_sections_async : table_data
-      set_cells_table(cells)
-      @data = cells
-      reset_data_stamps
-      load_sections unless async_data?
-      @data
-    end
-
     def reload_data
       reset_data
       table_view.reloadData
@@ -43,7 +34,7 @@ module MotionPrime
       @did_appear = false
       @data = nil
       @async_loaded_data = nil
-      @loaded_cell_index = nil
+      @next_portion_starts_from = nil
       @data_stamp = nil
     end
 
@@ -101,7 +92,6 @@ module MotionPrime
     end
 
     def render_table
-      # reset_data_stamps
       options = {
         styles: table_styles.values.flatten,
         delegate: self,
@@ -194,13 +184,9 @@ module MotionPrime
     end
 
     def tableView(table, heightForRowAtIndexPath: index)
-      # pp 'loading height for', index
       load_cell_by_index(index)
       cell = rows_for_section(index.section)[index.row]
-      # puts "req h for #{index}"
-      a = cell.container_height
-      # puts 'done'
-      a
+      cell.container_height
     end
 
     def flat_data?
@@ -215,15 +201,25 @@ module MotionPrime
       self.async_data_options = options
     end
 
+    def on_data_loaded; end
+
     private
+      def set_table_data
+        cells = async_data? ? load_sections_async : table_data
+        set_cells_table(cells)
+        @data = cells
+        reset_data_stamps
+        load_sections unless async_data?
+        @data
+      end
+
       def load_sections_async
         @async_loaded_data || begin
-          # NSLog("Loading async #{self.class.name}" + Time.now.to_f.to_s)
           BW::Reactor.schedule_on_main do
             @async_loaded_data = table_data
             @data = nil
-            # reset_data_stamps
             table_view.reloadData
+            on_data_loaded
           end
           []
         end
@@ -250,15 +246,8 @@ module MotionPrime
 
       def load_cell_by_index(index)
         cell = rows_for_section(index.section)[index.row]
-        return unless cell.load_section(index: index) # return if already loaded
-        if async_data?
-          @loaded_cell_index = max_index(@loaded_cell_index, index)
-          # NSLog("#{index} #{self.class.name.to_s} loaded from table #{Time.now.to_f}")
-        end
-      end
-
-      def max_index(*indexes)
-        [*indexes].compact.max { |a, b| (a.section <=> b.section) + (a.row <=> b.row) }
+        return unless cell.load_section # return if already loaded
+        cell.load_elements
       end
 
       def data_stamp_for(id)
@@ -286,7 +275,6 @@ module MotionPrime
 
       def load_sections
         return if async_data?
-        # NSLog("#{self.class.name} loading all")
         if flat_data?
           data.each(&:load_section)
         else
@@ -295,24 +283,34 @@ module MotionPrime
       end
 
       def preload_sections_for(index)
-        return unless async_data?
-        preload_rows_count = self.class.async_data_options.try(:[], :preload_rows_count)
-        return unless @loaded_cell_index == NSIndexPath.indexPathForRow(index.row + 1, inSection: index.section)
+        return if !async_data? || @next_portion_starts_from == false
+        service = index_service
 
-        section = @loaded_cell_index.section
-        next_row = @loaded_cell_index.row + 1
+        load_limit = self.class.async_data_options.try(:[], :preload_rows_count)
+        @next_portion_starts_from ||= index
+        start_preload_when_index_loaded = service.sum_index(@next_portion_starts_from, load_limit ? -load_limit/2 : 0)
 
-        BW::Reactor.schedule do
+        if service.compare_indexes(index, start_preload_when_index_loaded) >= 0
+          section = @next_portion_starts_from.section
+          next_row = @next_portion_starts_from.row
           left_to_load = rows_for_section(section).count - next_row
 
-          NSLog("#{self.class.name} preloading from #{next_row}, cnt: #{[left_to_load, preload_rows_count].compact.min}")
-          [left_to_load, preload_rows_count].compact.min.times do |offset|
-            new_index = NSIndexPath.indexPathForRow(next_row + offset, inSection: section)
-            load_cell_by_index(new_index)
+          load_count = [left_to_load, load_limit].compact.min
+
+          next_index = @next_portion_starts_from
+          BW::Reactor.schedule do
+            load_count.times do
+              load_cell_by_index(next_index)
+              next_index = service.sum_index(next_index, 1)
+            end
           end
-          @next_portion_starts_from = next_row + offset
-          @preloader_started = false
+
+          @next_portion_starts_from = service.sum_index(@next_portion_starts_from, load_count, false)
         end
+      end
+
+      def index_service
+        TableDataIndexes.new(@data)
       end
   end
 end

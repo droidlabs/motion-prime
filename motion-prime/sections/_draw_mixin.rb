@@ -64,7 +64,6 @@ module MotionPrime
           # CGContextRestoreGState(context)
         elsif background_color = options[:background_color]
           unless background_color.uicolor == :clear.uicolor
-            pp background_color
             background_color.uicolor.setFill
             UIRectFill(rect)
           end
