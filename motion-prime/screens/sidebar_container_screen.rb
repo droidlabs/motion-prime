@@ -39,7 +39,7 @@ module MotionPrime
 
     def content_controller=(c)
       controller = prepare_controller(c)
-      if content_controller.nil?
+      if should_reinit_content?(controller)
         self.setContentViewController controller
       else
         content_controller.viewControllers = [controller]
@@ -57,9 +57,15 @@ module MotionPrime
 
     private
 
+      def should_reinit_content?(new_controller)
+        content_controller.nil? || 
+        content_controller.is_a?(TabBarController) ||
+        new_controller.is_a?(TabBarController)
+      end
+
       def prepare_controller(controller)
         controller = setup_screen_for_open(controller, {})
-        if content_controller.nil?
+        if should_reinit_content?(controller)
           controller.wrap_in_navigation if controller.respond_to?(:wrap_in_navigation)
           controller.send(:on_screen_load) if controller.respond_to?(:on_screen_load)
           controller = controller.main_controller if controller.respond_to?(:main_controller)
