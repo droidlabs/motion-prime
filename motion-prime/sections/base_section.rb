@@ -236,6 +236,7 @@ module MotionPrime
     private
       def style_options
         @style_options ||= if section_styles.present?
+          # TODO: pass through normalizer?
           Styles.for(section_styles.values.flatten)
         else
           {}

@@ -16,8 +16,8 @@ module MotionPrime
 
       image_rect = CGRectInset(image_rect, -0.5, -0.5)
       border_width = options[:layer].try(:[], :border_width).to_f
-      background_rect = CGRectInset(image_rect, -(border_width - 1)*0.5, -(border_width - 1)*0.5)
-      draw_background_in(background_rect, options)
+
+      draw_background_in(image_rect, options)
 
       # draw already initialized image
       if image_data

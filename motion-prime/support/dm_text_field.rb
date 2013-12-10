@@ -4,7 +4,7 @@
 class DMTextField < UITextField
   include MotionPrime::SupportKeyValueStore
   include MotionPrime::SupportPaddingAttribute
-  attr_accessor :placeholderColor, :placeholderFont, :readonly
+  attr_accessor :placeholderColor, :placeholderFont, :readonly, :placeholderAlignment
 
 
   def self.default_padding_left
@@ -29,7 +29,11 @@ class DMTextField < UITextField
     color = self.placeholderColor || :gray.uicolor
     color.setFill
     font = self.placeholderFont || self.font || :system.uifont(16)
-    self.placeholder.drawInRect(rect, withFont: font)
+
+    truncation = :tailtruncation.uilinebreakmode
+    alignment = (placeholderAlignment || :left)
+    alignment = alignment.uitextalignment if alignment.is_a?(Symbol)
+    self.placeholder.drawInRect(rect, withFont: font, lineBreakMode: truncation, alignment: alignment)
   end
 
   def padding_top # to center title label

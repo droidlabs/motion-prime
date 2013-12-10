@@ -123,6 +123,10 @@ module MotionPrime
           attributedString = NSMutableAttributedString.alloc.initWithAttributedString(attributedString)
           attributedString.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
         end
+        if fragment_color = value[:fragment_color]
+          attributedString = NSMutableAttributedString.alloc.initWithAttributedString(attributedString)
+          attributedString.addAttributes({NSForegroundColorAttributeName => fragment_color[:color].uicolor}, range: fragment_color[:range])
+        end
         if view.is_a?(UIButton)
           view.setAttributedTitle attributedString, forState: UIControlStateNormal
         else

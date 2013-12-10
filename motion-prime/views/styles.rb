@@ -22,15 +22,13 @@ module MotionPrime
         parent = options.delete(:parent)
         namespace = options.delete(:parent_namspace) || @namespace
         parent ="#{namespace}_#{parent}".to_sym if namespace
+        mixins = Array.wrap(options.delete(:mixins)).map { |mixin_name| :"_mixin_#{mixin_name}" }
 
         names.each do |name|
           name = "#{@namespace}_#{name}".to_sym if @namespace
           @@repo[name] ||= {}
           @@repo[name].deep_merge!(self.class.for(parent)) if parent
-          mixins = Array.wrap(options.delete(:mixins)).map { |mixin_name| :"_mixin_#{mixin_name}" }
-          if mixins.present?
-            @@repo[name].deep_merge!(self.class.for(mixins))
-          end
+          @@repo[name].deep_merge!(self.class.for(mixins)) if mixins.present?
           @@repo[name].deep_merge! options
         end
       end
