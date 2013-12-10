@@ -51,6 +51,7 @@ module MotionPrime
 
       def draw_background(rect)
         options = container_element.computed_options
+
         if gradient_options = options[:gradient]
           start_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMinY(rect))
           end_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect))

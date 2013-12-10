@@ -44,8 +44,9 @@ module MotionPrime
           shorthand = "#{klass}"[2..-1].underscore.to_sym
 
           define_method(shorthand) do |options, &block|
+            options[:screen] = self
             element = MotionPrime::BaseElement.factory(shorthand, options)
-            element.render(to: self, &block)
+            element.render({}, &block)
             element
           end
         end

@@ -25,7 +25,7 @@ module MotionPrime
       screen
     end
 
-    
+
     def close_screen(args = {})
       args[:animated] = args.has_key?(:animated) ? args[:animated] : true
       # Pop current view, maybe with arguments, if in navigation controller

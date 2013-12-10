@@ -16,22 +16,8 @@ class DMTextView < UITextView
 
   def drawPadding(rect)
     # add padding to UITextView
-    padding_left = self.padding_left - 5
-    padding_top = self.padding_top - 8
-    padding = UIEdgeInsetsMake(
-      padding_top, padding_left,
-      padding_bottom, padding_right
-    )
-    self.contentInset = padding
-
-    # must change frame before bounds because the text wrap is reformatted based on frame,
-    # don't include the top and bottom insets
-    insetFrame = UIEdgeInsetsInsetRect(frame, UIEdgeInsetsMake(0, padding.left, 0, padding.right))
-    # offset frame back to original x
-    offsetX = frame.origin.x - (insetFrame.origin.x - ( padding.left + padding.right ) / 2)
-    insetFrame = CGRectApplyAffineTransform(insetFrame, CGAffineTransformMakeTranslation(offsetX, 0))
-    self.frame = insetFrame
-    self.bounds = UIEdgeInsetsInsetRect(self.bounds, UIEdgeInsetsMake(0, -padding.left, 0, -padding.right))
+    self.textContainer.lineFragmentPadding = 0 # left/right
+    self.textContainerInset = self.padding_insets
   end
 
   def drawPlaceholder(rect)

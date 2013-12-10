@@ -23,6 +23,7 @@ module MotionPrime
 
     def reload_data
       reset_data
+      @async_loaded_data = table_data if async_data?
       table_view.reloadData
     end
 
@@ -76,7 +77,7 @@ module MotionPrime
       if cell.is_a?(BaseFieldSection)
         # form cell: _<type>_<field_name> = `_field_email`
         suffixes << :"#{type}_#{cell.name}" if cell.name
-      elsif cell.respond_to?(:cell_name) # BaseCellSection
+      elsif cell.respond_to?(:cell_name) # cell section came from table
         # table cell: _<table_cell_name> = `_title`
         suffixes << cell.cell_name
       end
@@ -116,26 +117,13 @@ module MotionPrime
       table_view.try(:show)
     end
 
-    def number_of_sections
-      has_many_sections? ? data.count : 1
-    end
-
-    def has_many_sections?
-      data.any? && data.first.is_a?(Array)
-    end
-
-    def row_by_index(index)
-      rows_for_section(index.section)[index.row]
-    end
-
     def render_cell(index, table)
       item = row_by_index(index)
-
       screen.table_view_cell section: item, reuse_identifier: cell_name(table, index), parent_view: table_view, has_drawn_content: true do |container_view, container_element|
         # DrawSection allows as to draw inside the cell view, so we can setup
         # to use cell view as container
         item.container_element = container_element
-        item.render(to: screen)
+        item.render
       end
     end
 
@@ -189,8 +177,20 @@ module MotionPrime
       cell.container_height
     end
 
+    def number_of_sections
+      has_many_sections? ? data.count : 1
+    end
+
+    def has_many_sections?
+      data.any? && data.first.is_a?(Array)
+    end
+
     def flat_data?
-      number_of_sections == 1
+      !has_many_sections?
+    end
+
+    def row_by_index(index)
+      rows_for_section(index.section)[index.row]
     end
 
     def rows_for_section(section)
@@ -201,12 +201,13 @@ module MotionPrime
       self.async_data_options = options
     end
 
-    def on_data_loaded; end
+    def on_async_data_loaded; end
+    def on_async_data_preloaded(loaded_index); end
 
     private
       def set_table_data
         cells = async_data? ? load_sections_async : table_data
-        set_cells_table(cells)
+        prepare_table_cells(cells)
         @data = cells
         reset_data_stamps
         load_sections unless async_data?
@@ -219,7 +220,7 @@ module MotionPrime
             @async_loaded_data = table_data
             @data = nil
             table_view.reloadData
-            on_data_loaded
+            on_async_data_loaded
           end
           []
         end
@@ -240,8 +241,12 @@ module MotionPrime
         table.dequeueReusableCellWithIdentifier(cell_name(table, index))
       end
 
-      def set_cells_table(cells)
-        cells.each { |cell| cell.table = self if cell.respond_to?(:table=) }
+      def prepare_table_cells(cells)
+        cells.each do |cell|
+          cell.send(:extend, CellSectionMixin)
+          cell.screen = screen
+          cell.table = self if cell.respond_to?(:table=)
+        end
       end
 
       def load_cell_by_index(index)
@@ -299,10 +304,11 @@ module MotionPrime
 
           next_index = @next_portion_starts_from
           BW::Reactor.schedule do
-            load_count.times do
+            load_count.times do |offset|
               load_cell_by_index(next_index)
-              next_index = service.sum_index(next_index, 1)
+              next_index = service.sum_index(next_index, 1) unless offset == load_count - 1
             end
+            on_async_data_preloaded(next_index)
           end
 
           @next_portion_starts_from = service.sum_index(@next_portion_starts_from, load_count, false)

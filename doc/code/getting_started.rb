@@ -21,13 +21,14 @@ end
 # **3. Create the main screen.**
 #
 # You should rewrite the `render` method, which will be runned after opening screen.
+# Note: you must always pass `screen` option, which points to screen to render
 
 class MainScreen < Prime::BaseScreen
   title 'Main screen'
 
   def render
-    @main_section = MyProfileSection.new(model: User.first)
-    @main_section.render(to: self)
+    @main_section = MyProfileSection.new(screen: self, model: User.first)
+    @main_section.render
   end
 end
 
@@ -35,7 +36,7 @@ end
 #
 # "Section" is something like helper, which contains "Elements".
 #
-# Each element will be added to the parent screen when you run `section.render(to: screen)`
+# Each element will be added to the parent screen when you run `section.render`
 
 class MyProfileSection < Prime::BaseSection
   element :title, text: "Hello World"
@@ -44,10 +45,10 @@ end
 
 # **5. Create your first stylesheet file.**
 #
-# Styles will be applied to each element in section. 
+# Styles will be applied to each element in section.
 # The simplest rule by default is: `:section-name_:element-name`.
 #
-# E.g. if you have 'MyProfileSection' (the name for section by default will be - `my_profile`) 
+# E.g. if you have 'MyProfileSection' (the name for section by default will be - `my_profile`)
 # and 'title' element, then you should use `my_profile_title` style name.
 
 Prime::Styles.define do

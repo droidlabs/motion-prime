@@ -56,18 +56,18 @@ module MotionPrime
 
       fetch_with_url url do |data, status_code|
         save if sync_options[:save]
-        block.call(data, status_code) if use_callback
+        block.call(data, status_code, data) if use_callback
       end if should_fetch
 
       update_with_url url, sync_options do |data, status_code|
         save if sync_options[:save] && status_code.to_s =~ /20\d/
         # run callback only if it wasn't run on fetch
-        block.call(data, status_code) if use_callback && !should_fetch
+        block.call(data, status_code, data) if use_callback && !should_fetch
       end if should_update
 
       fetch_associations(sync_options) do |data, status_code|
         # run callback only if it wasn't run on fetch or update
-        block.call(data, status_code) if use_callback && !should_fetch && !should_update
+        block.call(data, status_code, data) if use_callback && !should_fetch && !should_update
       end if should_fetch_associations
     end
 
@@ -76,7 +76,7 @@ module MotionPrime
       use_callback = block_given?
       api_client.get(url) do |data, status_code|
         fetch_with_attributes(data, &block) if data.present?
-        block.call(data, status_code) if use_callback
+        block.call(data, status_code, data) if use_callback
       end
     end
 
@@ -98,7 +98,7 @@ module MotionPrime
         if update_from_response && status_code.to_s =~ /20\d/ && data.is_a?(Hash)
           set_attributes_from_response(data)
         end
-        block.call(data, status_code) if use_callback
+        block.call(data, status_code, data) if use_callback
       end
     end
 

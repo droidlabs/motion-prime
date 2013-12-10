@@ -23,9 +23,7 @@ module MotionPrime
     attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :section_headers, :section_header_options
 
     def table_data
-      if @groups_count == 1
-        fields.values
-      else
+      if @has_groups
         section_indexes = []
         data = fields.inject([]) do |result, (key, field)|
           section = self.class.fields_options[key][:group].to_i
@@ -37,6 +35,8 @@ module MotionPrime
         end
         self.section_header_options.delete_if.each_with_index { |opts, id| data[id].nil? }
         data.compact
+      else
+        fields.values
       end
     end
 
@@ -46,7 +46,6 @@ module MotionPrime
 
     def render_table
       init_form_fields
-      reset_data_stamps
       options = {
         styles: table_styles.values.flatten,
         delegate: self,
@@ -59,7 +58,7 @@ module MotionPrime
       field = rows_for_section(index.section)[index.row]
       screen.table_view_cell section: field, reuse_identifier: cell_name(table, index), parent_view: table_view do |container_view, container_element|
         field.container_element = container_element
-        field.render(to: screen)
+        field.render
       end
     end
 
@@ -79,9 +78,9 @@ module MotionPrime
 
       set_data_stamp(field_indexes[field])
 
-      table_view.beginUpdates
+      # table_view.beginUpdates
       table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
-      table_view.endUpdates
+      # table_view.endUpdates
     end
 
     def reset_data_stamps
@@ -185,6 +184,18 @@ module MotionPrime
     def textViewDidBeginEditing(text_view)
       on_input_edit(text_view)
     end
+    def textViewDidChange(text_view) # bug in iOS 7 - cursor is out of textView bounds
+      line = text_view.caretRectForPosition(text_view.selectedTextRange.start)
+      overflow = line.origin.y + line.size.height -
+        (text_view.contentOffset.y + text_view.bounds.size.height - text_view.contentInset.bottom - text_view.contentInset.top)
+      if overflow > 0
+        offset = text_view.contentOffset
+        offset.y += overflow + text_view.textContainerInset.bottom
+        UIView.animate(duration: 0.2) do
+          text_view.setContentOffset(offset)
+        end
+      end
+    end
 
     def textView(text_view, shouldChangeTextInRange:range, replacementText:string)
       textField(text_view, shouldChangeCharactersInRange:range, replacementString:string)
@@ -208,7 +219,7 @@ module MotionPrime
 
     def load_field(field)
       klass = "MotionPrime::#{field[:type].classify}FieldSection".constantize
-      klass.new(field.merge(table: self))
+      klass.new(field.merge(screen: screen, table: self))
     end
 
     def render_field?(name, options)
@@ -222,7 +233,7 @@ module MotionPrime
 
     def render_header(section)
       return unless options = self.section_header_options.try(:[], section)
-      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(table: self))
+      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(screen: screen, table: self))
     end
 
     def header_for_section(section)
@@ -232,10 +243,10 @@ module MotionPrime
 
     def tableView(table, viewForHeaderInSection: section)
       return unless header = header_for_section(section)
-      wrapper = MotionPrime::BaseElement.factory(:view, styles: cell_styles(header).values.flatten, parent_view: table_view)
-      wrapper.render(to: screen) do |container_view, container_element|
+      wrapper = MotionPrime::BaseElement.factory(:view, screen: screen, styles: cell_styles(header).values.flatten, parent_view: table_view)
+      wrapper.render do |container_view, container_element|
         header.container_element = container_element
-        header.render(to: screen)
+        header.render
       end
     end
 
@@ -272,8 +283,9 @@ module MotionPrime
 
     def reload_data
       @groups_count = nil
+      reset_data
       init_form_fields
-      super
+      table_view.reloadData
     end
 
     private
@@ -292,6 +304,8 @@ module MotionPrime
           section_indexes[section_id] += 1
         end
         init_form_headers
+        @has_groups = section_header_options.present? || @groups_count > 1
+        reset_data_stamps
       end
 
       def init_form_headers

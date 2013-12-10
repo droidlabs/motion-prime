@@ -41,10 +41,10 @@ class DMTextField < UITextField
 
   private
     def calculate_rect_for(bounds)
-      height_diff = self.bounds.size.height - (self.font.pointSize + padding_top*2)
+      height_diff = self.bounds.size.height - (self.font.pointSize + padding_top + padding_bottom)
       bounds = CGRectMake(bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height - height_diff)
       CGRectMake(
         bounds.origin.x + padding_left, bounds.origin.y + padding_top,
-        bounds.size.width - (padding_left + padding_right), bounds.size.height - padding_top*2)
+        bounds.size.width - (padding_left + padding_right), bounds.size.height - (padding_top + padding_bottom))
     end
 end

@@ -16,6 +16,7 @@ module MotionPrime
 
     def initialize(options = {})
       @options = options
+      @screen = options[:screen]
       @section = options[:section]
       @name = options[:name]
       @block = options[:block]
@@ -24,7 +25,6 @@ module MotionPrime
     end
 
     def render(options = {}, &block)
-      @screen = options[:to]
       run_callbacks :render do
         render!(&block)
       end
@@ -47,7 +47,7 @@ module MotionPrime
       @computed_options ||= {}
       block_options = compute_block_options || {}
       compute_style_options(options, block_options)
-      @computed_options.merge!(options.except(:name, :block, :view_class))
+      @computed_options.merge!(options.except(:screen, :name, :block, :view_class))
       @computed_options.merge!(block_options)
       normalize_options(@computed_options, section, %w[text placeholder font title_label padding padding_left padding_right min_width min_outer_width max_width max_outer_width width left right])
     end
@@ -62,7 +62,7 @@ module MotionPrime
 
     def compute_style_options(*style_sources)
       has_errors = section.respond_to?(:observing_errors?) && observing_errors? && has_errors?
-      is_cell_section = section.is_a?(BaseCellSection) || section.is_a?(DrawCellSection)
+      is_cell_section = section.respond_to?(:cell_name)
 
       @styles = []
       if is_cell_section
@@ -134,7 +134,7 @@ module MotionPrime
       compute_options!
       view.try(:removeFromSuperview)
       @view = nil
-      render(to: screen)
+      render
     end
 
     def hide

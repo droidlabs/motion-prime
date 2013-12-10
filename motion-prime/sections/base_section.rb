@@ -25,6 +25,7 @@ module MotionPrime
 
     def initialize(options = {})
       @options = options
+      self.screen = options[:screen]
       @model = options[:model]
       @name = options[:name] ||= default_name
       @options_block = options[:block]
@@ -68,10 +69,15 @@ module MotionPrime
     end
 
     def reload_section
-      self.elements.values.map(&:view).flatten.compact.each { |view| view.removeFromSuperview }
+      self.elements_to_render.values.map(&:view).flatten.compact.each { |view| view.removeFromSuperview }
       load_section!
       run_callbacks :render do
         render!
+      end
+
+      if @table && !self.is_a?(BaseFieldSection)
+        cell.setNeedsDisplay
+        @table.table_view.reloadData
       end
     end
 
@@ -95,7 +101,6 @@ module MotionPrime
       index = opts.delete(:at)
       options = build_options_for_element(opts)
       options[:name] ||= key
-      options[:type] ||= (options[:text] || options[:attributed_text_options]) ? :label : :view
 
       type = options.delete(:type)
       element = if self.is_a?(BaseFieldSection) || self.is_a?(BaseHeaderSection) || options.delete(:as).to_s == 'view'
@@ -116,12 +121,13 @@ module MotionPrime
     end
 
     def cell
-      first_element = elements.values.first
-      first_element.view.superview.superview
+      container_view || begin
+        first_element = elements.values.first
+        first_element.view.superview.superview
+      end
     end
 
     def render(container_options = {})
-      self.screen = container_options.delete(:to)
       self.container_options.merge!(container_options)
       load_section
 
@@ -132,7 +138,7 @@ module MotionPrime
 
     def render!
       elements_to_render.each do |key, element|
-        element.render(to: screen)
+        element.render
       end
     end
 
@@ -145,14 +151,18 @@ module MotionPrime
     end
 
     def hide
-      elements.values.each do |element|
-        element.view.hidden = true
+      if container_view
+        container_view.hidden = true
+      else
+        elements.values.each(&:hide)
       end
     end
 
     def show
-      elements.values.each do |element|
-        element.view.hidden = false
+      if container_view
+        container_view.hidden = false
+      else
+        elements.values.each(&:show)
       end
     end
 
@@ -194,7 +204,7 @@ module MotionPrime
       (views + Array.wrap(keyboard_close_bindings_options[:views])).compact.each(&:resignFirstResponder)
     end
 
-    private
+    protected
       def bind_keyboard_close
         return unless self.class.keyboard_close_bindings.present?
         Array.wrap(self.instance_eval(&self.class.keyboard_close_bindings[:tap_on])).each do |view|
@@ -219,9 +229,11 @@ module MotionPrime
         # we should clone options to prevent overriding options
         # in next element with same name in another class
         options = opts.clone
-        options.merge(section: self)
+        options[:type] ||= (options[:text] || options[:attributed_text_options]) ? :label : :view
+        options.merge(screen: screen, section: self)
       end
 
+    private
       def style_options
         @style_options ||= if section_styles.present?
           Styles.for(section_styles.values.flatten)

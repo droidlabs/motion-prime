@@ -7,7 +7,7 @@ module MotionPrime
     #   tab :info, default: true, page_section: :info_tab
     #   tab :map, page_section: :map_tab
     #   # page_section options will be converted to section class and added to section.
-    #   # e.g. in this sample: InfoTabSection.new(model: model).render(to: screen)
+    #   # e.g. in this sample: InfoTabSection.new(screen: screen, model: model).render
     # end
     #
     include MotionPrime::HasNormalizer
@@ -104,8 +104,8 @@ module MotionPrime
         index = 0
         tab_options.each do |key, options|
           section_class = options[:page_section].classify
-          page = "::#{section_class}Section".constantize.new(model: model)
-          page.render(to: screen)
+          page = "::#{section_class}Section".constantize.new(screen: screen, model: model)
+          page.render
           page.hide if index != tab_default
           self.tab_pages << page
           index += 1

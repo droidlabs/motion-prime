@@ -1,7 +1,7 @@
 class SidebarScreen < Prime::BaseScreen
   def render
-    @main_section = SidebarTableSection.new()
-    @main_section.render(to: self)
+    @main_section = SidebarTableSection.new(screen: self)
+    @main_section.render
   end
 
   def open_home

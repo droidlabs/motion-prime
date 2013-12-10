@@ -1,6 +1,6 @@
-motion_require '../table/base_cell_section'
 module MotionPrime
-  class BaseFieldSection < BaseCellSection
+  class BaseFieldSection < BaseSection
+    include CellSectionMixin
     include BW::KVO
 
     attr_reader :form
