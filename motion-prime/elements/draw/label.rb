@@ -24,7 +24,7 @@ module MotionPrime
       font = (options[:font] || :system).uifont
       alignment = (options.has_key?(:text_alignment) ? options[:text_alignment] : :left).uitextalignment
       line_break_mode = (options.has_key?(:line_break_mode) ? options[:line_break_mode] : :tailtruncation).uilinebreakmode
-      label_text = options[:text].to_s
+      label_text = options[:text].to_s.gsub(/^[\n\r]+/, '')
 
       top_left_corner = CGPointMake(computed_inner_left, computed_inner_top)
       if options[:number_of_lines].to_i.zero?
