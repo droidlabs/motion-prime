@@ -31,6 +31,7 @@ module MotionPrime
       if controller
         self.selectedViewController = controller
       end
+      controller
     end
   end
 end
