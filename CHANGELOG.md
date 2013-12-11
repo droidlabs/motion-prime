@@ -1,3 +1,8 @@
+=== 0.4.1
+* Bug fixes
+* Added custom progress view indicator
+* Tab bar screens support image/title options now
+
 === 0.4.0
 * Big refactoring and speed improvements.
 * Use BaseSection both for draw and base elements.
