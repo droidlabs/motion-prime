@@ -7,7 +7,15 @@ module MotionPrime
       view_controllers = []
 
       screens.each_with_index do |screen, index|
-        screen.tabBarItem.tag = index
+        if screen.is_a?(Hash)
+          screen, image, title = screen[:screen], screen[:image], screen[:title]
+          title ||= screen.title
+          image = image.uiimage if image
+          screen.tabBarItem = UITabBarItem.alloc.initWithTitle title, image: image, tag: index
+        else
+          screen.tabBarItem.tag = index
+        end
+
         screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
         screen.wrap_in_navigation if screen.respond_to?(:wrap_in_navigation)
         screen.tab_bar = controller if screen.respond_to?(:tab_bar=)
@@ -23,6 +31,7 @@ module MotionPrime
       if controller
         self.selectedViewController = controller
       end
+      controller
     end
   end
 end

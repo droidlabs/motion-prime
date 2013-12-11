@@ -19,6 +19,7 @@ Motion::Project::App.setup do |app|
     pod 'MBAlertView'
     pod 'SDSegmentedControl'
     pod 'RESideMenu', git: 'https://github.com/feklistov/RESideMenu.git'
+    pod 'MBProgressHUD'
   end
 
   app.version = '0.0.1'
