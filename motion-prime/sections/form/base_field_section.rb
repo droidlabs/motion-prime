@@ -115,10 +115,14 @@ module MotionPrime
     end
 
     def reload_section
+      clear_observers
+      form.reload_cell(self)
+    end
+
+    def clear_observers
       errors_observer_fields.each do |field|
         unobserve observing_errors_for.errors, observing_errors_for.errors.unique_key(field)
       end if observing_errors?
-      form.reload_cell(self)
     end
 
     def container_height

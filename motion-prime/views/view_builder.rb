@@ -118,6 +118,9 @@ module MotionPrime
           'GMSMapView' => Proc.new{|klass, options|
             camera = GMSCameraPosition.cameraWithLatitude(23.42, longitude: 127.42, zoom: 15)
             GMSMapView.mapWithFrame(CGRectZero, camera: camera)
+          },
+          'MBProgressHUD' => Proc.new{|klass, options|
+            MBProgressHUD.showHUDAddedTo options.delete(:add_to_view), animated: (options.has_key?(:animated) ? options[:animatetd] : true)
           }
         }
       end

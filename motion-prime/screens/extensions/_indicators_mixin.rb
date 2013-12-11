@@ -14,6 +14,25 @@ module MotionPrime
       @activity_indicator_view.stopAnimating
     end
 
+    def show_progress_indicator(text = nil, options = {})
+      options[:styles] ||= []
+      options[:styles] << :base_progress_indicator
+      options[:styles] << :"#{self.class_name_without_kvo.underscore.gsub('_screen', '')}_indicator"
+      options[:details_label_text] = text
+
+      if @progress_indicator_view.nil?
+        options[:add_to_view] ||= self.view
+        @progress_indicator_view = self.progress_hud(options).view
+      else
+        self.setup(@progress_indicator_view, options.except(:add_to_view))
+        @progress_indicator_view.show options.has_key?(:animated) ? options[:animatetd] : true
+      end
+    end
+
+    def hide_progress_indicator(animated = true)
+      @progress_indicator_view.try(:hide, animated)
+    end
+
     def show_notice(message, time = 1.0, type = :notice)
       hud_type = case type.to_s
       when 'alert' then MBAlertViewHUDTypeExclamationMark

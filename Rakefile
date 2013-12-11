@@ -27,5 +27,6 @@ Motion::Project::App.setup do |app|
     pod 'SVPullToRefresh'
     pod 'MBAlertView'
     pod 'RESideMenu', git: 'https://github.com/feklistov/RESideMenu.git'
+    pod 'MBProgressHUD', '~> 0.8'
   end
 end

@@ -288,12 +288,17 @@ module MotionPrime
       table_view.reloadData
     end
 
+    def reset_data
+      super
+      self.fields.values.each(&:clear_observers)
+    end
+
     private
       def init_form_fields
         self.fields = {}
         self.field_indexes = {}
         section_indexes = []
-        (self.class.fields_options || []).each do |key, field|
+        (self.class.fields_options || {}).each do |key, field|
           next unless render_field?(key, field)
           section_id = field[:group].to_i
           @groups_count = [@groups_count || 1, section_id + 1].max

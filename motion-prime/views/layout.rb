@@ -39,7 +39,7 @@ module MotionPrime
         [::UIActionSheet, ::UIActivityIndicatorView, ::UIButton, ::UIDatePicker, ::UIImageView, ::UILabel,
           ::UIPageControl, ::UIPickerView, ::UIProgressView, ::UIScrollView, ::UISearchBar, ::UISegmentedControl,
           ::UISlider, ::UIStepper, ::UISwitch, ::UITabBar, ::UITableView, ::UITableViewCell, ::UITextField, ::UITextView,
-          ::UIToolbar, ::UIWebView, ::UINavigationBar, ::DMCellWithSection].each do |klass|
+          ::UIToolbar, ::UIWebView, ::UINavigationBar, ::DMCellWithSection, ::MBProgressHUD].each do |klass|
 
           shorthand = "#{klass}"[2..-1].underscore.to_sym
 
