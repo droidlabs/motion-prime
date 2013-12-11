@@ -1,3 +1,7 @@
+=== 0.4.0
+* Big refactoring and speed improvements.
+* Use BaseSection both for draw and base elements.
+
 === 0.3.3
 * Screen tab bar support
 
