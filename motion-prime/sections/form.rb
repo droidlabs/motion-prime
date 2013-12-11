@@ -156,13 +156,13 @@ module MotionPrime
     def keyboard_will_show
       return if table_view.contentSize.height + table_view.top <= UIScreen.mainScreen.bounds.size.height - KEYBOARD_HEIGHT_PORTRAIT
       current_inset = table_view.contentInset
-      current_inset.bottom = KEYBOARD_HEIGHT_PORTRAIT + (self.table_element.computed_options[:bottom_content_offset] || 0)
+      current_inset.bottom = KEYBOARD_HEIGHT_PORTRAIT + (self.table_element.computed_options[:bottom_content_inset] || 0)
       table_view.contentInset = current_inset
     end
 
     def keyboard_will_hide
       current_inset = table_view.contentInset
-      current_inset.bottom = self.table_element.computed_options[:bottom_content_offset] || 0
+      current_inset.bottom = self.table_element.computed_options[:bottom_content_inset] || 0
       table_view.contentInset = current_inset
     end
 

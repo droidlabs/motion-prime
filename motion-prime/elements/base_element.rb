@@ -72,7 +72,7 @@ module MotionPrime
         # following example in Prime::TableSection#cell_styles
         # form element/cell: <base|user>_form_field, <base|user>_form_string_field, user_form_field_email
         # table element/cell: <base|categories>_table_cell, categories_table_title
-        section.section_styles.each { |type, values| base_styles[type] += values }
+        section.section_styles.each { |type, values| base_styles[type] += values } if section.section_styles
         if %w[base table_view_cell].exclude?(@view_name.to_s)
           # form element: _input
           # table element: _image
@@ -126,7 +126,7 @@ module MotionPrime
     end
 
     def style_options
-      Styles.for(styles)
+      @style_options ||= normalize_object(Styles.for(styles), section)
     end
 
     def update_with_options(new_options = {})

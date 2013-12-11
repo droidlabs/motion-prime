@@ -20,7 +20,7 @@ module MotionPrime
     include DrawMixin
 
     attr_accessor :screen, :model, :name, :options, :elements, :section_styles
-    class_attribute :elements_options, :container_options, :keyboard_close_bindings
+    class_attribute :elements_options, :container_options, :keyboard_close_bindings, :cell_name
     define_callbacks :render
 
     def initialize(options = {})
@@ -236,8 +236,7 @@ module MotionPrime
     private
       def style_options
         @style_options ||= if section_styles.present?
-          # TODO: pass through normalizer?
-          Styles.for(section_styles.values.flatten)
+          normalize_options(Styles.for(section_styles.values.flatten))
         else
           {}
         end
@@ -271,6 +270,9 @@ module MotionPrime
       end
       def bind_keyboard_close(options)
         self.keyboard_close_bindings = options
+      end
+      def set_cell_name(value)
+        self.cell_name = value
       end
     end
     after_render :bind_keyboard_events

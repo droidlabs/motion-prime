@@ -11,17 +11,11 @@ module MotionPrime
       names = Array.wrap(args)
       options = names.pop if args.last.is_a?(Hash)
 
-      if block_given?
-        raise "Only style names are available for nested styles, received: `#{args.inspect}`. Namespace: `#{@namespace}`" if options.present?
-        names.each do |name|
-          namespace = [@namespace, name].compact.join('_')
-          self.class.new(namespace).instance_eval(&block)
-        end
-      else
-        raise "No style rules specified for `#{names.join(', ')}`. Namespace: `#{@namespace}`" unless options
+      if options.present?
         parent = options.delete(:parent)
-        namespace = options.delete(:parent_namspace) || @namespace
-        parent ="#{namespace}_#{parent}".to_sym if namespace
+        if parent_namespace = options.delete(:parent_namespace) || @namespace
+          parent ="#{parent_namespace}_#{parent}".to_sym
+        end
         mixins = Array.wrap(options.delete(:mixins)).map { |mixin_name| :"_mixin_#{mixin_name}" }
 
         names.each do |name|
@@ -31,7 +25,14 @@ module MotionPrime
           @@repo[name].deep_merge!(self.class.for(mixins)) if mixins.present?
           @@repo[name].deep_merge! options
         end
+      elsif !block_given?
+        raise "No style rules specified for `#{names.join(', ')}`. Namespace: `#{@namespace}`"
       end
+
+      names.each do |name|
+        namespace = [@namespace, name].compact.join('_')
+        self.class.new(namespace).instance_eval(&block)
+      end if block_given?
     end
 
     class << self

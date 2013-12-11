@@ -83,7 +83,7 @@ module MotionPrime
         end
       elsif key.end_with?('image')
         view.setValue value.uiimage, forKey: key.camelize
-      elsif key.end_with?('_content_offset')
+      elsif key.end_with?('_content_inset')
         current_inset = view.contentInset
         current_inset.send("#{key.partition('_').first}=", value)
         view.contentInset = current_inset
@@ -135,6 +135,14 @@ module MotionPrime
       elsif key == 'gradient'
         gradient = prepare_gradient(value)
         view.layer.insertSublayer(gradient, atIndex: 0)
+      elsif key == 'selection_style' && view.is_a?(UITableViewCell) && value.is_a?(Symbol)
+        view.setSelectionStyle value.uitablecellselectionstyle
+      elsif key == 'separator_inset' && view.is_a?(UITableViewCell)
+        if value.to_s == 'none'
+          view.separatorInset = UIEdgeInsetsMake(0, 320, 0, 0)
+        elsif value.is_a?(Array) && value.count == 2
+          view.separatorInset = UIEdgeInsetsMake(0, value.first, 0, value.last)
+        end
       elsif value.is_a?(Hash)
         self.class.new(view.send(key.camelize(:lower).to_sym), nil, value.merge(parent_frame: options[:frame] || options[:parent_frame])).apply
       else

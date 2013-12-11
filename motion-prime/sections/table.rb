@@ -85,8 +85,8 @@ module MotionPrime
       # form: <form_name>_form_<type>, <form_name>_form_<field_type>, user_form_<type>_email = `user_form_field`, `user_form_string_field`, `user_form_field_email`
       styles[:specific] = build_styles_chain(table_styles[:specific], suffixes)
 
-      if respond_to?(:container_styles) && container_styles.present?
-        @section_styles[:specific] += Array.wrap(container_styles)
+      if cell.respond_to?(:container_styles) && cell.container_styles.present?
+        styles[:specific] += Array.wrap(cell.container_styles)
       end
 
       styles

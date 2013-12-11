@@ -17,9 +17,11 @@ module MotionPrime
     end
 
     def cell_name
-      return name unless table
-      table_name = table.name.gsub('_table', '')
-      name.gsub("#{table_name}_", '')
+      self.class.cell_name || begin
+        return name unless table
+        table_name = table.name.gsub('_table', '')
+        name.gsub("#{table_name}_", '')
+      end
     end
   end
 end
