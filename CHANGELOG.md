@@ -1,3 +1,7 @@
+=== 0.4.2
+* Bug fixes
+* Added web view element support
+
 === 0.4.1
 * Bug fixes
 * Added custom progress view indicator
