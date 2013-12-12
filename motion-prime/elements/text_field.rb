@@ -4,7 +4,7 @@ module MotionPrime
     include MotionPrime::ElementContentTextMixin
 
     def view_class
-      "DMTextField"
+      "MPTextField"
     end
   end
 end

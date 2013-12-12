@@ -1,6 +1,5 @@
 module MotionPrime
   class TabBarController < UITabBarController
-    
     def self.new(screens)
       controller = alloc.init
 

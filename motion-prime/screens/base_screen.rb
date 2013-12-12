@@ -1,4 +1,4 @@
-motion_require '../support/dm_view_controller.rb'
+motion_require '../support/mp_view_controller.rb'
 motion_require '../views/layout.rb'
 motion_require '../screens/_base_mixin.rb'
 motion_require './extensions/_indicators_mixin'
@@ -6,7 +6,7 @@ motion_require './extensions/_navigation_bar_mixin'
 motion_require '../helpers/has_authorization'
 motion_require '../helpers/has_search_bar'
 module MotionPrime
-  class BaseScreen < DMViewController
+  class BaseScreen < MPViewController
     include Layout
     include ScreenBaseMixin
 

@@ -110,7 +110,7 @@ module MotionPrime
             klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
           },
           'UISearchBar' => Proc.new{|klass, options|
-            klass = options[:search_field_background_image] ? UISearchBarCustom : UISearchBar
+            klass = options[:search_field_background_image] ? MPSearchBarCustom : UISearchBar
             search_bar = klass.alloc.init
             search_bar.autoresizingMask = UIViewAutoresizingFlexibleWidth
             search_bar

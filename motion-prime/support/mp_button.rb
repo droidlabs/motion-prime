@@ -1,4 +1,4 @@
-class DMButton < UIButton
+class MPButton < UIButton
   include MotionPrime::SupportKeyValueStore
   include MotionPrime::SupportPaddingAttribute
   attr_accessor :sizeToFit

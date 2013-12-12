@@ -1,7 +1,7 @@
 # This class have some modifications for UITextView:
 # * support padding, padding_left, padding_right options
 # * support placeholder, placeholder_color, placeholder_font options
-class DMTextView < UITextView
+class MPTextView < UITextView
   include MotionPrime::SupportKeyValueStore
   include MotionPrime::SupportPaddingAttribute
   attr_accessor :placeholderColor, :placeholderFont, :placeholder
