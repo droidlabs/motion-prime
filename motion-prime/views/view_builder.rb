@@ -121,6 +121,13 @@ module MotionPrime
           },
           'MBProgressHUD' => Proc.new{|klass, options|
             MBProgressHUD.showHUDAddedTo options.delete(:add_to_view), animated: (options.has_key?(:animated) ? options[:animatetd] : true)
+          },
+          'UIWebView' => Proc.new{|klass, options|
+            web_view = klass.alloc.initWithFrame CGRectZero
+            request = NSURLRequest.requestWithURL options.delete(:url).nsurl
+            web_view.loadRequest request
+            web_view.delegate = options.delete(:delegate)
+            web_view
           }
         }
       end
