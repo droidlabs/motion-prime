@@ -7,8 +7,9 @@ module MotionPrime
       border_width = options[:layer].try(:[], :border_width).to_f
       border_color = options[:layer].try(:[], :border_color) || bg_color || :black
 
-      rect = CGRectInset(draw_rect, -(border_width - 1)*0.5, -(border_width - 1)*0.5)
 
+      inset = border_width > 0 ? (border_width - 1 )*0.5 : 0
+      rect = CGRectInset(draw_rect, -inset, -inset)
       if bg_color || border_width > 0
         if border_radius
           bezierPath = UIBezierPath.bezierPathWithRoundedRect rect, cornerRadius: border_radius

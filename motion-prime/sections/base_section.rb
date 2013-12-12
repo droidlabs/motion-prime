@@ -32,15 +32,12 @@ module MotionPrime
     end
 
     def container_options
-      @container_options ||= (style_options.delete(:container) || {}).merge(base_container_options)
+      compute_container_options! unless @container_options
+      @container_options
     end
 
     def container_height
       container_options[:height] || DEFAULT_CONTENT_HEIGHT
-    end
-
-    def container_styles
-      base_container_options[:styles]
     end
 
     def default_name
@@ -234,20 +231,19 @@ module MotionPrime
       end
 
     private
-      def style_options
-        @style_options ||= if section_styles.present?
-          normalize_options(Styles.for(section_styles.values.flatten))
-        else
-          {}
-        end
-      end
+      def compute_container_options!
+        raw_options = {}
+        raw_options.merge!(self.class.container_options.try(:clone) || {})
+        raw_options.merge!(options.delete(:container) || {})
 
-      def base_container_options
-        @base_container_options ||= begin
-          container_options = self.class.container_options.try(:clone) || {}
-          container_options.merge!(options.delete(:container) || {})
-          normalize_options(container_options)
+        @container_options = raw_options
+
+        # must be here because section_styles may use container_options for custom styles
+        container_options_from_styles = Styles.for(section_styles.values.flatten)[:container] if section_styles
+        if container_options_from_styles.present?
+          @container_options = container_options_from_styles.merge(@container_options)
         end
+        normalize_options(@container_options)
       end
 
     class << self

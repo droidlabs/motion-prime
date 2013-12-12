@@ -41,14 +41,6 @@ module MotionPrime
         end
       end
 
-      def view_style_options
-        @view_style_options ||= begin
-          options = Styles.for(container_options[:styles])
-          normalize_options(options)
-          options
-        end
-      end
-
       def draw_background(rect)
         options = container_element.computed_options
 

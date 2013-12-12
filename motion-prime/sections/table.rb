@@ -63,7 +63,6 @@ module MotionPrime
       # type = `cell` (always true)
       # table_cell_name = `title`
       type = cell.respond_to?(:cell_type) ? cell.cell_type : 'cell'
-
       suffixes = [type]
       if cell.is_a?(BaseFieldSection)
         suffixes << cell.default_name
@@ -73,7 +72,6 @@ module MotionPrime
       # table: base_table_<type>
       # form: base_form_<type>, base_form_<field_type>
       styles[:common] = build_styles_chain(table_styles[:common], suffixes)
-
       if cell.is_a?(BaseFieldSection)
         # form cell: _<type>_<field_name> = `_field_email`
         suffixes << :"#{type}_#{cell.name}" if cell.name
@@ -85,8 +83,9 @@ module MotionPrime
       # form: <form_name>_form_<type>, <form_name>_form_<field_type>, user_form_<type>_email = `user_form_field`, `user_form_string_field`, `user_form_field_email`
       styles[:specific] = build_styles_chain(table_styles[:specific], suffixes)
 
-      if cell.respond_to?(:container_styles) && cell.container_styles.present?
-        styles[:specific] += Array.wrap(cell.container_styles)
+      container_options_styles = cell.container_options[:styles]
+      if container_options_styles.present?
+        styles[:specific] += Array.wrap(container_options_styles)
       end
 
       styles

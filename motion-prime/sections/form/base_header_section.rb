@@ -14,9 +14,5 @@ module MotionPrime
     def render_element?(name)
       @options[name].present?
     end
-
-    def container_height
-      container_options[:height] || DEFAULT_HEADER_HEIGHT
-    end
   end
 end
