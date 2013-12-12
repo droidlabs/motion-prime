@@ -51,7 +51,7 @@ module MotionPrime
       end
 
       def button_content_font
-        computed_options[:title_label][:font]
+        computed_options[:title_label].try(:[], :font)
       end
 
       def input_content_text
