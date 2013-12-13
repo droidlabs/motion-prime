@@ -54,14 +54,6 @@ module MotionPrime
       self.table_element = screen.table_view(options)
     end
 
-    def render_cell(index, table)
-      field = rows_for_section(index.section)[index.row]
-      screen.table_view_cell section: field, reuse_identifier: cell_name(table, index), parent_view: table_view do |container_view, container_element|
-        field.container_element = container_element
-        field.render
-      end
-    end
-
     def reload_cell(section)
       field = section.name.to_sym
       index = field_indexes[field].split('_').map(&:to_i)
