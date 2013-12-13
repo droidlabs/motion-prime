@@ -1,4 +1,4 @@
-class DMViewController < UIViewController
+class MPViewController < UIViewController
   def self.new(args = {})
     self.alloc.initWithNibName(nil, bundle: nil).tap do |screen|
       screen.on_create(args) if screen.respond_to?(:on_create)

@@ -1,7 +1,7 @@
 # This class have some modifications for UITextField:
 # * support padding, padding_left, padding_right options
 # * support placeholder_color, placeholder_font options
-class DMTextField < UITextField
+class MPTextField < UITextField
   include MotionPrime::SupportKeyValueStore
   include MotionPrime::SupportPaddingAttribute
   attr_accessor :placeholderColor, :placeholderFont, :readonly, :placeholderAlignment

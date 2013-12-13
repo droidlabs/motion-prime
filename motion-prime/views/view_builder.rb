@@ -111,7 +111,7 @@ module MotionPrime
             klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
           },
           'UISearchBar' => Proc.new{|klass, options|
-            klass = options[:search_field_background_image] ? UISearchBarCustom : UISearchBar
+            klass = options[:search_field_background_image] ? MPSearchBarCustom : UISearchBar
             search_bar = klass.alloc.init
             search_bar.autoresizingMask = UIViewAutoresizingFlexibleWidth
             search_bar
@@ -125,8 +125,10 @@ module MotionPrime
           },
           'UIWebView' => Proc.new{|klass, options|
             web_view = klass.alloc.initWithFrame CGRectZero
-            request = NSURLRequest.requestWithURL options.delete(:url).nsurl
-            web_view.loadRequest request
+            if url = options.delete(:url)
+              request = NSURLRequest.requestWithURL url.nsurl
+              web_view.loadRequest request
+            end
             web_view.delegate = options.delete(:delegate)
             web_view
           }

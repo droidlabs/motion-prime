@@ -35,7 +35,7 @@ module MotionPrime
       end
     end
 
-    # Setup the screen, will be called when you run DMViewController.new
+    # Setup the screen, will be called when you run MPViewController.new
     # @param options [hash] Options passed to setup
     # @return [MotionPrime::BaseScreen] Ready to use screen
     def on_create(options = {})

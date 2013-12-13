@@ -14,7 +14,7 @@ module MotionPrime
     end
 
     def view_class
-      "DMButton"
+      "MPButton"
     end
 
     def text_value

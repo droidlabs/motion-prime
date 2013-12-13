@@ -1,5 +1,5 @@
 # Search bar with background and no padding
-class UISearchBarCustom < UISearchBar
+class MPSearchBarCustom < UISearchBar
   def layoutSubviews
     super
     text_field = subviews.objectAtIndex(0).subviews.detect do |view|

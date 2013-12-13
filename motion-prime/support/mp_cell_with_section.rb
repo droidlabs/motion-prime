@@ -1,4 +1,4 @@
-class DMViewWithSection < UIView
+class MPCellWithSection < UITableViewCell
   attr_accessor :section
 
   def setSection(section)
@@ -6,6 +6,7 @@ class DMViewWithSection < UIView
   end
 
   def drawRect(rect)
-    section.draw_in(rect)
+    super
+    section.draw_in(rect) if section.respond_to?(:draw_in)
   end
 end
