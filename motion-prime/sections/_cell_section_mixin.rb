@@ -26,17 +26,12 @@ module MotionPrime
 
     def load_container_element(options = {})
       @container_element ||= begin
-        pp 'loading'
         options.merge!({
           screen: screen,
           section: self,
           has_drawn_content: true
         })
-        container_element = MotionPrime::BaseElement.factory(:table_view_cell, options)
-        container_element.render do
-          self.render
-        end
-        container_element
+        MotionPrime::BaseElement.factory(:table_view_cell, options)
       end
     end
   end

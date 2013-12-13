@@ -117,7 +117,11 @@ module MotionPrime
     end
 
     def render_cell(index, table)
-      container_element_for(index)
+      section = rows_for_section(index.section)[index.row]
+      cell_element = container_element_for(index)
+      cell_element.render do
+        section.render
+      end
     end
 
     def on_row_render(cell, index); end
