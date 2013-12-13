@@ -23,7 +23,7 @@ module MotionPrime
       color = (options[:text_color] || :black).uicolor
       font = (options[:font] || :system).uifont
       alignment = (options.has_key?(:text_alignment) ? options[:text_alignment] : :left).uitextalignment
-      line_break_mode = (options.has_key?(:line_break_mode) ? options[:line_break_mode] : :tailtruncation).uilinebreakmode
+      line_break_mode = (options.has_key?(:line_break_mode) ? options[:line_break_mode] : :tail_truncation).uilinebreakmode
       label_text = options[:text].to_s.gsub(/^[\n\r]+/, '')
 
       top_left_corner = CGPointMake(computed_inner_left, computed_inner_top)

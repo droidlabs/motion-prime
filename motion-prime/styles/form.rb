@@ -38,7 +38,7 @@ MotionPrime::Styles.define :base_form do
     top: nil,
     bottom: 0,
     width: 300,
-    line_break_mode: :wordwrap,
+    line_break_mode: :word_wrap,
     number_of_lines: 0,
     size_to_fit: true,
     text_color: proc { MotionPrime::Config.color.error },
