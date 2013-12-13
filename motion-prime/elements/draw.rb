@@ -68,8 +68,8 @@ module MotionPrime
 
     class << self
       def factory(type, options = {})
-        return unless %w[View Label Image].include?(type.classify)
-        class_name = "#{type.classify}DrawElement"
+        return unless %w[View Label Image].include?(type.camelize)
+        class_name = "#{type.camelize}DrawElement"
         "MotionPrime::#{class_name}".constantize.new(options)
       end
     end

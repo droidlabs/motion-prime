@@ -151,8 +151,8 @@ module MotionPrime
 
     class << self
       def factory(type, options = {})
-        class_name = "#{type.classify}Element"
-        options.merge!({view_class: "UI#{type.classify}"})
+        class_name = "#{type.camelize}Element"
+        options.merge!(view_class: "UI#{type.camelize}")
         if MotionPrime.const_defined?(class_name)
           "MotionPrime::#{class_name}".constantize.new(options)
         else

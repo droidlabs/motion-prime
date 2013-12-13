@@ -161,7 +161,7 @@ module MotionPrime
           data.each do |attributes|
             model = old_collection.detect{ |model| model.id == attributes[:id]}
             unless model
-              model = key.singularize.to_s.classify.constantize.new
+              model = key.classify.constantize.new
               self.send(:"#{key}_bag") << model
             end
             model.fetch_with_attributes(attributes)
@@ -191,7 +191,7 @@ module MotionPrime
         if data.present?
           model = self.send(key)
           unless model
-            model = key.singularize.to_s.classify.constantize.new
+            model = key.classify.constantize.new
             self.send(:"#{key}_bag") << model
           end
           model.fetch_with_attributes(data)

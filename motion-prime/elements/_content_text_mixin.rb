@@ -1,7 +1,7 @@
 module MotionPrime
   module ElementContentTextMixin
     def content_text
-      (is_a?(ButtonElement) ? button_content_text : input_content_text).to_s
+      is_a?(ButtonElement) ? button_content_text : input_content_text
     end
 
     def content_font
@@ -10,7 +10,7 @@ module MotionPrime
 
     def content_width
       min, max = computed_options[:min_width].to_f, computed_options[:max_width]
-      return min if content_text.blank?
+      return min unless content_text
 
       rect = get_content_rect(Float::MAX)
       @content_width = [[rect.size.width.ceil, max].compact.min, min].max.ceil
@@ -22,7 +22,7 @@ module MotionPrime
 
     def content_height
       min, max = computed_options[:min_height].to_f, computed_options[:max_height]
-      return min if content_text.blank?
+      return min unless content_text
       rect = get_content_rect(computed_options[:width])
       @content_height = [[rect.size.height.ceil, max].compact.min, min].max.ceil
     end
