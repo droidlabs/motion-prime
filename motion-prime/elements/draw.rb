@@ -51,6 +51,16 @@ module MotionPrime
       section.bind_gesture_on_container_for(self, action, receiver)
     end
 
+    def hide
+      computed_options[:hidden] = true
+      view.setNeedsDisplay
+    end
+
+    def show
+      computed_options[:hidden] = false
+      view.setNeedsDisplay
+    end
+
     private
       def reset_computed_values
         @computed_frame = nil

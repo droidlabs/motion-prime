@@ -30,5 +30,9 @@ module MotionPrime
         render
       end
     end
+
+    def on_disappear
+      sugarcube_cleanup if respond_to?(:sugarcube_cleanup)
+    end
   end
 end
