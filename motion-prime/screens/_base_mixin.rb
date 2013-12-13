@@ -48,8 +48,6 @@ module MotionPrime
       options.each do |k, v|
         self.send("#{k}=", v) if self.respond_to?("#{k}=")
       end
-
-      self.on_init if respond_to?(:on_init)
       self
     end
 

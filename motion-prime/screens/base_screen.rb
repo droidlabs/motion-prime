@@ -25,10 +25,13 @@ module MotionPrime
       [:base_screen, self.class_name_without_kvo.underscore.to_sym]
     end
 
-    def on_load
-      setup view, styles: default_styles do
-        render
+    def will_appear
+      unless @on_appear_happened
+        setup view, styles: default_styles do
+          render
+        end
       end
+      @on_appear_happened = true
     end
   end
 end

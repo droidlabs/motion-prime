@@ -1,3 +1,9 @@
+=== 0.4.3
+* Speed improvements
+* Rename dm_ views to mp_
+* Upgrade sugarcube
+* Render screen on appear instead of on load
+
 === 0.4.2
 * Bug fixes
 * Added web view element support
