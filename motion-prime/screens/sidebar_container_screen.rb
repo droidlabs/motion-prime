@@ -5,6 +5,7 @@ module MotionPrime
     def self.new(menu, content, options={})
       screen = self.alloc.initWithContentViewController(nil, menuViewController: nil)
       screen.backgroundImage = MotionPrime::Config.sidebar.background_image
+      screen.parallaxEnabled = false
 
       full_width = UIScreen.mainScreen.bounds.size.width
 
@@ -58,7 +59,7 @@ module MotionPrime
     private
 
       def should_reinit_content?(new_controller)
-        content_controller.nil? || 
+        content_controller.nil? ||
         content_controller.is_a?(TabBarController) ||
         new_controller.is_a?(TabBarController)
       end

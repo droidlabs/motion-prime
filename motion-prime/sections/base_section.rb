@@ -88,6 +88,7 @@ module MotionPrime
 
     def load_elements
       self.elements.values.each do |element|
+        element.size_to_fit_if_needed if element.is_a?(LabelDrawElement)
         element.computed_options if element.respond_to?(:computed_options)
       end
     end
@@ -198,7 +199,7 @@ module MotionPrime
       views = Array.wrap(keyboard_close_bindings_options[:views])
 
       elements.each { |el| views << el.view if %w[text_field text_view].include?(el.view_name) && el.view }
-      (views + Array.wrap(keyboard_close_bindings_options[:views])).compact.each(&:resignFirstResponder)
+      views.compact.each(&:resignFirstResponder)
     end
 
     protected

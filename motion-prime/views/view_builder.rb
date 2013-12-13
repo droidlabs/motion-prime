@@ -107,6 +107,7 @@ module MotionPrime
               options[:background_color] = :clear
               options.delete(:gradient)
             end
+
             klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
           },
           'UISearchBar' => Proc.new{|klass, options|

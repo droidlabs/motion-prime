@@ -117,13 +117,7 @@ module MotionPrime
     end
 
     def render_cell(index, table)
-      item = row_by_index(index)
-      screen.table_view_cell section: item, reuse_identifier: cell_name(table, index), parent_view: table_view, has_drawn_content: true do |container_view, container_element|
-        # DrawSection allows as to draw inside the cell view, so we can setup
-        # to use cell view as container
-        item.container_element = container_element
-        item.render
-      end
+      container_element_for(index)
     end
 
     def on_row_render(cell, index); end
@@ -203,6 +197,16 @@ module MotionPrime
     def on_async_data_loaded; end
     def on_async_data_preloaded(loaded_index); end
 
+    def cell_name(table, index)
+      record = row_by_index(index)
+      if record && record.model &&
+         record.model.respond_to?(:id) && record.model.id.present?
+        "cell_#{record.model.id}_#{data_stamp_for("#{index.section}_#{index.row}")}"
+      else
+        "cell_#{index.section}_#{index.row}_#{data_stamp_for("#{index.section}_#{index.row}")}"
+      end
+    end
+
     private
       def set_table_data
         cells = async_data? ? load_sections_async : table_data
@@ -225,16 +229,6 @@ module MotionPrime
         end
       end
 
-      def cell_name(table, index)
-        record = row_by_index(index)
-        if record && record.model &&
-           record.model.respond_to?(:id) && record.model.id.present?
-          "cell_#{record.model.id}_#{data_stamp_for("#{index.section}_#{index.row}")}"
-        else
-          "cell_#{index.section}_#{index.row}_#{data_stamp_for("#{index.section}_#{index.row}")}"
-        end
-      end
-
       def cached_cell(index, table = nil)
         table ||= self.table_view
         table.dequeueReusableCellWithIdentifier(cell_name(table, index))
@@ -252,6 +246,19 @@ module MotionPrime
         cell = rows_for_section(index.section)[index.row]
         return unless cell.load_section # return if already loaded
         cell.load_elements
+        if async_data?
+          container_element = container_element_for(index)
+          container_element.computed_options # compute options
+        end
+      end
+
+      def container_element_for(index)
+        cell = rows_for_section(index.section)[index.row]
+        options = {
+          reuse_identifier: cell_name(table_view, index),
+          parent_view: table_view
+        }
+        cell.load_container_element(options)
       end
 
       def data_stamp_for(id)

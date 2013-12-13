@@ -1,16 +1,14 @@
 module MotionPrime
   module DrawBackgroundMixin
     def draw_background_in(draw_rect, options)
-
       bg_color = options[:background_color]
       border_radius = options[:layer].try(:[], :corner_radius)
       border_width = options[:layer].try(:[], :border_width).to_f
       border_color = options[:layer].try(:[], :border_color) || bg_color || :black
 
-
-      inset = border_width > 0 ? (border_width - 1 )*0.5 : 0
-      rect = CGRectInset(draw_rect, -inset, -inset)
       if bg_color || border_width > 0
+        inset = border_width > 0 ? (border_width - 1 )*0.5 : 0
+        rect = CGRectInset(draw_rect, -inset, -inset)
         if border_radius
           bezierPath = UIBezierPath.bezierPathWithRoundedRect rect, cornerRadius: border_radius
           if border_width > 0
