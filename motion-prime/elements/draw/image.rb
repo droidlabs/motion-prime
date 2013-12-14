@@ -52,27 +52,19 @@ module MotionPrime
     end
 
     def draw_with_layer(image, rect)
-
+      layer = CALayer.layer
+      layer.contents = image.CGImage
+      layer.frame = rect
+      layer.bounds = rect
       if computed_options[:layer]
-        layer = CALayer.layer
-        layer.frame = CGRectMake(0, 0, image.size.width, image.size.height)
-        layer.contents = image.CGImage
-
         layer.masksToBounds = computed_options[:layer][:masks_to_bounds] || computed_options[:clips_to_bounds]
         if radius = computed_options[:layer][:corner_radius]
           k = image.size.width / rect.size.width
           radius = radius * k
           layer.cornerRadius = radius
         end
-
-        UIGraphicsBeginImageContext(image.size)
-        layer.renderInContext(UIGraphicsGetCurrentContext())
-        image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        image.drawInRect(rect)
-      else
-        image.drawInRect(rect)
       end
+      view.layer.addSublayer layer
     end
   end
 end
