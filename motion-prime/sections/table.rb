@@ -146,12 +146,11 @@ module MotionPrime
       @rendered_cells ||= []
       @rendered_cells[index.section] ||= []
 
-      cell = cached_cell(index, table) || render_cell(index, table).tap do |cell|
-        @rendered_cells[index.section][index.row] = cell
-        on_row_render(cell, index)
+      cell = cached_cell(index, table) || render_cell(index, table)
+      @rendered_cells[index.section][index.row] = cell
+      on_row_render(cell, index)
 
-        preload_sections_for(index)
-      end
+      preload_sections_for(index)
 
       # run table view is appeared callback if needed
       if !@did_appear && index.row == rows_for_section(index.section).size - 1

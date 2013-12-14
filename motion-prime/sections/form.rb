@@ -18,6 +18,8 @@ module MotionPrime
     # end
     #
 
+    include HasClassFactory
+
     class_attribute :text_field_limits, :text_view_limits
     class_attribute :fields_options, :section_header_options
     attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :section_headers, :section_header_options
@@ -210,8 +212,8 @@ module MotionPrime
     end
 
     def load_field(field)
-      klass = "MotionPrime::#{field[:type].classify}FieldSection".constantize
-      klass.new(field.merge(screen: screen, table: self))
+      field_class = class_factory("#{field[:type]}_field_section", true)
+      field_class.new(field.merge(screen: screen, table: self))
     end
 
     def render_field?(name, options)

@@ -2,6 +2,7 @@ module MotionPrime
   class ViewStyler
     include FrameCalculatorMixin
     include HasStyles
+    include HasClassFactory
 
     attr_reader :view, :options
 
@@ -12,20 +13,16 @@ module MotionPrime
     end
 
     def apply
-      converted_options = convert_primitives_to_objects(options)
-      setValuesForKeysWithDictionary(converted_options)
-    end
-
-    def convert_primitives_to_objects(options)
-      options.inject({}) do |result, (k, v)|
-        v = STRUCTS_MAP[v.class].call(v) if STRUCTS_MAP.has_key?(v.class)
-        result[k] = v
-        result
+      options.each do |key, value|
+        set_option(key.to_s, value)
       end
     end
 
     def prepare_frame_for(bounds)
-      options[:frame] = calculate_frome_for(bounds, options)
+      frame = calculate_frome_for(bounds, options)
+      if STRUCTS_MAP.has_key?(frame.class)
+        options[:frame] = STRUCTS_MAP[frame.class].call(frame)
+      end
 
       if options.slice(:width, :height, :right, :bottom, :height_to_fit).values.any?
         mask = UIViewAutoresizingNone
@@ -39,7 +36,7 @@ module MotionPrime
       end
     end
 
-    def setValue(value, forUndefinedKey: key)
+    def set_option(key, value)
       # return if value.nil?
       # ignore options
       return if key == 'section' && !view.respond_to?(:section=)
@@ -56,15 +53,15 @@ module MotionPrime
       if key.end_with?('title_color')
         view.setTitleColor value.uicolor, forState: UIControlStateNormal
       elsif key.end_with?('alignment') && value.is_a?(Symbol)
-        view.setValue value.uitextalignment, forKey: key.camelize
+        view.setValue value.uitextalignment, forKey: camelize_factory(key)
       elsif key.end_with?('line_break_mode') && value.is_a?(Symbol)
-        view.setValue value.uilinebreakmode, forKey: key.camelize
+        view.setValue value.uilinebreakmode, forKey: camelize_factory(key)
       elsif key.end_with?('title_shadow_color')
         view.setTitleShadowColor value.uicolor, forState: UIControlStateNormal
       elsif key.end_with?('color')
         color = value.try(:uicolor)
         color = color.cgcolor if view.is_a?(CALayer)
-        view.send :"#{key.camelize(:lower)}=", color
+        view.send :"#{low_camelize_factory(key)}=", color
       elsif key.end_with?('background_image')
         if view.is_a?(UIButton)
           view.setBackgroundImage value.uiimage, forState: UIControlStateNormal
@@ -79,10 +76,10 @@ module MotionPrime
           bg_view.backgroundColor = value[:color].uicolor
           view.backgroundView = bg_view
         else
-          view.setValue value, forKey: key.camelize(:lower)
+          view.setValue value, forKey: low_camelize_factory(key)
         end
       elsif key.end_with?('image')
-        view.setValue value.uiimage, forKey: key.camelize
+        view.setValue value.uiimage, forKey: camelize_factory(key)
       elsif key.end_with?('_content_inset')
         current_inset = view.contentInset
         current_inset.send("#{key.partition('_').first}=", value)
@@ -144,9 +141,9 @@ module MotionPrime
           view.separatorInset = UIEdgeInsetsMake(0, value.first, 0, value.last)
         end
       elsif value.is_a?(Hash)
-        self.class.new(view.send(key.camelize(:lower).to_sym), nil, value.merge(parent_frame: options[:frame] || options[:parent_frame])).apply
+        self.class.new(view.send(low_camelize_factory(key).to_sym), nil, value.merge(parent_frame: options[:frame] || options[:parent_frame])).apply
       else
-        view.setValue value, forKey: key.camelize(:lower)
+        view.setValue value, forKey: low_camelize_factory(key)
       end
     end
 

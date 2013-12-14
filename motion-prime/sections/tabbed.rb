@@ -103,8 +103,8 @@ module MotionPrime
         self.tab_pages = []
         index = 0
         tab_options.each do |key, options|
-          section_class = options[:page_section].camelize
-          page = "::#{section_class}Section".constantize.new(screen: screen, model: model)
+          page_class = class_factory("/#{options[:page_section]}_section")
+          page = page_class.new(screen: screen, model: model)
           page.render
           page.hide if index != tab_default
           self.tab_pages << page

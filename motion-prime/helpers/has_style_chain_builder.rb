@@ -1,11 +1,14 @@
 module MotionPrime
   module HasStyleChainBuilder
     def build_styles_chain(base_styles, suffixes)
-      [*base_styles].map do |base_style|
-        [*suffixes].map do |suffix| 
-          [base_style.to_s, suffix.to_s].join('_').to_sym
+      styles = []
+      [*base_styles].each do |base_style|
+        [*suffixes].each do |suffix|
+          next if !base_style && !suffix
+          styles << [base_style.to_s, suffix.to_s].join('_').to_sym
         end
-      end.flatten.compact.uniq
+      end
+      styles
     end
   end
 end

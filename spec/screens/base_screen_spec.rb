@@ -3,9 +3,10 @@ describe "BaseScreen" do
   before do
     @screen = BaseScreen.new()
     @screen.on_load
+    @screen.will_appear
   end
 
-  it "should render screen on load" do
+  it "should render screen on appear" do
     @screen.was_rendered.should == true
   end
 

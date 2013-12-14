@@ -1,5 +1,6 @@
 motion_require '../helpers/has_normalizer'
 motion_require '../helpers/has_style_chain_builder'
+motion_require '../helpers/has_class_factory'
 module MotionPrime
   class BaseElement
     # MotionPrime::BaseElement is container for UIView class elements with options.
@@ -8,6 +9,8 @@ module MotionPrime
     include ::MotionSupport::Callbacks
     include HasNormalizer
     include HasStyleChainBuilder
+    include HasClassFactory
+    extend HasClassFactory
 
     attr_accessor :options, :section, :name,
                   :view_class, :view, :view_name, :styles, :screen
@@ -151,13 +154,11 @@ module MotionPrime
 
     class << self
       def factory(type, options = {})
-        class_name = "#{type.camelize}Element"
-        options.merge!(view_class: "UI#{type.camelize}")
-        if MotionPrime.const_defined?(class_name)
-          "MotionPrime::#{class_name}".constantize.new(options)
-        else
-          self.new(options)
-        end
+        element_class = class_factory("#{type}_element", true) || self
+        view_class_name = camelize_factory("ui_#{type}")
+        
+        options.merge!(view_class: view_class_name)
+        element_class.new(options)
       end
       def before_render(method_name)
         set_callback :render, :before, method_name

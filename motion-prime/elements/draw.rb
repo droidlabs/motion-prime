@@ -6,6 +6,7 @@ module MotionPrime
 
     include FrameCalculatorMixin
     include ElementContentPaddingMixin
+    extend HasClassFactory
 
     def render!; end
 
@@ -68,9 +69,8 @@ module MotionPrime
 
     class << self
       def factory(type, options = {})
-        return unless %w[View Label Image].include?(type.camelize)
-        class_name = "#{type.camelize}DrawElement"
-        "MotionPrime::#{class_name}".constantize.new(options)
+        return unless %w[view label image].include?(type.downcase)
+        class_factory("#{type}_draw_element", true).new(options)
       end
     end
   end
