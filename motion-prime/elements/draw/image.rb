@@ -56,7 +56,7 @@ module MotionPrime
       if computed_options[:layer]
         layer = CALayer.layer
         layer.frame = CGRectMake(0, 0, image.size.width, image.size.height)
-        # layer.contents = image.CGImage # REMOVE IF IT"S NO NEEDED
+        layer.contents = image.CGImage
 
         layer.masksToBounds = computed_options[:layer][:masks_to_bounds] || computed_options[:clips_to_bounds]
         if radius = computed_options[:layer][:corner_radius]

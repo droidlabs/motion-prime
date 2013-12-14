@@ -68,7 +68,7 @@ module MotionPrime
 
     class << self
       def factory(type, options = {})
-        return unless %w[view label image].include?(type.downcase)
+        return unless %w[view label image].include?(type.to_s.downcase)
         class_factory("#{type}_draw_element", true).new(options)
       end
     end
