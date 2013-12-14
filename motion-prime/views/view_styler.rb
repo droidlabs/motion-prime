@@ -13,16 +13,22 @@ module MotionPrime
     end
 
     def apply
-      options.each do |key, value|
+      converted_options = convert_primitives_to_objects(options)
+      converted_options.each do |key, value|
         set_option(key.to_s, value)
       end
     end
 
-    def prepare_frame_for(bounds)
-      frame = calculate_frome_for(bounds, options)
-      if STRUCTS_MAP.has_key?(frame.class)
-        options[:frame] = STRUCTS_MAP[frame.class].call(frame)
+    def convert_primitives_to_objects(options)
+      options.inject({}) do |result, (k, v)|
+        v = STRUCTS_MAP[v.class].call(v) if STRUCTS_MAP.has_key?(v.class)
+        result[k] = v
+        result
       end
+    end
+
+    def prepare_frame_for(bounds)
+      options[:frame] = calculate_frome_for(bounds, options)
 
       if options.slice(:width, :height, :right, :bottom, :height_to_fit).values.any?
         mask = UIViewAutoresizingNone

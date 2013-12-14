@@ -6,7 +6,6 @@ module MotionPrime
 
     include FrameCalculatorMixin
     include ElementContentPaddingMixin
-    extend HasClassFactory
 
     def render!; end
 

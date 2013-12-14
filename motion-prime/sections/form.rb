@@ -18,8 +18,6 @@ module MotionPrime
     # end
     #
 
-    include HasClassFactory
-
     class_attribute :text_field_limits, :text_view_limits
     class_attribute :fields_options, :section_header_options
     attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :section_headers, :section_header_options

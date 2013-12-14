@@ -17,6 +17,7 @@ module MotionPrime
     include ::MotionSupport::Callbacks
     include HasAuthorization
     include HasNormalizer
+    include HasClassFactory
     include DrawMixin
 
     attr_accessor :screen, :model, :name, :options, :elements, :section_styles

@@ -119,9 +119,16 @@ module MotionPrime
     def render_cell(index, table)
       section = rows_for_section(index.section)[index.row]
       cell_element = container_element_for(index)
-      cell_element.render do
+      cell_view = cell_element.render do
         section.render
       end
+
+      @rendered_cells[index.section][index.row] = cell_view
+      on_row_render(cell_view, index)
+
+      preload_sections_for(index)
+
+      cell_view
     end
 
     def on_row_render(cell, index); end
@@ -147,10 +154,6 @@ module MotionPrime
       @rendered_cells[index.section] ||= []
 
       cell = cached_cell(index, table) || render_cell(index, table)
-      @rendered_cells[index.section][index.row] = cell
-      on_row_render(cell, index)
-
-      preload_sections_for(index)
 
       # run table view is appeared callback if needed
       if !@did_appear && index.row == rows_for_section(index.section).size - 1

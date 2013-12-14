@@ -4,8 +4,10 @@ module MotionPrime
       styles = []
       [*base_styles].each do |base_style|
         [*suffixes].each do |suffix|
-          next if !base_style && !suffix
-          styles << [base_style.to_s, suffix.to_s].join('_').to_sym
+          components = []
+          components << base_style.to_s if base_style.present?
+          components << suffix.to_s if suffix.present?
+          styles << components.join('_').to_sym if components.present?
         end
       end
       styles
