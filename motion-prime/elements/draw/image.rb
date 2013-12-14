@@ -52,6 +52,7 @@ module MotionPrime
     end
 
     def draw_with_layer(image, rect)
+      return if image.blank?
       layer = CALayer.layer
       layer.contents = image.CGImage
       layer.frame = rect
