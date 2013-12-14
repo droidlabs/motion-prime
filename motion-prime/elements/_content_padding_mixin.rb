@@ -51,7 +51,7 @@ module MotionPrime
     end
 
     def default_padding_for(side)
-      view_class.constantize.send(:"default_padding_#{side}")
+      class_factory(view_class).send(:"default_padding_#{side}")
     end
   end
 end

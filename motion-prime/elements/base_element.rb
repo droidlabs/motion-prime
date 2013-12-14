@@ -23,7 +23,7 @@ module MotionPrime
       @section = options[:section]
       @name = options[:name]
       @block = options[:block]
-      @view_class = options[:view_class] || "UIView"
+      @view_class = options[:view_class] || 'UIView'
       @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
     end
 
@@ -34,7 +34,7 @@ module MotionPrime
     end
 
     def render!(&block)
-      screen.add_view view_class.constantize, computed_options do |view|
+      screen.add_view class_factory(view_class), computed_options do |view|
         @view = view
         block.try(:call, view, self)
       end
@@ -100,14 +100,16 @@ module MotionPrime
           # following example in Prime::TableSection#cell_styles
           # form element/cell: <base|user>_form_field, <base|user>_form_string_field, user_form_field_email
           # table element/cell: <base|categories>_table_cell, categories_table_title
-          section.section_styles.each { |type, values| base_styles[type] += values } if section.section_styles
-          if %w[base table_view_cell].exclude?(@view_name.to_s)
+          if section.section_styles
+            section.section_styles.each { |type, values| base_styles[type] += values }
+          end
+          if %w[base table_view_cell].exclude?(@view_name)
             # form element: _input
             # table element: _image
             suffixes[:common] << @view_name.to_sym
             suffixes[:common] << :"#{@view_name}_with_errors" if has_errors
           end
-          if name && name.to_s != @view_name.to_s
+          if name && name.to_s != @view_name
             # form element: _input
             # table element: _icon
             suffixes[:specific] << name.to_sym
@@ -121,7 +123,7 @@ module MotionPrime
             build_styles_chain(base_styles[:common], suffixes[:common])
           elsif suffixes[:specific].any?
             build_styles_chain(base_styles[:common], suffixes[:specific])
-          elsif @view_name.to_s == 'table_view_cell'
+          elsif @view_name == 'table_view_cell'
             base_styles[:common]
           end
           @styles += Array.wrap(common_styles)
@@ -132,7 +134,7 @@ module MotionPrime
           # table element: categories_table_cell_image, categories_table_title_image
           specific_base_common_suffix_styles = if suffixes[:common].any?
             build_styles_chain(base_styles[:specific], suffixes[:common])
-          elsif suffixes[:specific].empty? && @view_name.to_s == 'table_view_cell'
+          elsif suffixes[:specific].empty? && @view_name == 'table_view_cell'
             base_styles[:specific]
           end
           @styles += Array.wrap(specific_base_common_suffix_styles)
@@ -147,9 +149,9 @@ module MotionPrime
         # custom style (from options or block options), using for TableViews as well
         custom_styles = style_sources.map do |source|
           normalize_object(source.delete(:styles), section)
-        end.compact.flatten
+        end.flatten
         @styles += custom_styles
-        # puts @view_class.to_s + @styles.inspect, ''
+        #puts @view_class.to_s + @styles.inspect, ''
       end
 
     class << self
