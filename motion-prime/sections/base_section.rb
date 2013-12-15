@@ -127,8 +127,8 @@ module MotionPrime
     end
 
     def render(container_options = {})
-      self.container_options.merge!(container_options)
       load_section
+      self.container_options.merge!(container_options)
 
       run_callbacks :render do
         render!
