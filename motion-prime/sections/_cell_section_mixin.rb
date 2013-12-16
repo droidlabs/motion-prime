@@ -43,7 +43,7 @@ module MotionPrime
       load_elements
       init_container_element(options)
       @container_element.compute_options! unless @container_element.computed_options
-      prerender_elements if respond_to?(:prerender_elements)
+      prerender_elements if respond_to?(:prerender_elements) && self.class.prerender_enabled
     end
   end
 end

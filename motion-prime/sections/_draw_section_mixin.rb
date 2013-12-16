@@ -1,8 +1,13 @@
 module MotionPrime
   module DrawSectionMixin
+    extend ::MotionSupport::Concern
+
     include HasStyles
     include FrameCalculatorMixin
     attr_accessor :container_element, :container_gesture_recognizers
+    included do
+      class_attribute :prerender_enabled
+    end
 
     def container_view
       container_element.try(:view)
@@ -91,5 +96,11 @@ module MotionPrime
           element.load_image if element.is_a?(ImageDrawElement)
         end
       end
+
+    module ClassMethods
+      def enable_prerender
+        self.prerender_enabled = true
+      end
+    end
   end
 end
