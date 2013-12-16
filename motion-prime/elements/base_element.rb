@@ -46,6 +46,15 @@ module MotionPrime
       @computed_options
     end
 
+    def compute_options!
+      block_options = compute_block_options || {}
+      raw_options = self.options.except(:screen, :name, :block, :view_class).merge(block_options)
+      compute_style_options(raw_options)
+      raw_options = Styles.for(styles).merge(raw_options)
+      @computed_options = raw_options
+      normalize_options(@computed_options, section, %w[text placeholder font title_label padding padding_left padding_right min_width min_outer_width max_width max_outer_width width left right])
+    end
+
     def update_with_options(new_options = {})
       options.merge!(new_options)
       compute_options!
@@ -70,15 +79,6 @@ module MotionPrime
     end
 
     protected
-      def compute_options!
-        block_options = compute_block_options || {}
-        raw_options = self.options.except(:screen, :name, :block, :view_class).merge(block_options)
-        compute_style_options(raw_options)
-        raw_options = Styles.for(styles).merge(raw_options)
-
-        @computed_options = raw_options
-        normalize_options(@computed_options, section, %w[text placeholder font title_label padding padding_left padding_right min_width min_outer_width max_width max_outer_width width left right])
-      end
 
       # Compute options sent inside block, e.g.
       # element :button do
@@ -158,7 +158,7 @@ module MotionPrime
       def factory(type, options = {})
         element_class = class_factory("#{type}_element", true) || self
         view_class_name = camelize_factory("ui_#{type}")
-        
+
         options.merge!(view_class: view_class_name)
         element_class.new(options)
       end

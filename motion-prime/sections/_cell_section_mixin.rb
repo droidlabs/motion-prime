@@ -24,7 +24,11 @@ module MotionPrime
       end
     end
 
-    def load_container_element(options = {})
+    def container_bounds
+      @container_bounds ||= CGRectMake(0, 0, table.table_view.bounds.size.width, container_height)
+    end
+
+    def init_container_element(options = {})
       @container_element ||= begin
         options.merge!({
           screen: screen,
@@ -33,6 +37,13 @@ module MotionPrime
         })
         MotionPrime::BaseElement.factory(:table_view_cell, options)
       end
+    end
+
+    def load_container_element(options = {})
+      load_elements
+      init_container_element(options)
+      @container_element.compute_options! unless @container_element.computed_options
+      prerender_elements if respond_to?(:prerender_elements)
     end
   end
 end

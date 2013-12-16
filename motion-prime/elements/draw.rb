@@ -7,6 +7,19 @@ module MotionPrime
     include FrameCalculatorMixin
     include ElementContentPaddingMixin
 
+    def draw_options
+      options = computed_options
+      background_color = options[:background_color].try(:uicolor)
+      {
+        rect: CGRectMake(computed_left, computed_top, computed_outer_width, computed_outer_height),
+        background_color: background_color,
+        masks_to_bounds: options[:layer].try(:[], :masks_to_bounds) || options[:clips_to_bounds],
+        corner_radius: options[:layer].try(:[], :corner_radius).to_f,
+        border_width: options[:layer].try(:[], :border_width).to_f,
+        border_color: options[:layer].try(:[], :border_color).try(:uicolor) || background_color
+      }
+    end
+
     def render!; end
 
     def view
@@ -14,7 +27,7 @@ module MotionPrime
     end
 
     def computed_frame
-      @computed_frame ||= calculate_frome_for(view.bounds, computed_options)
+      @computed_frame ||= calculate_frome_for(view.try(:bounds) || section.container_bounds, computed_options)
     end
 
     def default_padding_for(side)

@@ -18,7 +18,7 @@ module MotionPrime
     include HasAuthorization
     include HasNormalizer
     include HasClassFactory
-    include DrawMixin
+    include DrawSectionMixin
 
     attr_accessor :screen, :model, :name, :options, :elements, :section_styles
     class_attribute :elements_options, :container_options, :keyboard_close_bindings, :cell_name
@@ -58,6 +58,7 @@ module MotionPrime
       @section_loading = true
       create_elements
       @section_loading = false
+
       return @section_loaded = true
     end
 
@@ -90,7 +91,7 @@ module MotionPrime
     def load_elements
       self.elements.values.each do |element|
         element.size_to_fit_if_needed if element.is_a?(LabelDrawElement)
-        element.computed_options if element.respond_to?(:computed_options)
+        element.compute_options! if element.respond_to?(:computed_options) && !element.computed_options
       end
     end
 

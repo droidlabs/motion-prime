@@ -14,7 +14,7 @@ MotionPrime::Styles.define :base_form do
     width: 320
 
   style :field,
-    selection_style: UITableViewCellSelectionStyleNone,
+    selection_style: :none,
     background_color: :clear
 
   style :with_sections,

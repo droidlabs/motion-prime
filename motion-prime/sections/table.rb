@@ -36,7 +36,9 @@ module MotionPrime
       @data = nil
       @async_loaded_data = nil
       @next_portion_starts_from = nil
+      @preloader_cancelled = false
       @data_stamp = nil
+      @queue_states[-1] = :cancelled if @queue_states.present?
     end
 
     def table_styles
@@ -118,17 +120,18 @@ module MotionPrime
 
     def render_cell(index, table)
       section = rows_for_section(index.section)[index.row]
-      cell_element = container_element_for(index)
-      cell_view = cell_element.render do
+      element = section.container_element || section.init_container_element(container_element_options_for(index))
+
+      view = element.render do
         section.render
       end
 
-      @rendered_cells[index.section][index.row] = cell_view
-      on_row_render(cell_view, index)
+      @rendered_cells[index.section][index.row] = view
+      on_row_render(view, index)
 
       preload_sections_for(index)
 
-      cell_view
+      view
     end
 
     def on_row_render(cell, index); end
@@ -171,7 +174,7 @@ module MotionPrime
     end
 
     def tableView(table, heightForRowAtIndexPath: index)
-      load_cell_by_index(index)
+      load_cell_by_index(index, preload: true)
       cell = rows_for_section(index.section)[index.row]
       cell.container_height
     end
@@ -248,23 +251,20 @@ module MotionPrime
         end
       end
 
-      def load_cell_by_index(index)
-        cell = rows_for_section(index.section)[index.row]
-        return unless cell.load_section # return if already loaded
-        cell.load_elements
-        if async_data?
-          container_element = container_element_for(index)
-          container_element.computed_options # compute options
+      def load_cell_by_index(index, options = {})
+        section = rows_for_section(index.section)[index.row]
+        return unless section.load_section # return if already loaded
+
+        if options[:preload] && !section.container_element && async_data?
+          section.load_container_element(container_element_options_for(index))
         end
       end
 
-      def container_element_for(index)
-        cell = rows_for_section(index.section)[index.row]
-        options = {
+      def container_element_options_for(index)
+        {
           reuse_identifier: cell_name(table_view, index),
           parent_view: table_view
         }
-        cell.load_container_element(options)
       end
 
       def data_stamp_for(id)
@@ -315,12 +315,22 @@ module MotionPrime
           load_count = [left_to_load, load_limit].compact.min
 
           next_index = @next_portion_starts_from
-          BW::Reactor.schedule do
-            load_count.times do |offset|
-              load_cell_by_index(next_index)
+          @preloader_cancelled = false
+
+          @queue_states ||= []
+          BW::Reactor.schedule(@queue_states.count)  do |queue_id|
+            @queue_states[queue_id] = :in_progress
+
+            result = load_count.times do |offset|
+              break if @queue_states[queue_id] == :cancelled
+              load_cell_by_index(next_index, preload: true)
               next_index = service.sum_index(next_index, 1) unless offset == load_count - 1
             end
-            on_async_data_preloaded(next_index)
+
+            if result
+              on_async_data_preloaded(next_index)
+              @queue_states[queue_id] = :completed
+            end
           end
 
           @next_portion_starts_from = service.sum_index(@next_portion_starts_from, load_count, false)

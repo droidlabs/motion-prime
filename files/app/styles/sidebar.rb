@@ -10,7 +10,7 @@ Prime::Styles.define :sidebar do
     separator_color: :clear
 
   style :table_cell,
-    selection_style: UITableViewCellSelectionStyleNone
+    selection_style: :none
 
   style :action_title,
     text_color: :white,
