@@ -37,7 +37,7 @@ module MotionPrime
             reload_section
           else
             load_section!
-            form.table_view.reloadData
+            form.reload_table_data
           end
         end
       end

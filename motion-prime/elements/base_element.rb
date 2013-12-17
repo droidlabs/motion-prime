@@ -151,7 +151,7 @@ module MotionPrime
           normalize_object(source.delete(:styles), section)
         end.flatten
         @styles += custom_styles
-        #puts @view_class.to_s + @styles.inspect, ''
+        # puts @view_class.to_s + @styles.inspect, ''
       end
 
     class << self

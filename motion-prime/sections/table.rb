@@ -24,11 +24,15 @@ module MotionPrime
     def reload_data
       reset_data
       @async_loaded_data = table_data if async_data?
+      reload_table_data
+    end
+
+    def reload_table_data
       table_view.reloadData
     end
 
     def refresh_if_needed
-      table_view.reloadData if @data.nil?
+      reload_table_data if @data.nil?
     end
 
     def reset_data
@@ -45,7 +49,7 @@ module MotionPrime
       type = self.is_a?(FormSection) ? :base_form : :base_table
 
       base_styles = [type]
-      base_styles << :"#{type}_with_sections" unless flat_data?
+      base_styles << :"#{type}_with_sections" #unless flat_data?
       item_styles = [name.to_sym]
       item_styles << @styles if @styles.present?
       {common: base_styles, specific: item_styles}
@@ -138,7 +142,44 @@ module MotionPrime
     def on_appear; end
     def on_click(table, index); end
 
-    # ALIASES
+    def number_of_sections
+      has_many_sections? ? data.count : 1
+    end
+
+    def has_many_sections?
+      data.any? && data.first.is_a?(Array)
+    end
+
+    def flat_data?
+      !has_many_sections?
+    end
+
+    def rows_for_section(section)
+      flat_data? ? data : data[section]
+    end
+
+    def row_by_index(index)
+      rows_for_section(index.section)[index.row]
+    end
+
+    def self.async_table_data(options = {})
+      self.async_data_options = options
+    end
+
+    def on_async_data_loaded; end
+    def on_async_data_preloaded(loaded_index); end
+
+    def cell_name(table, index)
+      record = row_by_index(index)
+      if record && record.model &&
+         record.model.respond_to?(:id) && record.model.id.present?
+        "cell_#{record.model.id}_#{data_stamp_for("#{index.section}_#{index.row}")}"
+      else
+        "cell_#{index.section}_#{index.row}_#{data_stamp_for("#{index.section}_#{index.row}")}"
+      end
+    end
+
+    # Table View Delegate
     # ---------------------
 
     # def tableView(table, viewForFooterInSection: section) # cause bug in ios7.0.0-7.0.2
@@ -166,54 +207,17 @@ module MotionPrime
     end
 
     def tableView(table, numberOfRowsInSection:section)
-      rows_for_section(section).length
-    end
-
-    def tableView(table, didSelectRowAtIndexPath:index)
-      on_click(table, index)
+      rows_for_section(section).try(:count).to_i
     end
 
     def tableView(table, heightForRowAtIndexPath: index)
       load_cell_by_index(index, preload: true)
-      cell = rows_for_section(index.section)[index.row]
-      cell.container_height
+      section = rows_for_section(index.section)[index.row]
+      section.container_height
     end
 
-    def number_of_sections
-      has_many_sections? ? data.count : 1
-    end
-
-    def has_many_sections?
-      data.any? && data.first.is_a?(Array)
-    end
-
-    def flat_data?
-      !has_many_sections?
-    end
-
-    def row_by_index(index)
-      rows_for_section(index.section)[index.row]
-    end
-
-    def rows_for_section(section)
-      flat_data? ? data : data[section]
-    end
-
-    def self.async_table_data(options = {})
-      self.async_data_options = options
-    end
-
-    def on_async_data_loaded; end
-    def on_async_data_preloaded(loaded_index); end
-
-    def cell_name(table, index)
-      record = row_by_index(index)
-      if record && record.model &&
-         record.model.respond_to?(:id) && record.model.id.present?
-        "cell_#{record.model.id}_#{data_stamp_for("#{index.section}_#{index.row}")}"
-      else
-        "cell_#{index.section}_#{index.row}_#{data_stamp_for("#{index.section}_#{index.row}")}"
-      end
+    def tableView(table, didSelectRowAtIndexPath:index)
+      on_click(table, index)
     end
 
     private
@@ -231,7 +235,7 @@ module MotionPrime
           BW::Reactor.schedule_on_main do
             @async_loaded_data = table_data
             @data = nil
-            table_view.reloadData
+            reload_table_data
             on_async_data_loaded
           end
           []
@@ -243,11 +247,13 @@ module MotionPrime
         table.dequeueReusableCellWithIdentifier(cell_name(table, index))
       end
 
-      def prepare_table_cells(cells)
-        cells.each do |cell|
+      def prepare_table_cells(cell)
+        if cell.is_a?(Array)
+          cell.each { |c| prepare_table_cells(c) }
+        else
           cell.send(:extend, CellSectionMixin)
-          cell.screen = screen
-          cell.table = self if cell.respond_to?(:table=)
+          cell.screen ||= screen
+          cell.table ||= self if cell.respond_to?(:table=)
         end
       end
 
@@ -295,7 +301,7 @@ module MotionPrime
         if flat_data?
           data.each(&:load_section)
         else
-          data.count.times { |section_data| section_data.each(&:load_section) }
+          data.each { |section_data| section_data.each(&:load_section) }
         end
       end
 
@@ -306,7 +312,6 @@ module MotionPrime
         load_limit = self.class.async_data_options.try(:[], :preload_rows_count)
         @next_portion_starts_from ||= index
         start_preload_when_index_loaded = service.sum_index(@next_portion_starts_from, load_limit ? -load_limit/2 : 0)
-
         if service.compare_indexes(index, start_preload_when_index_loaded) >= 0
           section = @next_portion_starts_from.section
           next_row = @next_portion_starts_from.row

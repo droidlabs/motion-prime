@@ -76,7 +76,7 @@ module MotionPrime
 
       if @table && !self.is_a?(BaseFieldSection)
         cell.setNeedsDisplay
-        @table.table_view.reloadData
+        @table.reload_table_data
       end
     end
 

@@ -20,38 +20,14 @@ module MotionPrime
 
     class_attribute :text_field_limits, :text_view_limits
     class_attribute :fields_options, :section_header_options
-    attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :section_headers, :section_header_options
+    attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :section_headers, :section_header_options, :grouped_data
 
     def table_data
-      if @has_groups
-        section_indexes = []
-        data = fields.inject([]) do |result, (key, field)|
-          section = self.class.fields_options[key][:group].to_i
-          section_indexes[section] ||= 0
-          result[section] ||= []
-          result[section][section_indexes[section]] = field
-          section_indexes[section] += 1
-          result
-        end
-        self.section_header_options.delete_if.each_with_index { |opts, id| data[id].nil? }
-        data.compact
+      if has_many_sections?
+        grouped_data.compact
       else
         fields.values
       end
-    end
-
-    def data
-      @data ||= table_data
-    end
-
-    def render_table
-      init_form_fields
-      options = {
-        styles: table_styles.values.flatten,
-        delegate: self,
-        dataSource: self,
-        style: (UITableViewStyleGrouped unless flat_data?)}
-      self.table_element = screen.table_view(options)
     end
 
     def reload_cell(section)
@@ -234,9 +210,11 @@ module MotionPrime
     end
 
     def tableView(table, viewForHeaderInSection: section)
+      return @cached_headers[section] if @cached_headers.try(:[], section)
       return unless header = header_for_section(section)
       wrapper = MotionPrime::BaseElement.factory(:view, screen: screen, styles: cell_styles(header).values.flatten, parent_view: table_view)
-      wrapper.render do |container_view, container_element|
+      @cached_headers ||= []
+      @cached_headers[section] = wrapper.render do |container_view, container_element|
         header.container_element = container_element
         header.render
       end
@@ -244,6 +222,12 @@ module MotionPrime
 
     def tableView(table, heightForHeaderInSection: section)
       header_for_section(section).try(:container_height) || 0
+    end
+
+    def tableView(table, heightForRowAtIndexPath: index)
+      load_cell_by_index(index, preload: false)
+      section = rows_for_section(index.section)[index.row]
+      section.container_height
     end
 
     class << self
@@ -277,7 +261,7 @@ module MotionPrime
       @groups_count = nil
       reset_data
       init_form_fields
-      table_view.reloadData
+      reload_table_data
     end
 
     def reset_data
@@ -285,28 +269,58 @@ module MotionPrime
       self.fields.values.each(&:clear_observers)
     end
 
+    def has_many_sections?
+      section_header_options.present? || grouped_data.count > 1
+    end
+
+    def number_of_sections
+      has_many_sections? ? grouped_data.compact.count : 1
+    end
+
+    def render_table
+      init_form_fields unless self.fields.present?
+      super
+    end
+
+    def reload_table_data
+      return super unless async_data?
+      sections = NSMutableIndexSet.new
+      number_of_sections.times do |section_id|
+        sections.addIndex(section_id)
+      end
+      table_view.reloadSections sections, withRowAnimation: UITableViewRowAnimationFade
+    end
+
     private
+      def load_sections; end
+
       def init_form_fields
         self.fields = {}
         self.field_indexes = {}
+        self.grouped_data = []
         section_indexes = []
         (self.class.fields_options || {}).each do |key, field|
           next unless render_field?(key, field)
           section_id = field[:group].to_i
           @groups_count = [@groups_count || 1, section_id + 1].max
-          self.fields[key] = load_field(field)
 
+          grouped_data[section_id] ||= []
           section_indexes[section_id] ||= 0
+
+          section = load_field(field)
+          self.fields[key] = section
           self.field_indexes[key] = "#{section_id}_#{section_indexes[section_id]}"
+          grouped_data[section_id][section_indexes[section_id]] = section
+
           section_indexes[section_id] += 1
         end
         init_form_headers
-        @has_groups = section_header_options.present? || @groups_count > 1
         reset_data_stamps
       end
 
       def init_form_headers
-        self.section_header_options = Array.wrap(self.class.section_header_options).clone
+        options = Array.wrap(self.class.section_header_options).clone
+        self.section_header_options = options.delete_if.each_with_index { |opts, id| grouped_data[id].nil? }
       end
   end
 end
