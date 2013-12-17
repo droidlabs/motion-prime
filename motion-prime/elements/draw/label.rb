@@ -15,7 +15,7 @@ module MotionPrime
 
       top_left_corner = CGPointMake(computed_inner_left, computed_inner_top)
       if options[:number_of_lines].to_i.zero?
-        rect = CGRectMake(*top_left_corner.to_a, computed_width, computed_height)
+        inner_rect = CGRectMake(*top_left_corner.to_a, computed_width, computed_height)
       end
       super.merge({
         text: text,
@@ -26,7 +26,7 @@ module MotionPrime
         line_spacing: options[:line_spacing],
         underline: options[:underline],
         top_left_corner: top_left_corner,
-        rect: rect
+        inner_rect: inner_rect
       })
     end
 
@@ -61,8 +61,8 @@ module MotionPrime
           # prepared_text.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
         end
 
-        if options[:rect]
-          prepared_text.drawInRect(options[:rect])
+        if options[:inner_rect]
+          prepared_text.drawInRect(options[:inner_rect])
         else
           prepared_text.drawAtPoint(options[:top_left_corner])
         end
@@ -70,8 +70,8 @@ module MotionPrime
         # regular string
         prepared_text = options[:text]
         options[:text_color].set
-        if options[:rect]
-          prepared_text.drawInRect(options[:rect],
+        if options[:inner_rect]
+          prepared_text.drawInRect(options[:inner_rect],
             withFont: options[:font],
             lineBreakMode: options[:line_break_mode],
             alignment: options[:text_alignment])

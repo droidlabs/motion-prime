@@ -26,6 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "motion-support"
   spec.add_dependency 'bubble-wrap'
   spec.add_dependency 'sugarcube'
-  spec.add_dependency 'nano-store'
   spec.add_dependency("methadone")
 end

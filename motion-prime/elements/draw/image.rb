@@ -33,31 +33,20 @@ module MotionPrime
 
     def draw_with_layer(image)
       options = draw_options
-      rect = options[:rect]
+      border_width = options[:border_width]
+      inset = border_width > 0 ? (border_width - 1 ).abs*0.5 : 0
+      rect = CGRectInset(options[:rect], inset, inset)
+      radius = options[:corner_radius].to_f if options[:corner_radius] && options[:masks_to_bounds]
 
-      if options[:corner_radius] && options[:masks_to_bounds]
-        layer = CALayer.layer
-        layer.frame = CGRectMake(0, 0, image.size.width, image.size.height)
-        layer.contents = image.CGImage
-
-        layer.masksToBounds = options[:masks_to_bounds]
-        radius = options[:corner_radius]
-        k = image.size.width / rect.size.width
-        radius = radius * k
-        layer.cornerRadius = radius
-
-        UIGraphicsBeginImageContext(image.size)
-        layer.renderInContext(UIGraphicsGetCurrentContext())
-        image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        # CGContextBeginPath(context)
-        # CGContextAddArc(context, 225, 225, 100, 0, 2*Math::PI, 0)
-        # CGContextClosePath(context)
-        # CGContextSaveGState()
-        # CGContextClip(context)
-        # draw
-        # CGContextRestoreGState()
+      if radius
+        context = UIGraphicsGetCurrentContext()
+        CGContextBeginPath(context)
+        CGContextAddArc(context, rect.origin.x + rect.size.width/2, rect.origin.y + rect.size.height/2, radius, 0, 2*Math::PI, 0)
+        CGContextClosePath(context)
+        CGContextSaveGState(context)
+        CGContextClip(context)
         image.drawInRect(rect)
+        CGContextRestoreGState(context)
       else
         image.drawInRect(rect)
       end

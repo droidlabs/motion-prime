@@ -210,11 +210,14 @@ module MotionPrime
     end
 
     def tableView(table, viewForHeaderInSection: section)
-      return @cached_headers[section] if @cached_headers.try(:[], section)
       return unless header = header_for_section(section)
-      wrapper = MotionPrime::BaseElement.factory(:view, screen: screen, styles: cell_styles(header).values.flatten, parent_view: table_view)
-      @cached_headers ||= []
-      @cached_headers[section] = wrapper.render do |container_view, container_element|
+
+      reuse_identifier = "header_#{section}"
+      cached = table.dequeueReusableHeaderFooterViewWithIdentifier(reuse_identifier)
+      return cached if cached.present?
+
+      wrapper = MotionPrime::BaseElement.factory(:table_view_header_footer_view, screen: screen, styles: cell_styles(header).values.flatten, parent_view: table_view, reuse_identifier: reuse_identifier)
+      wrapper.render do |container_view, container_element|
         header.container_element = container_element
         header.render
       end
