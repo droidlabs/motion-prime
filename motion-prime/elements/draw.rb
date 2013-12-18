@@ -74,8 +74,16 @@ module MotionPrime
       view.setNeedsDisplay
     end
 
+    def update_with_options(new_options = {})
+      options.merge!(new_options)
+      compute_options!
+      view.setNeedsDisplay
+    end
+
     private
       def reset_computed_values
+        @content_height = nil
+        @content_width = nil
         @computed_frame = nil
       end
 

@@ -13,13 +13,16 @@ module MotionPrime
       container_element.try(:view)
     end
 
-    def draw_in(rect)
-      if @cached_draw_image
+    def draw_in(rect, state = :normal)
+      if cached_draw_image[state]
         context = UIGraphicsGetCurrentContext()
-        CGContextDrawImage(context, container_bounds, @cached_draw_image)
+        CGContextDrawImage(context, container_bounds, cached_draw_image[state])
         render_image_elements
+      elsif prerender_enabled?
+        prerender_elements_for_state(state)
+        draw_in(rect, state)
       else
-        draw_background_in(rect)
+        draw_background_in_context(UIGraphicsGetCurrentContext(), rect)
         draw_elements(rect)
       end
     end
@@ -32,7 +35,7 @@ module MotionPrime
       self.container_gesture_recognizers << {element: element, action: action, receiver: receiver}
     end
 
-    def prerender_elements
+    def prerender_elements_for_state(state = :normal)
       scale = UIScreen.mainScreen.scale
       space = CGColorSpaceCreateDeviceRGB()
       bits_per_component = 8
@@ -40,12 +43,21 @@ module MotionPrime
         bits_per_component, container_bounds.size.width*scale*4, space, KCGImageAlphaPremultipliedLast)
 
       CGContextScaleCTM(context, scale, scale)
-      draw_background_in(container_bounds) # TODO: test this
 
+      draw_background_in_context(context, container_bounds)
       elements_to_draw.each do |key, element|
         element.draw_in_context(context)
       end
-      @cached_draw_image = CGBitmapContextCreateImage(context)
+
+      cached_draw_image[state] = CGBitmapContextCreateImage(context)
+    end
+
+    def prerender_enabled?
+      self.class.prerender_enabled
+    end
+
+    def cached_draw_image
+      @cached_draw_image ||= MotionSupport::HashWithIndifferentAccess.new
     end
 
     private
@@ -69,25 +81,25 @@ module MotionPrime
         end
       end
 
-      def draw_background_in(rect)
+      def draw_background_in_context(context, rect)
         options = container_element.computed_options
+        background_color = options[:background_color].try(:uicolor)
 
         if gradient_options = options[:gradient]
           start_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMinY(rect))
           end_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect))
 
-          context = UIGraphicsGetCurrentContext()
           # CGContextSaveGState(context)
           CGContextAddRect(context, rect)
           CGContextClip(context)
           gradient = prepare_gradient(gradient_options)
           CGContextDrawLinearGradient(context, gradient, start_point, end_point, 0)
           # CGContextRestoreGState(context)
-        elsif background_color = options[:background_color]
-          unless background_color.uicolor == :clear.uicolor
-            background_color.uicolor.setFill
-            UIRectFill(rect)
-          end
+        elsif background_color && background_color != :clear.uicolor
+          UIGraphicsPushContext(context)
+          background_color.uicolor.setFill
+          UIRectFill(rect)
+          UIGraphicsPopContext()
         end
       end
 

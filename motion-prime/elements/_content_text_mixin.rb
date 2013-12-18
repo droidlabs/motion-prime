@@ -8,6 +8,22 @@ module MotionPrime
       (is_a?(ButtonElement) ? button_content_font : input_content_font) || :system.uifont
     end
 
+    def content_attributed_text
+      if view.try(:is_a?, UITextView) && view.text.present?
+        text = view.attributedText
+        text += ' ' if text.to_s.end_with?("\n") # do not respect \n at the end by default
+        return text
+      end
+
+      attributes = {NSFontAttributeName => content_font }
+      if computed_options[:line_spacing]
+        paragrahStyle = NSMutableParagraphStyle.alloc.init
+        paragrahStyle.setLineSpacing(computed_options[:line_spacing])
+        attributes[NSParagraphStyleAttributeName] = paragrahStyle
+      end
+      NSAttributedString.alloc.initWithString(content_text, attributes: attributes)
+    end
+
     def content_width
       min, max = computed_options[:min_width].to_f, computed_options[:max_width]
       return min if content_text.blank?
@@ -23,7 +39,7 @@ module MotionPrime
     def content_height
       min, max = computed_options[:min_height].to_f, computed_options[:max_height]
       return min if content_text.blank?
-      rect = get_content_rect(computed_options[:width])
+      rect = get_content_rect(computed_options[:width] - content_padding_width)
       @content_height = [[rect.size.height.ceil, max].compact.min, min].max.ceil
     end
 
@@ -34,15 +50,12 @@ module MotionPrime
     private
       def get_content_rect(width)
         raise "Please set element width for content size calculation" unless width
-        attributes = {NSFontAttributeName => content_font }
-        if computed_options[:line_spacing]
-          paragrahStyle = NSMutableParagraphStyle.alloc.init
-          paragrahStyle.setLineSpacing(computed_options[:line_spacing])
-          attributes[NSParagraphStyleAttributeName] = paragrahStyle
-        end
-        attributed_text = NSAttributedString.alloc.initWithString(content_text, attributes: attributes)
-        attributed_text.boundingRectWithSize(
-          [width, Float::MAX], options:NSStringDrawingUsesLineFragmentOrigin, context:nil
+
+        # if content_attributed_text
+        #   content_attributed_text += ' ' if content_attributed_text.to_s.end_with?("\n") # do not respect \n at the end by default
+        # end
+        content_attributed_text.boundingRectWithSize(
+          [width, Float::MAX], options: NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading | NSStringDrawingTruncatesLastVisibleLine, context:nil
         )
       end
 

@@ -35,6 +35,9 @@ module MotionPrime
           section: self,
           has_drawn_content: true
         })
+        options[:styles] ||= []
+        options[:styles] = [:"#{table.name}_first_cell"] if table.data.first == self
+        options[:styles] = [:"#{table.name}_last_cell"] if table.data.last == self
         MotionPrime::BaseElement.factory(:table_view_cell, options)
       end
     end
@@ -43,7 +46,9 @@ module MotionPrime
       load_elements
       init_container_element(options)
       @container_element.compute_options! unless @container_element.computed_options
-      prerender_elements if respond_to?(:prerender_elements) && self.class.prerender_enabled
+      if respond_to?(:prerender_elements_for_state) && prerender_enabled?
+        prerender_elements_for_state(:normal)
+      end
     end
   end
 end

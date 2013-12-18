@@ -204,6 +204,14 @@ module MotionPrime
       views.compact.each(&:resignFirstResponder)
     end
 
+    def elements_to_draw
+      self.elements.select { |key, element| element.is_a?(DrawElement) }
+    end
+
+    def elements_to_render
+      self.elements.select { |key, element| element.is_a?(BaseElement) }
+    end
+
     protected
       def bind_keyboard_close
         return unless self.class.keyboard_close_bindings.present?
@@ -216,13 +224,6 @@ module MotionPrime
 
       def keyboard_close_bindings_options
         @keyboard_close_bindings_options ||= normalize_options(self.class.keyboard_close_bindings.clone, self)
-      end
-      def elements_to_draw
-        self.elements.select { |key, element| element.is_a?(DrawElement) }
-      end
-
-      def elements_to_render
-        self.elements.select { |key, element| element.is_a?(BaseElement) }
       end
 
       def build_options_for_element(opts)

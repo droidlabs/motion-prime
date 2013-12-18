@@ -4,7 +4,7 @@ module MotionPrime
 
     def self.new(menu, content, options={})
       screen = self.alloc.initWithContentViewController(nil, menuViewController: nil)
-      screen.backgroundImage = MotionPrime::Config.sidebar.background_image
+      screen.backgroundImage = Prime::Config.sidebar.background_image
       screen.parallaxEnabled = false
 
       full_width = UIScreen.mainScreen.bounds.size.width

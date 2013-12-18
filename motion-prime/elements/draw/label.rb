@@ -36,7 +36,8 @@ module MotionPrime
 
     def draw_in_context(context)
       return if computed_options[:hidden]
-      size_to_fit_if_needed or set_text_position
+      size_to_fit_if_needed
+      set_text_position
 
       draw_background_in_context(context)
 
@@ -90,16 +91,14 @@ module MotionPrime
     def size_to_fit_if_needed
       if computed_options[:size_to_fit]
         computed_options[:width] ||= cached_content_outer_width
-        if computed_options[:width]
-          computed_options[:height] ||= cached_content_outer_height
-        end
+        computed_options[:height] ||= cached_content_outer_height
         reset_computed_values
         true
       end
     end
 
     def set_text_position
-      if computed_options.slice(:padding_top, :padding_bottom, :padding).none?
+      if computed_options.slice(:padding_top, :padding_bottom, :padding).values.none?
         computed_options[:width] ||= computed_width
         @padding_top = (computed_outer_height - cached_content_height)/2
         # @padding_top += 1 unless @padding_top.zero?

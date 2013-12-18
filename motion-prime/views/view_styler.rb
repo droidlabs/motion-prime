@@ -105,14 +105,6 @@ module MotionPrime
         mask_layer.frame = bounds
         mask_layer.path = mask_path.CGPath
         view.mask = mask_layer
-      elsif key == 'mask'
-        radius = value[:radius]
-        bounds = CGRectMake(0, 0, value[:width], value[:height])
-        mask_path = UIBezierPath.bezierPathWithRoundedRect(bounds, byRoundingCorners: UIRectCornerAllCorners, cornerRadii: CGSizeMake(radius, radius))
-        mask_layer = CAShapeLayer.layer
-        mask_layer.frame = bounds
-        mask_layer.path = mask_path.CGPath
-        view.layer.mask = mask_layer
       elsif key == 'attributed_text_options'
         attributes = {}
         if line_spacing = value[:line_spacing]

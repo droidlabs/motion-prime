@@ -7,6 +7,10 @@ class MPCellWithSection < UITableViewCell
 
   def drawRect(rect)
     super
+    draw_in(rect)
+  end
+
+  def draw_in(rect)
     section.draw_in(rect) if section.respond_to?(:draw_in)
   end
 end
