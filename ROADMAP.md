@@ -4,6 +4,8 @@
 * Ability to pass "locals" while opening screen.
 * navigation: true by default for screen initialization.
 * separate screen.open_screen to screen.open_child and screen.open_modal.
+* use model.assign_attributes instead of model.fetch_with_attributes and call it on initialization. 
+* separate sync#update and sync#fetch
 
 === 0.6.0
 * add testing framework

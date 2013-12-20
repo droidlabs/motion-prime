@@ -22,6 +22,14 @@ module MotionPrime
       end
     end
 
+    def last
+      all.last
+    end
+
+    def first
+      all.first
+    end
+
     # Find model by criteria
     #
     # Examples:

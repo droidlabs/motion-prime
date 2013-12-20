@@ -10,6 +10,10 @@ module MotionPrime
   def self.low_camelize_factory_cache
     @camelize_factory_cache ||= {}
   end
+
+  def self.env
+    ENV['PRIME_ENV'] || RUBYMOTION_ENV
+  end
 end
 ::MP = MotionPrime unless defined?(::MP)
 ::Prime = MotionPrime unless defined?(::Prime)
