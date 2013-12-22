@@ -8,14 +8,15 @@ module MotionPrime
       image = image_data || computed_options[:image]
       image ||= computed_options[:default] if computed_options[:url]
 
+      # already initialized image or image from resources or default image
       super.merge({image: image.try(:uiimage)})
     end
 
     def draw_in(rect)
       return if computed_options[:hidden]
 
-      # draw already initialized image or image from resources or default image
-      draw_in_context(UIGraphicsGetCurrentContext())
+      draw_background_in_context(UIGraphicsGetCurrentContext())
+      draw_with_layer
       load_image
     end
 
@@ -23,25 +24,18 @@ module MotionPrime
       return if computed_options[:hidden]
 
       draw_background_in_context(context)
-
-      if image = draw_options[:image]
-        UIGraphicsPushContext(context)
-        draw_with_layer(image)
-        UIGraphicsPopContext()
-      end
-    end
-
-    def draw_with_layer(image)
       options = draw_options
+      return unless image = options[:image]
+
       border_width = options[:border_width]
       inset = border_width > 0 ? (border_width - 1 ).abs*0.5 : 0
       rect = CGRectInset(options[:rect], inset, inset)
       radius = options[:corner_radius].to_f if options[:corner_radius] && options[:masks_to_bounds]
 
+      UIGraphicsPushContext(context)
       if radius
-        context = UIGraphicsGetCurrentContext()
         CGContextBeginPath(context)
-        CGContextAddArc(context, rect.origin.x + rect.size.width/2, rect.origin.y + rect.size.height/2, radius, 0, 2*Math::PI, 0)
+        CGContextAddArc(context, rect.origin.x + rect.size.width/2, rect.origin.y + rect.size.height/2, radius, 0, 2*Math::PI, 0) # FIXME
         CGContextClosePath(context)
         CGContextSaveGState(context)
         CGContextClip(context)
@@ -50,27 +44,48 @@ module MotionPrime
       else
         image.drawInRect(rect)
       end
+      UIGraphicsPopContext()
+    end
+
+    def draw_with_layer
+      options = draw_options
+      return unless image = options[:image]
+      rect = options[:rect]
+      radius = options[:corner_radius].to_f if options[:corner_radius] && options[:masks_to_bounds]
+
+      layer = CALayer.layer
+      layer.contents = image.CGImage
+      layer.frame = rect
+      layer.bounds = rect
+
+      layer.masksToBounds = options[:masks_to_bounds]
+      layer.cornerRadius = radius if radius
+
+      view.layer.addSublayer(layer)
     end
 
     def load_image
-      return unless computed_options[:url]
-      manager = SDWebImageManager.sharedManager
-      manager.downloadWithURL(computed_options[:url],
-        options: 0,
-        progress: lambda{ |r_size, e_size|  },
-        completed: lambda{ |image, error, type, finished|
-          if image
-            self.image_data = image
-            if type == SDImageCacheTypeNone || type == SDImageCacheTypeDisk
-              # if it's first call, we should redraw view, because it's async
-              section.container_view.setNeedsDisplay
+      return if image_data || !computed_options[:url]
+      self_ref = WeakRef.new(self)
+      BW::Reactor.schedule do
+        manager = SDWebImageManager.sharedManager
+        manager.downloadWithURL(computed_options[:url],
+          options: 0,
+          progress: lambda{ |r_size, e_size|  },
+          completed: lambda{ |image, error, type, finished|
+            break unless image && self_ref
+            self_ref.image_data = image
+            section = self_ref.section
+
+            section.cached_draw_image = nil
+            if section.respond_to?(:cell_name)
+              section.pending_display!
             else
-              # if it's second call, we should just draw image
-              draw_with_layer(image_data)
+              self_ref.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
             end
-          end
-        }
-      )
+          }
+        )
+      end
     end
   end
 end

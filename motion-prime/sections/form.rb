@@ -209,57 +209,6 @@ module MotionPrime
       self.section_headers[section] || render_header(section)
     end
 
-    def tableView(table, viewForHeaderInSection: section)
-      return unless header = header_for_section(section)
-
-      reuse_identifier = "header_#{section}"
-      cached = table.dequeueReusableHeaderFooterViewWithIdentifier(reuse_identifier)
-      return cached if cached.present?
-
-      wrapper = MotionPrime::BaseElement.factory(:table_view_header_footer_view, screen: screen, styles: cell_styles(header).values.flatten, parent_view: table_view, reuse_identifier: reuse_identifier)
-      wrapper.render do |container_view, container_element|
-        header.container_element = container_element
-        header.render
-      end
-    end
-
-    def tableView(table, heightForHeaderInSection: section)
-      header_for_section(section).try(:container_height) || 0
-    end
-
-    def tableView(table, heightForRowAtIndexPath: index)
-      load_cell_by_index(index, preload: false)
-      section = rows_for_section(index.section)[index.row]
-      section.container_height
-    end
-
-    class << self
-      def field(name, options = {}, &block)
-        options[:name] = name
-        options[:type] ||= :string
-        options[:block] = block
-        self.fields_options ||= {}
-        self.fields_options[name] = options
-        self.fields_options[name]
-      end
-
-      def group_header(name, options)
-        options[:name] = name
-        self.section_header_options ||= []
-        section = options.delete(:id)
-        self.section_header_options[section] = options
-      end
-
-      def limit_text_field_length(name, limit)
-        self.text_field_limits ||= {}
-        self.text_field_limits[name] = limit
-      end
-      def limit_text_view_length(name, limit)
-        self.text_view_limits ||= {}
-        self.text_view_limits[name] = limit
-      end
-    end
-
     def reload_data
       @groups_count = nil
       reset_data
@@ -292,6 +241,57 @@ module MotionPrime
         sections.addIndex(section_id)
       end
       table_view.reloadSections sections, withRowAnimation: UITableViewRowAnimationFade
+    end
+
+    def tableView(table, viewForHeaderInSection: section)
+      return unless header = header_for_section(section)
+
+      reuse_identifier = "header_#{section}"
+      cached = table.dequeueReusableHeaderFooterViewWithIdentifier(reuse_identifier)
+      return cached if cached.present?
+
+      styles = cell_styles(header).values.flatten
+      wrapper = MotionPrime::BaseElement.factory(:table_view_header_footer_view, screen: screen, styles: styles, parent_view: table_view, reuse_identifier: reuse_identifier)
+      wrapper.render do |container_view, container_element|
+        header.container_element = container_element
+        header.render
+      end
+    end
+
+    def tableView(table, heightForHeaderInSection: section)
+      header_for_section(section).try(:container_height) || 0
+    end
+
+    def tableView(table, heightForRowAtIndexPath: index)
+      section = load_cell_by_index(index, preload: false)
+      section.container_height
+    end
+
+    class << self
+      def field(name, options = {}, &block)
+        options[:name] = name
+        options[:type] ||= :string
+        options[:block] = block
+        self.fields_options ||= {}
+        self.fields_options[name] = options
+        self.fields_options[name]
+      end
+
+      def group_header(name, options)
+        options[:name] = name
+        self.section_header_options ||= []
+        section = options.delete(:id)
+        self.section_header_options[section] = options
+      end
+
+      def limit_text_field_length(name, limit)
+        self.text_field_limits ||= {}
+        self.text_field_limits[name] = limit
+      end
+      def limit_text_view_length(name, limit)
+        self.text_view_limits ||= {}
+        self.text_view_limits[name] = limit
+      end
     end
 
     private

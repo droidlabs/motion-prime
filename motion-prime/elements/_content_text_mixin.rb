@@ -1,5 +1,8 @@
+motion_require './_text_mixin.rb'
 module MotionPrime
   module ElementContentTextMixin
+    include ElementTextMixin
+
     def content_text
       is_a?(ButtonElement) ? button_content_text : input_content_text
     end
@@ -11,17 +14,16 @@ module MotionPrime
     def content_attributed_text
       if view.try(:is_a?, UITextView) && view.text.present?
         text = view.attributedText
-        text += ' ' if text.to_s.end_with?("\n") # do not respect \n at the end by default
+        text += ' ' if text.to_s.end_with?("\n") # does not respect \n at the end by default
         return text
       end
 
-      attributes = {NSFontAttributeName => content_font }
-      if computed_options[:line_spacing]
-        paragrahStyle = NSMutableParagraphStyle.alloc.init
-        paragrahStyle.setLineSpacing(computed_options[:line_spacing])
-        attributes[NSParagraphStyleAttributeName] = paragrahStyle
-      end
-      NSAttributedString.alloc.initWithString(content_text, attributes: attributes)
+      options = {
+        text: content_text,
+        font: content_font,
+        line_spacing: computed_options[:line_spacing]
+      }
+      computed_options[:html].present? ? html_string(options) : attributed_string(options)
     end
 
     def content_width
@@ -51,9 +53,6 @@ module MotionPrime
       def get_content_rect(width)
         raise "Please set element width for content size calculation" unless width
 
-        # if content_attributed_text
-        #   content_attributed_text += ' ' if content_attributed_text.to_s.end_with?("\n") # do not respect \n at the end by default
-        # end
         content_attributed_text.boundingRectWithSize(
           [width, Float::MAX], options: NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading | NSStringDrawingTruncatesLastVisibleLine, context:nil
         )
@@ -76,7 +75,7 @@ module MotionPrime
       end
 
       def input_value_text
-        view && !is_a?(DrawElement) ? view.text : computed_options[:text]
+        view && !is_a?(DrawElement) ? view.text : (computed_options[:html] || computed_options[:text])
       end
 
       def input_placeholder_text

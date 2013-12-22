@@ -1,6 +1,13 @@
 module MotionPrime
   module CellSectionMixin
+    extend ::MotionSupport::Concern
+
     attr_writer :table
+    attr_reader :pending_display
+
+    included do
+      class_attribute :custom_cell_name
+    end
 
     def table
       @table ||= options[:table]
@@ -17,7 +24,7 @@ module MotionPrime
     end
 
     def cell_name
-      self.class.cell_name || begin
+      self.class.custom_cell_name || begin
         return name unless table
         table_name = table.name.gsub('_table', '')
         name.gsub("#{table_name}_", '')
@@ -43,11 +50,27 @@ module MotionPrime
     end
 
     def load_container_element(options = {})
-      load_elements
       init_container_element(options)
+      load_elements
       @container_element.compute_options! unless @container_element.computed_options
       if respond_to?(:prerender_elements_for_state) && prerender_enabled?
         prerender_elements_for_state(:normal)
+      end
+    end
+
+    def pending_display!
+      @pending_display = true
+      display unless table.decelerating
+    end
+
+    def display
+      @pending_display = false
+      container_view.setNeedsDisplay
+    end
+
+    module ClassMethods
+      def set_cell_name(value)
+        self.custom_cell_name = value
       end
     end
   end

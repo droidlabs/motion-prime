@@ -4,7 +4,7 @@ module MotionPrime
 
     include HasStyles
     include FrameCalculatorMixin
-    attr_accessor :container_element, :container_gesture_recognizers
+    attr_accessor :container_element, :container_gesture_recognizers, :cached_draw_image
     included do
       class_attribute :prerender_enabled
     end
@@ -82,6 +82,8 @@ module MotionPrime
       end
 
       def draw_background_in_context(context, rect)
+        return unless container_element
+
         options = container_element.computed_options
         background_color = options[:background_color].try(:uicolor)
 

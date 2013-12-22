@@ -71,7 +71,7 @@ module MotionPrime
           controller.send(:on_screen_load) if controller.respond_to?(:on_screen_load)
           controller = controller.main_controller if controller.respond_to?(:main_controller)
         else
-          controller.navigation_controller = content_controller
+          controller.navigation_controller = content_controller if controller.respond_to?(:navigation_controller)
           controller.send(:on_screen_load) if controller.respond_to?(:on_screen_load)
         end
         controller

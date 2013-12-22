@@ -28,15 +28,17 @@ module MotionPrime
     end
 
     def render(options = {}, &block)
+      self_ref = WeakRef.new(self)
       run_callbacks :render do
-        render!(&block)
+        self_ref and self_ref.render!(&block)
       end
     end
 
     def render!(&block)
+      self_ref = WeakRef.new(self)
       screen.add_view class_factory(view_class), computed_options do |view|
-        @view = view
-        block.try(:call, view, self)
+        self_ref and self_ref.view = view
+        self_ref and block.try(:call, view, self_ref)
       end
     end
 
@@ -142,9 +144,9 @@ module MotionPrime
           # table element: categories_table_cell_icon, categories_table_title_icon
           @styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
         end
-        if section
+        if section && section.name.present? && name.present?
           # using for base sections
-          @styles << [section.name, name].compact.join('_').to_sym
+          @styles << [section.name, name].join('_').to_sym
         end
         # custom style (from options or block options), using for TableViews as well
         custom_styles = style_sources.map do |source|

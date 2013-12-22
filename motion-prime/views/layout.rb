@@ -17,6 +17,7 @@ module MotionPrime
       elsif view_stack.any?
         view_stack.last.addSubview(view)
       end
+
       setup(view, options, &block)
       view.on_added if view.respond_to?(:on_added)
 

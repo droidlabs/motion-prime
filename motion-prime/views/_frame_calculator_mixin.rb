@@ -43,31 +43,27 @@ module MotionPrime
 
       if !left.nil? && !right.nil?
         frame.origin.x = left
-        frame.size.width = max_width - left - right
+        width = max_width - left - right
       elsif !right.nil?
         frame.origin.x = max_width - width - right
-        frame.size.width = width
       elsif !left.nil?
         frame.origin.x = left
-        frame.size.width = width
       else
         frame.origin.x = max_width / 2 - width / 2
-        frame.size.width = width
       end
+      frame.size.width = width
 
       if !top.nil? && !bottom.nil?
         frame.origin.y = top
-        frame.size.height = max_height - top - bottom
+        height = max_height - top - bottom if options[:height_to_fit].nil?
       elsif !bottom.nil?
         frame.origin.y = max_height - height - bottom
-        frame.size.height = height
       elsif !top.nil?
         frame.origin.y = top
-        frame.size.height = height
       else
         frame.origin.y = max_height / 2 - height / 2
-        frame.size.height = height
       end
+      frame.size.height = height
 
       frame
     end

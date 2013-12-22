@@ -2,16 +2,19 @@ motion_require '../draw.rb'
 module MotionPrime
   class LabelDrawElement < DrawElement
     include ElementContentTextMixin
+    include ElementTextMixin
     include DrawBackgroundMixin
 
     def draw_options
       options = computed_options
-      text = options[:text].to_s.gsub(/^[\n\r]+/, '')
+      text = (options[:html] || options[:text]).to_s.gsub(/^[\n\r]+/, '')
       text_color = (options[:text_color] || :black).uicolor
       font = (options[:font] || :system).uifont
 
-      text_alignment = (options.has_key?(:text_alignment) ? options[:text_alignment] : :left).uitextalignment
-      line_break_mode = (options.has_key?(:line_break_mode) ? options[:line_break_mode] : :tail_truncation).uilinebreakmode
+      text_alignment_name = options.has_key?(:text_alignment) ? options[:text_alignment] : :left
+      text_alignment = text_alignment_name.uitextalignment
+      line_break_mode_name = options.has_key?(:line_break_mode) ? options[:line_break_mode] : :tail_truncation
+      line_break_mode = line_break_mode_name.uilinebreakmode
 
       top_left_corner = CGPointMake(computed_inner_left, computed_inner_top)
       if options[:number_of_lines].to_i.zero?
@@ -19,9 +22,12 @@ module MotionPrime
       end
       super.merge({
         text: text,
+        is_html: options[:html].present?,
         text_color: text_color,
         font: font,
+        text_alignment_name: text_alignment_name,
         text_alignment: text_alignment,
+        line_break_mode_name: line_break_mode_name,
         line_break_mode: line_break_mode,
         line_spacing: options[:line_spacing],
         underline: options[:underline],
@@ -43,24 +49,8 @@ module MotionPrime
 
       UIGraphicsPushContext(context)
       options = draw_options
-      if options[:line_spacing] || options[:underline]
-        # attributed string
-        paragrahStyle = NSMutableParagraphStyle.alloc.init
-
-        paragrahStyle.setLineSpacing(options[:line_spacing]) if options[:line_spacing]
-        paragrahStyle.setAlignment(options[:text_alignment])
-        paragrahStyle.setLineBreakMode(options[:line_break_mode])
-        attributes = {}
-        attributes[NSParagraphStyleAttributeName] = paragrahStyle
-        attributes[NSForegroundColorAttributeName] = options[:text_color]
-        attributes[NSFontAttributeName] = options[:font]
-
-        prepared_text = NSMutableAttributedString.alloc.initWithString(options[:text], attributes: attributes)
-        if underline_range = options[:underline]
-          # FIXME
-          # prepared_text = NSMutableAttributedString.alloc.initWithAttributedString(prepared_text)
-          # prepared_text.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
-        end
+      if options[:is_html] || options[:line_spacing] || options[:underline]
+        prepared_text = options[:is_html] ? html_string(options) : attributed_string(options)
 
         if options[:inner_rect]
           prepared_text.drawInRect(options[:inner_rect])
@@ -93,7 +83,6 @@ module MotionPrime
         computed_options[:width] ||= cached_content_outer_width
         computed_options[:height] ||= cached_content_outer_height
         reset_computed_values
-        true
       end
     end
 

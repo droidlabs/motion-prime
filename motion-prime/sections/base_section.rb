@@ -21,7 +21,7 @@ module MotionPrime
     include DrawSectionMixin
 
     attr_accessor :screen, :model, :name, :options, :elements, :section_styles
-    class_attribute :elements_options, :container_options, :keyboard_close_bindings, :cell_name
+    class_attribute :elements_options, :container_options, :keyboard_close_bindings
     define_callbacks :render
 
     def initialize(options = {})
@@ -30,6 +30,10 @@ module MotionPrime
       @model = options[:model]
       @name = options[:name] ||= default_name
       @options_block = options[:block]
+    end
+
+    def container_bounds
+      options[:container_bounds] or raise "You must pass `container bounds` option to prerender base section"
     end
 
     def container_options
@@ -70,8 +74,9 @@ module MotionPrime
     def reload_section
       self.elements_to_render.values.map(&:view).flatten.compact.each { |view| view.removeFromSuperview }
       load_section!
+      self_ref = WeakRef.new(self)
       run_callbacks :render do
-        render!
+        self_ref and self_ref.render!
       end
 
       if @table && !self.is_a?(BaseFieldSection)
@@ -130,9 +135,9 @@ module MotionPrime
     def render(container_options = {})
       load_section
       self.container_options.merge!(container_options)
-
+      self_ref = WeakRef.new(self)
       run_callbacks :render do
-        render!
+        self_ref and self_ref.render!
       end
     end
 
@@ -270,9 +275,6 @@ module MotionPrime
       end
       def bind_keyboard_close(options)
         self.keyboard_close_bindings = options
-      end
-      def set_cell_name(value)
-        self.cell_name = value
       end
     end
     after_render :bind_keyboard_events

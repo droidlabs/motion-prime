@@ -7,6 +7,7 @@ module MotionPrime
 
     class_attribute :async_data_options
     attr_accessor :table_element, :did_appear
+    attr_reader :decelerating
     before_render :render_table
 
     def table_data
@@ -126,8 +127,9 @@ module MotionPrime
       section = rows_for_section(index.section)[index.row]
       element = section.container_element || section.init_container_element(container_element_options_for(index))
 
+      self_ref = WeakRef.new(self)
       view = element.render do
-        section.render
+        self_ref and self_ref.rows_for_section(index.section)[index.row].render
       end
 
       @rendered_cells[index.section][index.row] = view
@@ -211,8 +213,7 @@ module MotionPrime
     end
 
     def tableView(table, heightForRowAtIndexPath: index)
-      load_cell_by_index(index, preload: true)
-      section = rows_for_section(index.section)[index.row]
+      section = load_cell_by_index(index, preload: true)
       section.container_height
     end
 
@@ -220,7 +221,24 @@ module MotionPrime
       on_click(table, index)
     end
 
+    def scrollViewWillBeginDragging(scroll_view)
+      @decelerating = true
+    end
+
+    def scrollViewDidEndDecelerating(scroll_view)
+      @decelerating = false
+      display_pending_cells
+    end
+
+    def scrollViewDidEndDragging(scroll_view, willDecelerate: will_decelerate)
+      display_pending_cells unless @decelerating = will_decelerate
+    end
+
     private
+      def display_pending_cells
+        table_view.visibleCells.each { |cell_view| cell_view.section.display if cell_view.section.pending_display }
+      end
+
       def set_table_data
         cells = async_data? ? load_sections_async : table_data
         prepare_table_cells(cells)
@@ -251,7 +269,8 @@ module MotionPrime
         if cell.is_a?(Array)
           cell.each { |c| prepare_table_cells(c) }
         else
-          cell.send(:extend, CellSectionMixin)
+          cell.class.send(:include, CellSectionMixin)
+          # cell.class.module_eval { class_attribute :cell_name }
           cell.screen ||= screen
           cell.table ||= self if cell.respond_to?(:table=)
         end
@@ -259,11 +278,10 @@ module MotionPrime
 
       def load_cell_by_index(index, options = {})
         section = rows_for_section(index.section)[index.row]
-        return unless section.load_section # return if already loaded
-
-        if options[:preload] && !section.container_element && async_data?
+        if section.load_section && options[:preload] && !section.container_element && async_data? # perform only if just loaded
           section.load_container_element(container_element_options_for(index))
         end
+        section
       end
 
       def container_element_options_for(index)
@@ -323,7 +341,8 @@ module MotionPrime
           @preloader_cancelled = false
 
           @queue_states ||= []
-          BW::Reactor.schedule(@queue_states.count)  do |queue_id|
+
+          BW::Reactor.schedule(@queue_states.count) do |queue_id|
             @queue_states[queue_id] = :in_progress
 
             result = load_count.times do |offset|
