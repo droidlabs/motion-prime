@@ -19,12 +19,17 @@ module MotionPrime
 
     def initialize(options = {})
       @options = options
-      @screen = options[:screen].try(:weak_ref)
-      @section = options[:section].try(:weak_ref)
+      @screen = options[:screen]
+      @section = options[:section]
+      @view_class = options[:view_class] || 'UIView'
       @name = options[:name]
       @block = options[:block]
-      @view_class = options[:view_class] || 'UIView'
       @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
+    end
+
+    def dealloc
+      pp 'deallocating elemenet', self.name
+      super
     end
 
     def render(options = {}, &block)

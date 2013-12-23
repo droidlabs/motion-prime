@@ -34,10 +34,9 @@ module MotionPrime
       @on_appear_happened = true
     end
 
-    def will_disappear
-      pp 'dis'
+    def on_destroy
+      pp 'destroying screen'
       @main_section = nil
-      super
     end
   end
 end

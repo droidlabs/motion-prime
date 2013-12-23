@@ -97,10 +97,15 @@ module MotionPrime
       end
 
       def close_screen_navigational(args = {})
+        screens = self.navigation_controller.childViewControllers
+        app_delegate.close_screens(screens[screens.index(self)..-1])
+
         if args[:to_screen] && args[:to_screen].is_a?(UIViewController)
-          self.parent_screen = args[:to_screen].try(:weak_ref)
+          self.parent_screen = args[:to_screen]
+
           self.navigation_controller.popToViewController(args[:to_screen], animated: args[:animated])
         else
+          app_delegate.close_screens(self)
           self.navigation_controller.popViewControllerAnimated(args[:animated])
         end
         send_on_return(args)

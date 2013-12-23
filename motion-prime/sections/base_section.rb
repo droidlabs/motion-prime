@@ -175,7 +175,7 @@ module MotionPrime
     def keyboard_will_hide; end
 
     def dealloc
-      pp 'dealloc', self.elements.try(:count)
+      pp 'deallocating section. elements count: ', self.elements.try(:count)
       self.elements = nil
 
       NSNotificationCenter.defaultCenter.removeObserver self
@@ -237,7 +237,7 @@ module MotionPrime
         # in next element with same name in another class
         options = opts.clone
         options[:type] ||= (options[:text] || options[:attributed_text_options]) ? :label : :view
-        options.merge(screen: screen, section: self)
+        options.merge(screen: screen.try(:weak_ref), section: self.weak_ref)
       end
 
     private

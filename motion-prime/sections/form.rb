@@ -18,9 +18,8 @@ module MotionPrime
     # end
     #
 
-    class_attribute :text_field_limits, :text_view_limits
-    class_attribute :fields_options, :section_header_options
-    attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :section_headers, :section_header_options, :grouped_data
+    class_attribute :fields_options, :text_field_limits, :text_view_limits
+    attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :grouped_data
 
     def table_data
       if has_many_sections?
@@ -199,16 +198,6 @@ module MotionPrime
       end
     end
 
-    def render_header(section)
-      return unless options = self.section_header_options.try(:[], section)
-      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(screen: screen, table: self))
-    end
-
-    def header_for_section(section)
-      self.section_headers ||= []
-      self.section_headers[section] || render_header(section)
-    end
-
     def reload_data
       @groups_count = nil
       reset_data
@@ -225,10 +214,6 @@ module MotionPrime
       section_header_options.present? || grouped_data.count > 1
     end
 
-    def number_of_sections
-      has_many_sections? ? grouped_data.compact.count : 1
-    end
-
     def render_table
       init_form_fields unless self.fields.present?
       super
@@ -243,26 +228,14 @@ module MotionPrime
       table_view.reloadSections sections, withRowAnimation: UITableViewRowAnimationFade
     end
 
-    def tableView(table, viewForHeaderInSection: section)
-      return unless header = header_for_section(section)
+    # Table View Delegate
+    # ---------------------
 
-      reuse_identifier = "header_#{section}"
-      cached = table.dequeueReusableHeaderFooterViewWithIdentifier(reuse_identifier)
-      return cached if cached.present?
-
-      styles = cell_styles(header).values.flatten
-      wrapper = MotionPrime::BaseElement.factory(:table_view_header_footer_view, screen: screen, styles: styles, parent_view: table_view, reuse_identifier: reuse_identifier)
-      wrapper.render do |container_view, container_element|
-        header.container_element = container_element
-        header.render
-      end
+    def number_of_sections(table = nil)
+      has_many_sections? ? grouped_data.compact.count : 1
     end
 
-    def tableView(table, heightForHeaderInSection: section)
-      header_for_section(section).try(:container_height) || 0
-    end
-
-    def tableView(table, heightForRowAtIndexPath: index)
+    def height_for_index(table, index)
       section = load_cell_by_index(index, preload: false)
       section.container_height
     end
@@ -275,13 +248,6 @@ module MotionPrime
         self.fields_options ||= {}
         self.fields_options[name] = options
         self.fields_options[name]
-      end
-
-      def group_header(name, options)
-        options[:name] = name
-        self.section_header_options ||= []
-        section = options.delete(:id)
-        self.section_header_options[section] = options
       end
 
       def limit_text_field_length(name, limit)

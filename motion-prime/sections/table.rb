@@ -1,14 +1,23 @@
 motion_require './table/refresh_mixin'
+motion_require './table/table_delegate'
+
 module MotionPrime
   class TableSection < BaseSection
     include TableSectionRefreshMixin
     include HasStyleChainBuilder
     include HasSearchBar
 
-    class_attribute :async_data_options
-    attr_accessor :table_element, :did_appear
+    class_attribute :async_data_options, :section_header_options
+    attr_accessor :table_element, :did_appear, :section_headers, :section_header_options
     attr_reader :decelerating
     before_render :render_table
+
+    def dealloc
+      pp 'deallocating table. sections count:', @data.try(:count)
+      @data = nil
+      @async_loaded_data = nil
+      super
+    end
 
     def table_data
       []
@@ -44,13 +53,6 @@ module MotionPrime
       @preloader_cancelled = false
       @data_stamp = nil
       @queue_states[-1] = :cancelled if @queue_states.present?
-    end
-
-    def dealloc
-      pp 'dealloc', @data.count, @async_loaded_data.count
-      @data = nil
-      @async_loaded_data = nil
-      super
     end
 
     def table_styles
@@ -106,10 +108,11 @@ module MotionPrime
     end
 
     def render_table
+      delegate = TableDelegate.new(section: self)
       options = {
         styles: table_styles.values.flatten,
-        delegate: self,
-        data_source: self,
+        delegate: delegate,
+        data_source: delegate,
         style: (UITableViewStyleGrouped unless flat_data?)
       }
       if async_data? && self.class.async_data_options.has_key?(:estimated_row_height)
@@ -146,16 +149,22 @@ module MotionPrime
       view
     end
 
+    def render_header(section)
+      return unless options = self.section_header_options.try(:[], section)
+      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(screen: screen, table: self))
+    end
+
+    def header_for_section(section)
+      self.section_headers ||= []
+      self.section_headers[section] || render_header(section)
+    end
+
     def on_row_render(cell, index); end
     def on_appear; end
     def on_click(table, index); end
 
-    def number_of_sections
-      has_many_sections? ? data.count : 1
-    end
-
     def has_many_sections?
-      data.any? && data.first.is_a?(Array)
+      section_header_options.present? || data.try(:first).is_a?(Array)
     end
 
     def flat_data?
@@ -168,10 +177,6 @@ module MotionPrime
 
     def row_by_index(index)
       rows_for_section(index.section)[index.row]
-    end
-
-    def self.async_table_data(options = {})
-      self.async_data_options = options
     end
 
     def on_async_data_loaded; end
@@ -190,18 +195,11 @@ module MotionPrime
     # Table View Delegate
     # ---------------------
 
-    # def tableView(table, viewForFooterInSection: section) # cause bug in ios7.0.0-7.0.2
-    #   UIView.new
-    # end
-    # def tableView(table, heightForFooterInSection: section)
-    #   0.1
-    # end
-
-    def numberOfSectionsInTableView(tableView)
-      number_of_sections
+    def number_of_sections(table = nil)
+      has_many_sections? ? data.count : 1
     end
 
-    def tableView(table, cellForRowAtIndexPath:index)
+    def cell_for_index(table, index)
       @rendered_cells ||= []
       @rendered_cells[index.section] ||= []
 
@@ -214,29 +212,40 @@ module MotionPrime
       cell.is_a?(UIView) ? cell : cell.view
     end
 
-    def tableView(table, numberOfRowsInSection:section)
-      rows_for_section(section).try(:count).to_i
-    end
-
-    def tableView(table, heightForRowAtIndexPath: index)
+    def height_for_index(table, index)
       section = load_cell_by_index(index, preload: true)
       section.container_height
     end
 
-    def tableView(table, didSelectRowAtIndexPath:index)
-      on_click(table, index)
+    def view_for_header_in_section(table, section)
+      return unless header = header_for_section(section)
+
+      reuse_identifier = "header_#{section}"
+      cached = table.dequeueReusableHeaderFooterViewWithIdentifier(reuse_identifier)
+      return cached if cached.present?
+
+      styles = cell_styles(header).values.flatten
+      wrapper = MotionPrime::BaseElement.factory(:table_view_header_footer_view, screen: screen, styles: styles, parent_view: table_view, reuse_identifier: reuse_identifier)
+      wrapper.render do |container_view, container_element|
+        header.container_element = container_element
+        header.render
+      end
     end
 
-    def scrollViewWillBeginDragging(scroll_view)
+    def height_for_header_in_section(table, section)
+      header_for_section(section).try(:container_height) || 0
+    end
+
+    def scroll_view_will_begin_dragging(scroll)
       @decelerating = true
     end
 
-    def scrollViewDidEndDecelerating(scroll_view)
+    def scroll_view_did_end_decelerating(scroll)
       @decelerating = false
       display_pending_cells
     end
 
-    def scrollViewDidEndDragging(scroll_view, willDecelerate: will_decelerate)
+    def scroll_view_did_end_dragging(scroll, willDecelerate: will_decelerate)
       display_pending_cells unless @decelerating = will_decelerate
     end
 
@@ -369,5 +378,18 @@ module MotionPrime
       def index_service
         TableDataIndexes.new(@data)
       end
+
+    class << self
+      def async_table_data(options = {})
+        self.async_data_options = options
+      end
+
+      def group_header(name, options)
+        options[:name] = name
+        self.section_header_options ||= []
+        section = options.delete(:id)
+        self.section_header_options[section] = options
+      end
+    end
   end
 end

@@ -7,7 +7,7 @@ module MotionPrime
     after_render :on_section_render
 
     def initialize(options = {})
-      @form = options[:table]
+      @form = options[:table].try(:weak_ref)
       @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, self) if options[:observe_errors]
       super
       observe_model_errors
