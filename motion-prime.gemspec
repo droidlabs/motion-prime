@@ -4,7 +4,7 @@ require File.expand_path('../motion-prime/version', __FILE__)
 Gem::Specification.new do |spec|
   spec.name          = "motion-prime"
   spec.version       = MotionPrime::VERSION
-  spec.authors       = ["Iskander Haziev"]
+  spec.authors       = ["Iskander Haziev", "Pavel Feklistov"]
   spec.email         = ["gvalmon@gmail.com"]
   spec.description   = %q{RubyMotion apps development framework}
   spec.summary       = %q{RubyMotion apps development framework}
