@@ -2,6 +2,7 @@
 * Model.new with invalid parameter will not raise exception by default now.
 * "id" attribute always being added to model by default now.
 * navigation: true by default for screen initialization.
+* screen.open_screen do not support root screen opening now. use app_delegate.open_screen for that.
 
 === 0.4.4
 * Added Prime.env support

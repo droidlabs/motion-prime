@@ -10,17 +10,13 @@ module MotionPrime
     # @param args [Hash] Options for opening screen
     # @return [MotionPrime::BaseScreen]
     def open_screen(screen, args = {})
-      if args[:modal] || has_navigation?
-        screen = setup_screen_for_open(screen, args)
-        screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
-        args[:animated] = args.has_key?(:animated) ? args[:animated] : true
-        if args[:modal] || !has_navigation?
-          open_screen_modal(screen, args)
-        else
-          open_screen_navigational(screen, args)
-        end
+      screen = setup_screen_for_open(screen, args)
+      screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
+      args[:animated] = args.has_key?(:animated) ? args[:animated] : true
+      if args[:modal] || !has_navigation?
+        open_screen_modal(screen, args)
       else
-        app_delegate.open_screen(screen.main_controller)
+        open_screen_navigational(screen, args)
       end
       screen
     end
