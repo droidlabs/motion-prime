@@ -2,7 +2,7 @@ class MPCellWithSection < UITableViewCell
   attr_accessor :section
 
   def setSection(section)
-    @section = section
+    @section = section.try(:weak_ref)
   end
 
   def drawRect(rect)

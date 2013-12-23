@@ -10,7 +10,7 @@ module MotionPrime
     end
 
     def table
-      @table ||= options[:table]
+      @table ||= options[:table].try(:weak_ref)
     end
 
     def section_styles

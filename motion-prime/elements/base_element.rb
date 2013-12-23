@@ -19,8 +19,8 @@ module MotionPrime
 
     def initialize(options = {})
       @options = options
-      @screen = options[:screen]
-      @section = options[:section]
+      @screen = options[:screen].try(:weak_ref)
+      @section = options[:section].try(:weak_ref)
       @name = options[:name]
       @block = options[:block]
       @view_class = options[:view_class] || 'UIView'
@@ -28,17 +28,15 @@ module MotionPrime
     end
 
     def render(options = {}, &block)
-      self_ref = WeakRef.new(self)
       run_callbacks :render do
-        self_ref and self_ref.render!(&block)
+        render!(&block)
       end
     end
 
     def render!(&block)
-      self_ref = WeakRef.new(self)
       screen.add_view class_factory(view_class), computed_options do |view|
-        self_ref and self_ref.view = view
-        self_ref and block.try(:call, view, self_ref)
+        @view = view
+        block.try(:call, view, self)
       end
     end
 

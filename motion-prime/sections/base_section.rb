@@ -26,7 +26,7 @@ module MotionPrime
 
     def initialize(options = {})
       @options = options
-      self.screen = options[:screen]
+      self.screen = options[:screen].try(:weak_ref)
       @model = options[:model]
       @name = options[:name] ||= default_name
       @options_block = options[:block]
@@ -74,9 +74,8 @@ module MotionPrime
     def reload_section
       self.elements_to_render.values.map(&:view).flatten.compact.each { |view| view.removeFromSuperview }
       load_section!
-      self_ref = WeakRef.new(self)
       run_callbacks :render do
-        self_ref and self_ref.render!
+        render!
       end
 
       if @table && !self.is_a?(BaseFieldSection)
@@ -135,9 +134,8 @@ module MotionPrime
     def render(container_options = {})
       load_section
       self.container_options.merge!(container_options)
-      self_ref = WeakRef.new(self)
       run_callbacks :render do
-        self_ref and self_ref.render!
+        render!
       end
     end
 
@@ -177,6 +175,9 @@ module MotionPrime
     def keyboard_will_hide; end
 
     def dealloc
+      pp 'dealloc', self.elements.try(:count)
+      self.elements = nil
+
       NSNotificationCenter.defaultCenter.removeObserver self
       self.delegate = nil if self.respond_to?(:delegate)
       super

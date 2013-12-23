@@ -66,22 +66,20 @@ module MotionPrime
 
     def load_image
       return if image_data || !computed_options[:url]
-      self_ref = WeakRef.new(self)
       BW::Reactor.schedule do
         manager = SDWebImageManager.sharedManager
         manager.downloadWithURL(computed_options[:url],
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|
-            break unless image && self_ref
-            self_ref.image_data = image
-            section = self_ref.section
+            break unless image
+            self.image_data = image
 
             section.cached_draw_image = nil
             if section.respond_to?(:cell_name)
               section.pending_display!
             else
-              self_ref.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
+              self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
             end
           }
         )

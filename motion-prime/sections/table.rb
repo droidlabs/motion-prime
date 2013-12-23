@@ -46,6 +46,13 @@ module MotionPrime
       @queue_states[-1] = :cancelled if @queue_states.present?
     end
 
+    def dealloc
+      pp 'dealloc', @data.count, @async_loaded_data.count
+      @data = nil
+      @async_loaded_data = nil
+      super
+    end
+
     def table_styles
       type = self.is_a?(FormSection) ? :base_form : :base_table
 
@@ -127,9 +134,8 @@ module MotionPrime
       section = rows_for_section(index.section)[index.row]
       element = section.container_element || section.init_container_element(container_element_options_for(index))
 
-      self_ref = WeakRef.new(self)
       view = element.render do
-        self_ref and self_ref.rows_for_section(index.section)[index.row].render
+        rows_for_section(index.section)[index.row].render
       end
 
       @rendered_cells[index.section][index.row] = view
@@ -270,9 +276,8 @@ module MotionPrime
           cell.each { |c| prepare_table_cells(c) }
         else
           cell.class.send(:include, CellSectionMixin)
-          # cell.class.module_eval { class_attribute :cell_name }
           cell.screen ||= screen
-          cell.table ||= self if cell.respond_to?(:table=)
+          cell.table ||= WeakRef.new(self) if cell.respond_to?(:table=)
         end
       end
 

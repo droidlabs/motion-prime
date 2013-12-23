@@ -33,5 +33,11 @@ module MotionPrime
       end
       @on_appear_happened = true
     end
+
+    def will_disappear
+      pp 'dis'
+      @main_section = nil
+      super
+    end
   end
 end
