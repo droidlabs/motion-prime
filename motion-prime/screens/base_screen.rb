@@ -35,8 +35,10 @@ module MotionPrime
     end
 
     def on_destroy
-      pp 'destroying screen'
-      @main_section = nil
+      BW::Reactor.schedule do
+        pp 'destroying screen'
+        @main_section = nil
+      end
     end
   end
 end
