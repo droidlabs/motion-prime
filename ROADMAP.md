@@ -1,6 +1,5 @@
 === 0.5.0
 * fix issue when draw element without table section in parent will not be drawn.
-* separate sync#update and sync#fetch
 
 === 0.6.0
 * add testing framework

@@ -1,11 +1,14 @@
 === 0.5.0.beta
-* Model.new with invalid parameter will not raise exception by default now.
-* "id" attribute always being added to model by default now.
-* navigation: true by default for screen initialization.
-* screen.open_screen do not support root screen opening now. use app_delegate.open_screen for that.
 * renamed Prime::BaseModel to Prime::Model.
 * renamed Prime::BaseScreen to Prime::Screen.
 * renamed Prime::BaseSection to Prime::Section.
+* Model: sync/sync! separated to update/update! and fetch/fetch!
+* Model: `fetch_associations` option on fetch renamed to `associations` option.
+* Model: `update_from_response` option on update renamed to `save_response` option.
+* Screen: `navigation: true` by default for screen initialization.
+* Model.new with invalid parameter will not raise exception by default now.
+* "id" attribute always being added to model by default now.
+* screen.open_screen do not support root screen opening now. use app_delegate.open_screen for that.
 
 === 0.4.4
 * Added Prime.env support
