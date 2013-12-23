@@ -1,3 +1,7 @@
+=== 0.4.4.beta
+* Added Prime.env support
+* Added Prime.root support
+
 === 0.4.3
 * Speed improvements
 * Rename dm_ views to mp_

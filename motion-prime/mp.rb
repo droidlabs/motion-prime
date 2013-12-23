@@ -12,7 +12,7 @@ module MotionPrime
   end
 
   def self.env
-    ENV['PRIME_ENV'] || RUBYMOTION_ENV
+    ENV['PRIME_ENV'] || ENV['RUBYMOTION_ENV'] || 'development'
   end
 end
 ::MP = MotionPrime unless defined?(::MP)
