@@ -22,10 +22,12 @@ module MotionPrime
       end
     end
 
+    # Find last model model by default order
     def last
       all.last
     end
 
+    # Find first model model by default order
     def first
       all.first
     end

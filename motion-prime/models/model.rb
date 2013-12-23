@@ -30,10 +30,10 @@ module MotionPrime
       attributes.each do |k, v|
         if has_attribute?(k)
           assign_attribute(k, v) unless options[:skip_nil_values] && v.nil?
-        elsif options[:check_attribute_presence]
-          NSLog("unknown attribute: #{k}")
+        elsif options[:validate_attribute_presence]
+          raise(StoreError, "unknown attribute: '#{k}'")
         else
-          raise(NoMethodError, "unknown attribute: #{k}")
+          NSLog("unknown attribute: #{k}")
         end
       end
     end
@@ -75,11 +75,15 @@ module MotionPrime
     #
     # @return MotionPrime::BaseModel unsaved model
     def new(data = {}, options = {})
-      data.keys.each { |k|
-        unless self.attributes.member? k.to_sym
-          raise StoreError, "'#{k}' is not a defined attribute for this model"
+      data.keys.each do |key|
+        unless self.attributes.member? key.to_sym
+          if options[:validate_attribute_presence]
+            raise StoreError, "unknown attribute: '#{key}'"
+          else
+            data.delete(key)
+          end
         end
-      }
+      end
 
       object = self.nanoObjectWithDictionary(data)
       object
@@ -129,7 +133,7 @@ module MotionPrime
       end
     end
 
-    # Return all model attribute names
+    # Set or return all model attribute names
     #
     # @return Array array of attribute names
     def attributes(*attrs)

@@ -32,12 +32,26 @@ describe MotionPrime::BaseModel do
       user.key.should.not.be.nil
     end
 
-    it "throw error when invalid parameter" do
+    it "throw error when invalid parameter and validate_attribute_presence=true" do
       lambda {
-        user = User.new(:name => "Eddie", :age => 12, :created_at => Time.now, :gender => "m")
+        user = User.new({
+          name: "Eddie", 
+          age: 12, 
+          created_at: Time.now, 
+          gender: "m",
+        }, validate_attribute_presence: true )
       }.should.raise(::MotionPrime::StoreError)
     end
 
+    it "creates model when invalid parameter and validate_attribute_presence=false" do
+      user = User.new({
+        name: "Eddie", 
+        age: 12, 
+        created_at: Time.now, 
+        gender: "m",
+      })
+      user.name.should == "Eddie"
+    end
   end
 
   describe "::create" do
