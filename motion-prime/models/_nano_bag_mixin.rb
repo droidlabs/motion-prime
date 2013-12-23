@@ -1,6 +1,6 @@
-motion_require './finder.rb'
+motion_require './_finder_mixin.rb'
 module MotionPrime
-  module BagInstanceMethods
+  module NanoBagMixin
     def self.included(base)
       base.class_eval do
         alias_method :saved, :savedObjects
@@ -131,6 +131,6 @@ module MotionPrime
 end
 
 class NSFNanoBag
-  include MotionPrime::ModelFinderMethods
-  include MotionPrime::BagInstanceMethods
+  include MotionPrime::ModelFinderMixin::ClassMethods
+  include MotionPrime::NanoBagMixin
 end

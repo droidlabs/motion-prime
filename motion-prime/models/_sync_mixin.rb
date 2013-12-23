@@ -1,5 +1,5 @@
 module MotionPrime
-  module ModelSyncMethods
+  module ModelSyncMixin
     def self.included(base)
       base.class_attribute :_sync_url
       base.class_attribute :_updatable_attributes
@@ -232,36 +232,36 @@ module MotionPrime
     def normalize_sync_url(url)
       url.to_s.gsub(':id', id.to_s)
     end
-  end
 
-  module ModelSyncClassMethods
-    def new(data = {}, options = {})
-      model = super
-      if fetch_attributes = options[:fetch_attributes]
-        model.fetch_with_attributes(fetch_attributes)
+    module ClassMethods
+      def new(data = {}, options = {})
+        model = super
+        if fetch_attributes = options[:fetch_attributes]
+          model.fetch_with_attributes(fetch_attributes)
+        end
+        model
       end
-      model
-    end
 
-    def sync_url(url = nil, &block)
-      if url || block_given?
-        self._sync_url = url || block
-      else
-        self._sync_url
+      def sync_url(url = nil, &block)
+        if url || block_given?
+          self._sync_url = url || block
+        else
+          self._sync_url
+        end
       end
-    end
 
-    def updatable_attributes(*attrs)
-      return self._updatable_attributes if attrs.blank?
-      attrs.each do |attribute|
-        updatable_attribute attribute
+      def updatable_attributes(*attrs)
+        return self._updatable_attributes if attrs.blank?
+        attrs.each do |attribute|
+          updatable_attribute attribute
+        end
       end
-    end
 
-    def updatable_attribute(attribute, options = {}, &block)
-      options[:block] = block if block_given?
-      self._updatable_attributes ||= {}
-      self._updatable_attributes[attribute] = options
+      def updatable_attribute(attribute, options = {}, &block)
+        options[:block] = block if block_given?
+        self._updatable_attributes ||= {}
+        self._updatable_attributes[attribute] = options
+      end
     end
   end
 end
