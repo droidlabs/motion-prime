@@ -20,8 +20,7 @@ end
 
 # **3. Create the main screen.**
 #
-# You should rewrite the `render` method, which will be runned after opening screen.
-# Note: you must always pass `screen` option, which points to screen to render
+# You should rewrite the `render` method, which will be runned after first opening screen.
 
 class MainScreen < Prime::BaseScreen
   title 'Main screen'

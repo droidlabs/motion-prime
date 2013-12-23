@@ -1,8 +1,11 @@
 === 0.5.0
-* rename support/dm_* to support/mp_*
 * "id" attribute should always be added to model by default
-* add DSL for ViewStyles#setValue conditions
-* add auto-symbol-value for Prime::Config.color items
+* fix issue when draw element without table section in parent will not be drawn.
+* Ability to pass "locals" while opening screen.
+* navigation: true by default for screen initialization.
+* separate screen.open_screen to screen.open_child and screen.open_modal.
+* use model.assign_attributes instead of model.fetch_with_attributes and call it on initialization. 
+* separate sync#update and sync#fetch
 
 === 0.6.0
 * add testing framework
@@ -10,3 +13,5 @@
 
 === 0.7.0
 * add sections/screens/models generator
+* add DSL for ViewStyles#setValue conditions
+* add auto-symbol-value for Prime::Config.color items

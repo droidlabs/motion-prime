@@ -46,6 +46,14 @@ module MotionPrime
       data
     end
 
+    def last
+      all.last
+    end
+
+    def first
+      all.first
+    end
+
     def set_inverse_relation_for(models)
       [*models].each do |model|
         model.send("#{inverse_relation_name}=", inverse_relation)
