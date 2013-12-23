@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    motion-prime (0.4.3)
+    motion-prime (0.4.4)
       bubble-wrap
       cocoapods
       methadone

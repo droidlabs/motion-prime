@@ -1,6 +1,7 @@
-=== 0.4.4.beta
+=== 0.4.4
 * Added Prime.env support
 * Added Prime.root support
+* Fix memory leak issues
 
 === 0.4.3
 * Speed improvements
