@@ -2,7 +2,7 @@ module MotionPrime
   class SidebarContainerScreen < RESideMenu
     include ::MotionPrime::ScreenBaseMixin
 
-    def self.new(menu, content, options={})
+    def self.new(menu, content, options = {})
       screen = self.alloc.initWithContentViewController(nil, menuViewController: nil)
       screen.backgroundImage = Prime::Config.sidebar.background_image
       screen.parallaxEnabled = false
@@ -19,7 +19,7 @@ module MotionPrime
         screen.contentViewInPortraitOffsetCenterY = UIScreen.mainScreen.bounds.size.height/2 + y_offset
       end
 
-      screen.on_create(options) if screen.respond_to?(:on_create)
+      screen.on_create(options.merge(navigation: false)) if screen.respond_to?(:on_create)
       screen.menu_controller = menu unless menu.nil?
       screen.content_controller = content unless content.nil?
 

@@ -56,7 +56,7 @@ end
 
 def open_foo_screen
   foo_screen = FooScreen.new
-  sidebar = MySidebar.new
+  sidebar = MySidebar.new(navigation: false)
   app_delegate.open_screen foo_screen, sidebar: sidebar
 end
 
