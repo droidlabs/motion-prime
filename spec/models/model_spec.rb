@@ -9,6 +9,12 @@ describe MotionPrime::BaseModel do
   end
 
   describe "::new" do
+    it "should have id attribute by default" do
+      user = stub_user("Bob", 10, Time.now)
+      user.respond_to?(:id).should.be.true
+      user.respond_to?(:id=).should.be.true
+    end
+
     it "create new object" do
       user = stub_user("Bob", 10, Time.now)
       user.save

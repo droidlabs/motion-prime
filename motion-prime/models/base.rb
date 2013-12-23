@@ -19,6 +19,7 @@ module MotionPrime
     extend MotionPrime::ModelSyncClassMethods
 
     attribute :bag_key # need this as we use shared store; each nested resource must belong to parent bag
+    attribute :id
 
     def errors
       @errors ||= Errors.new(self)

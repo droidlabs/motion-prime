@@ -1,5 +1,4 @@
 === 0.5.0
-* "id" attribute should always be added to model by default
 * fix issue when draw element without table section in parent will not be drawn.
 * Ability to pass "locals" while opening screen.
 * navigation: true by default for screen initialization.

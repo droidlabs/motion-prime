@@ -1,5 +1,6 @@
 === 0.5.0.beta
 * Model.new with invalid parameter will not raise exception by default now.
+* "id" attribute always being added to model by default now.
 
 === 0.4.4
 * Added Prime.env support
