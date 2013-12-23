@@ -11,6 +11,27 @@
   <div id="container">
     <div id="background"></div>
     
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="getting_started.html">
+                getting_started.rb
+              </a>
+            
+              
+              <a class="source" href="screens.html">
+                screens.rb
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
     <ul class="sections">
         
           <li id="title">
@@ -98,7 +119,7 @@ Note: you should always use AppDelegate class name.</p>
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p><strong>3. Create the main screen.</strong></p>
-<p>You should rewrite the <code>render</code> method, which will be runned after opening screen.</p>
+<p>You should rewrite the <code>render</code> method, which will be runned after first opening screen.</p>
 
             </div>
             
@@ -106,8 +127,8 @@ Note: you should always use AppDelegate class name.</p>
   title <span class="string">'Main screen'</span>
 
   <span class="function"><span class="keyword">def</span> <span class="title">render</span></span>
-    <span class="variable">@main_section</span> = <span class="constant">MyProfileSection</span>.new(<span class="symbol">model:</span> <span class="constant">User</span>.first)
-    <span class="variable">@main_section</span>.render(<span class="symbol">to:</span> <span class="keyword">self</span>)
+    <span class="variable">@main_section</span> = <span class="constant">MyProfileSection</span>.new(<span class="symbol">screen:</span> <span class="keyword">self</span>, <span class="symbol">model:</span> <span class="constant">User</span>.first)
+    <span class="variable">@main_section</span>.render
   <span class="keyword">end</span>
 <span class="keyword">end</span></pre></div></div>
             
@@ -122,7 +143,7 @@ Note: you should always use AppDelegate class name.</p>
               </div>
               <p><strong>4. Create your first section.</strong></p>
 <p>&quot;Section&quot; is something like helper, which contains &quot;Elements&quot;.</p>
-<p>Each element will be added to the parent screen when you run <code>section.render(to: screen)</code></p>
+<p>Each element will be added to the parent screen when you run <code>section.render</code></p>
 
             </div>
             
@@ -141,9 +162,9 @@ Note: you should always use AppDelegate class name.</p>
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p><strong>5. Create your first stylesheet file.</strong></p>
-<p>Styles will be applied to each element in section. 
+<p>Styles will be applied to each element in section.
 The simplest rule by default is: <code>:section-name_:element-name</code>.</p>
-<p>E.g. if you have &#39;MyProfileSection&#39; (the name for section by default will be - <code>my_profile</code>) 
+<p>E.g. if you have &#39;MyProfileSection&#39; (the name for section by default will be - <code>my_profile</code>)
 and &#39;title&#39; element, then you should use <code>my_profile_title</code> style name.</p>
 
             </div>

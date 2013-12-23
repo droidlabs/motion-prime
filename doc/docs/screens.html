@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>screens.rb</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="getting_started.html">
+                getting_started.rb
+              </a>
+            
+              
+              <a class="source" href="screens.html">
+                screens.rb
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>screens.rb</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p><strong> Render the screen. </strong></p>
+<p>You should rewrite the <code>render</code> method of Prime::BaseScreen, which will be runned after first opening screen.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MainScreen</span> <span class="inheritance">&lt; <span class="parent">Prime::BaseScreen</span></span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">render</span></span>
+    <span class="variable">@main_section</span> = <span class="constant">MyProfileSection</span>.new(<span class="symbol">screen:</span> <span class="keyword">self</span>, <span class="symbol">model:</span> <span class="constant">User</span>.first)
+    <span class="variable">@main_section</span>.render
+  <span class="keyword">end</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p><strong> Set screen&#39;s title </strong></p>
+<p>This title will be used in screen&#39;s navigation controller and will be shown there.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MainScreen</span> <span class="inheritance">&lt; <span class="parent">Prime::BaseScreen</span></span></span>
+  title <span class="string">'Main screen'</span>
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Also, you can pass block to define screen&#39;s title</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MainScreen</span> <span class="inheritance">&lt; <span class="parent">Prime::BaseScreen</span></span></span>
+  title { params[<span class="symbol">:title</span>] }
+<span class="keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><strong> Initialize screen. </strong></p>
+<p>Available options:</p>
+<ul>
+<li>:navigation. when this options is true, screen will be created with navigation support, like left and right buttons and title.
+This option is false by default.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>screen = <span class="constant">MainScreen</span>.new(<span class="symbol">navigation:</span> <span class="keyword">true</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p><strong> Open screen: using app delegate. </strong></p>
+<p>Opening screen using app delegate is the most basic way, you would do it at least on app load.</p>
+<p>Available options:</p>
+<ul>
+<li><p>:root. when this option is true, screen will not be in content controller and will create new root screen. 
+You can use root: true when you have already opened screen with sidebar, and you want to open new screen without sidebar.
+This option is false by default if you already have root screen and true if not.</p>
+</li>
+<li><p>:sidebar. send Prime::BaseScreen instance to this option if you want to create root screen with sidebar. 
+value of this options will be used as sidebar controller.</p>
+</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>app_delegate.open_screen <span class="constant">MainScreen</span>.new(<span class="symbol">navigation:</span> <span class="keyword">true</span>), <span class="symbol">sidebar:</span> <span class="constant">MySidebar</span>.new</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p><strong> Open screen: using parent screen. </strong></p>
+<p>Opening screen using parent screen is usefull if you want to create inherited screen. 
+Parent screen should have been initialized with navigation support.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>screen.open_screen <span class="constant">AnotherScreen</span>.new(<span class="symbol">navigation:</span> <span class="keyword">true</span>)</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
