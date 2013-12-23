@@ -16,7 +16,7 @@ module MotionPrime
       return if computed_options[:hidden]
 
       draw_background_in_context(UIGraphicsGetCurrentContext())
-      draw_with_layer
+      computed_options[:draw_in_rect] ? draw_in_context(UIGraphicsGetCurrentContext()) : draw_with_layer
       load_image
     end
 
@@ -72,7 +72,7 @@ module MotionPrime
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|
-            break unless image
+            break unless image && section
             self.image_data = image
 
             section.cached_draw_image = nil

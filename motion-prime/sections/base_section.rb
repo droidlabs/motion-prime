@@ -32,6 +32,15 @@ module MotionPrime
       @options_block = options[:block]
     end
 
+    def dealloc
+      pp 'deallocating section. elements count: ', self.elements.try(:count)
+      self.elements = nil
+
+      NSNotificationCenter.defaultCenter.removeObserver self
+      self.delegate = nil if self.respond_to?(:delegate)
+      super
+    end
+
     def container_bounds
       options[:container_bounds] or raise "You must pass `container bounds` option to prerender base section"
     end
@@ -173,15 +182,6 @@ module MotionPrime
     def on_keyboard_hide; end
     def keyboard_will_show; end
     def keyboard_will_hide; end
-
-    def dealloc
-      pp 'deallocating section. elements count: ', self.elements.try(:count)
-      self.elements = nil
-
-      NSNotificationCenter.defaultCenter.removeObserver self
-      self.delegate = nil if self.respond_to?(:delegate)
-      super
-    end
 
     def bind_keyboard_events
       NSNotificationCenter.defaultCenter.addObserver self,

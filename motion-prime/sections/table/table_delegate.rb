@@ -9,11 +9,11 @@ module MotionPrime
       table_section.number_of_sections(table)
     end
 
-    def tableView(table, cellForRowAtIndexPath:index)
+    def tableView(table, cellForRowAtIndexPath: index)
       table_section.cell_for_index(table, index)
     end
 
-    def tableView(table, numberOfRowsInSection:section)
+    def tableView(table, numberOfRowsInSection: section)
       table_section.rows_for_section(section).try(:count).to_i
     end
 

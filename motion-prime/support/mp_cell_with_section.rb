@@ -11,6 +11,6 @@ class MPCellWithSection < UITableViewCell
   end
 
   def draw_in(rect)
-    section.draw_in(rect) if section.respond_to?(:draw_in)
+    section and section.draw_in(rect) if section.respond_to?(:draw_in)
   end
 end

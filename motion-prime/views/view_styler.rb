@@ -46,7 +46,7 @@ module MotionPrime
       # ignore options
       return if key == 'section' && !view.respond_to?(:section=)
       return if key == 'size_to_fit' && view.is_a?(UILabel)
-      return if (key == 'url' || key == 'default') && view.is_a?(UIImageView)
+      return if %w[url default draw_in_rect].include?(key.to_s) && view.is_a?(UIImageView)
       return if %w[
         styles has_drawn_content
         width height top right bottom left value_type
