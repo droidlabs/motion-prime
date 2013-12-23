@@ -37,7 +37,7 @@ module MotionPrime
 
     # Setup the screen, this method will be called when you run MPViewController.new
     # @param options [hash] Options passed to setup
-    # @return [MotionPrime::BaseScreen] Ready to use screen
+    # @return [MotionPrime::Screen] Ready to use screen
     def on_create(options = {})
       unless self.is_a?(UIViewController)
         raise StandardError.new("ERROR: Screens must extend UIViewController.")

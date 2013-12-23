@@ -1,4 +1,4 @@
-describe MotionPrime::BaseModel do
+describe MotionPrime::Model do
   before do
     MotionPrime::Store.connect
     @store = MotionPrime::Store.shared_store

@@ -1,4 +1,4 @@
-describe "BaseScreen" do
+describe MotionPrime::Screen do
 
   before do
     @screen = BaseScreen.new()

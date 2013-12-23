@@ -1,5 +1,5 @@
 module MotionPrime
-  class BaseFieldSection < BaseSection
+  class BaseFieldSection < Section
     include CellSectionMixin
     include BW::KVO
 

@@ -73,7 +73,7 @@ module MotionPrime
     # Examples:
     #   User.new(name: "Bob", age: 10)
     #
-    # @return MotionPrime::BaseModel unsaved model
+    # @return MotionPrime::Model unsaved model
     def new(data = {}, options = {})
       data.keys.each do |key|
         unless self.attributes.member? key.to_sym
@@ -94,7 +94,7 @@ module MotionPrime
     # Examples:
     #   User.create(name: "Bob", age: 10)
     #
-    # @return MotionPrime::BaseModel saved model
+    # @return MotionPrime::Model saved model
     def create(data = {})
       object = self.new(data)
       object.save
@@ -103,7 +103,7 @@ module MotionPrime
     # Define model attribute
     #
     # Examples:
-    #   class User < MotionPrime::BaseModel
+    #   class User < MotionPrime::Model
     #     attribute :name
     #     attribute :age
     #   end
@@ -168,7 +168,7 @@ module MotionPrime
 
     # Delete objects from store
     #
-    # @param [Array, MotionPrime::BaseModel] objects to delete
+    # @param [Array, MotionPrime::Model] objects to delete
     # @return [Array] result
     def delete(*args)
       keys = find_keys(*args)

@@ -1,4 +1,4 @@
-class BaseScreen < MotionPrime::BaseScreen
+class BaseScreen < MotionPrime::Screen
   title "Base"
   attr_accessor :was_rendered
 

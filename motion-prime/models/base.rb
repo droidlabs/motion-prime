@@ -7,7 +7,7 @@ motion_require './sync.rb'
 motion_require './association.rb'
 motion_require './store_extension.rb'
 module MotionPrime
-  class BaseModel < NSFNanoObject
+  class Model < NSFNanoObject
     include MotionPrime::HasAuthorization
     include MotionPrime::ModelMethods
     include MotionPrime::ModelAssociationMethods

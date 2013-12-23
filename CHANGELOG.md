@@ -3,6 +3,9 @@
 * "id" attribute always being added to model by default now.
 * navigation: true by default for screen initialization.
 * screen.open_screen do not support root screen opening now. use app_delegate.open_screen for that.
+* renamed Prime::BaseModel to Prime::Model.
+* renamed Prime::BaseScreen to Prime::Screen.
+* renamed Prime::BaseSection to Prime::Section.
 
 === 0.4.4
 * Added Prime.env support

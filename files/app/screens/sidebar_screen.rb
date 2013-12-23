@@ -1,4 +1,4 @@
-class SidebarScreen < Prime::BaseScreen
+class SidebarScreen < Prime::Screen
   def render
     @main_section = SidebarTableSection.new(screen: self)
     @main_section.render

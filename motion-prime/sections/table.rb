@@ -2,7 +2,7 @@ motion_require './table/refresh_mixin'
 motion_require './table/table_delegate'
 
 module MotionPrime
-  class TableSection < BaseSection
+  class TableSection < Section
     include TableSectionRefreshMixin
     include HasStyleChainBuilder
     include HasSearchBar

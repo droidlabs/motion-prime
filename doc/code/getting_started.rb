@@ -25,7 +25,7 @@ end
 #
 # NOTE: it's recommended to use instance variables for sections, e.g. `@main_section` instead of `main_section`.
 
-class MainScreen < Prime::BaseScreen
+class MainScreen < Prime::Screen
   title 'Main screen'
 
   def render
@@ -40,7 +40,7 @@ end
 #
 # Each element will be added to the parent screen when you run `section.render`
 
-class MyProfileSection < Prime::BaseSection
+class MyProfileSection < Prime::Section
   element :title, text: "Hello World"
   element :avatar, image: "images/avatar.png", type: :image
 end

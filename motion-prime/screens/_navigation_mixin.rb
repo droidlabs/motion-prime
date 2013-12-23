@@ -6,9 +6,9 @@ module MotionPrime
     #   animated: open screen with animation.
     #   modal: open screen as model
 
-    # @param screen [MotionPrime::BaseScreen] Screen to be opened
+    # @param screen [MotionPrime::Screen] Screen to be opened
     # @param args [Hash] Options for opening screen
-    # @return [MotionPrime::BaseScreen]
+    # @return [MotionPrime::Screen]
     def open_screen(screen, args = {})
       screen = setup_screen_for_open(screen, args)
       screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)

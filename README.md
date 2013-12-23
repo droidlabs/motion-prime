@@ -32,7 +32,7 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
   end
 
   # app/screens/main_screen.rb
-  class MainScreen < Prime::BaseScreen
+  class MainScreen < Prime::Screen
     title 'Main screen'
 
     def render
@@ -42,7 +42,7 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
   end
 
   # app/sections/my_profile.rb
-  class MyProfileSection < Prime::BaseSection
+  class MyProfileSection < Prime::Section
     element :title, text: "Hello World"
     element :avatar, image: "images/avatar.png", type: :image
   end

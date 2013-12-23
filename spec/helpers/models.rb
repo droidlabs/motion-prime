@@ -1,40 +1,40 @@
-class User < MotionPrime::BaseModel
+class User < MotionPrime::Model
   attributes :name, :age, :created_at
 end
 
-class Plane < MotionPrime::BaseModel
+class Plane < MotionPrime::Model
   attributes :name, :age
 end
 
-class Listing < MotionPrime::BaseModel
+class Listing < MotionPrime::Model
   attribute :name
 end
 
-class Todo < MotionPrime::BaseModel
+class Todo < MotionPrime::Model
   attribute :title
   bag :items
 end
 
-class TodoItem < MotionPrime::BaseModel
+class TodoItem < MotionPrime::Model
   attribute :completed
   attribute :text
 end
 
-class Page < MotionPrime::BaseModel
+class Page < MotionPrime::Model
   attribute :text
   attribute :index
 end
 
-class Animal < MotionPrime::BaseModel
+class Animal < MotionPrime::Model
   attribute :name
 end
 
-class Autobot < MotionPrime::BaseModel
+class Autobot < MotionPrime::Model
   attribute :name
 end
 
 module CustomModule; end
-class CustomModule::Car < MotionPrime::BaseModel
+class CustomModule::Car < MotionPrime::Model
   attribute :name
   attribute :created_at
 end
