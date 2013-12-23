@@ -5,6 +5,13 @@
 # For RubyOnRails developers the nearest analogy would be "Controllers".
 ---
 
+# ** Create a screen. **
+#
+# Just inherit it from `Prime::Screen`.
+
+class FooScreen < Prime::Screen
+end
+
 # ** Render the screen. **
 #
 # You should rewrite the `render` method of `Prime::Screen`, which will be runned after first opening screen.
