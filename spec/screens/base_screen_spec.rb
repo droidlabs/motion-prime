@@ -14,6 +14,10 @@ describe "BaseScreen" do
     @screen.title.should == "Base"
   end
 
+  it "should have navigation enabled by default" do
+    @screen.wrap_in_navigation?.should == true
+  end
+
   it "#modal? should be false by default" do
     @screen.modal?.should == false
   end

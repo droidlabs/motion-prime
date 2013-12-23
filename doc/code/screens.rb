@@ -36,10 +36,10 @@ end
 #
 # Available options:
 # * `:navigation`. When this options is true, screen will be created with navigation support: it will allow adding title and left/right buttons.
-# This option is false by default.
+# This option is true by default.
 
 def open_foo_screen
-  foo_screen = FooScreen.new(navigation: true)
+  foo_screen = FooScreen.new(navigation: false)
 end
 
 # ** Open screen: using app delegate. **
@@ -55,7 +55,7 @@ end
 # Value of this options will be used as sidebar controller.
 
 def open_foo_screen
-  foo_screen = FooScreen.new(navigation: true)
+  foo_screen = FooScreen.new
   sidebar = MySidebar.new
   app_delegate.open_screen foo_screen, sidebar: sidebar
 end

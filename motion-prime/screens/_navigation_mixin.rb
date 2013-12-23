@@ -47,7 +47,7 @@ module MotionPrime
     end
 
     def wrap_in_navigation?
-      options[:navigation]
+      options[:navigation] || options[:navigation].nil?
     end
 
     def wrap_in_navigation
