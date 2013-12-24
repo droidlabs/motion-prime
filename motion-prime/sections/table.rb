@@ -15,10 +15,10 @@ module MotionPrime
     after_render :init_pull_to_refresh
     delegate :init_pull_to_refresh, to: :table_delegate
 
-    # def dealloc
-    #   pp 'deallocating table. sections count:', @data.try(:count)
-    #   super
-    # end
+    def dealloc
+      pp 'deallocating table. sections count:', @data.try(:count)
+      super
+    end
 
     def table_data
       []

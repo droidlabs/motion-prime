@@ -80,7 +80,7 @@ module MotionPrime
         focus
         form.on_input_change(view(:input))
       end
-      view(:input).delegate = self.form
+      view(:input).delegate = self.form.table_delegate
     end
 
     def observing_errors?
