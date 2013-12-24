@@ -10,7 +10,8 @@ Visit http://www.rubymotion.com
 # **2. Create application delegate.**
 #
 # You should rewrite the `on_load` method, which will be runned after starting application.
-# Note: you should always use AppDelegate class name.
+#
+# NOTE: you should always use AppDelegate class name.
 
 class AppDelegate < Prime::BaseAppDelegate
   def on_load(app, options)
@@ -21,6 +22,8 @@ end
 # **3. Create the main screen.**
 #
 # You should rewrite the `render` method, which will be runned after first opening screen.
+#
+# NOTE: it's recommended to use instance variables for sections, e.g. `@main_section` instead of `main_section`.
 
 class MainScreen < Prime::BaseScreen
   title 'Main screen'
@@ -47,14 +50,14 @@ end
 # Styles will be applied to each element in section.
 # The simplest rule by default is: `:section-name_:element-name`.
 #
-# E.g. if you have 'MyProfileSection' (the name for section by default will be - `my_profile`)
-# and 'title' element, then you should use `my_profile_title` style name.
+# E.g. if you have "MyProfileSection" (the name for section by default will be - `my_profile`)
+# and "title" element, then you should use `my_profile_title` style name.
 
 Prime::Styles.define do
   style :my_profile_title, width: 300, height: 20
 end
 
-# Also, you can pass namespace to `define` method.
+# You can pass namespace to `define` method.
 
 Prime::Styles.define :my_profile do
   style :title, width: 300, height: 20
