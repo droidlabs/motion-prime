@@ -25,16 +25,16 @@ module MotionPrime
     define_callbacks :render
 
     def initialize(options = {})
+      options[:screen] = options[:screen].try(:weak_ref)
       @options = options
-      self.screen = options[:screen].try(:weak_ref)
+      self.screen = options[:screen]
       @model = options[:model]
       @name = options[:name] ||= default_name
       @options_block = options[:block]
     end
 
     def dealloc
-      pp 'deallocating section. elements count: ', self.elements.try(:count)
-      self.elements = nil
+      # pp 'deallocating section. elements count: ', self.elements.try(:count), self.to_s
 
       NSNotificationCenter.defaultCenter.removeObserver self
       self.delegate = nil if self.respond_to?(:delegate)
@@ -237,7 +237,7 @@ module MotionPrime
         # in next element with same name in another class
         options = opts.clone
         options[:type] ||= (options[:text] || options[:attributed_text_options]) ? :label : :view
-        options.merge(screen: screen.try(:weak_ref), section: self.weak_ref)
+        options.merge(screen: screen, section: self.weak_ref)
       end
 
     private

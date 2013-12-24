@@ -34,11 +34,13 @@ module MotionPrime
       @on_appear_happened = true
     end
 
-    def on_destroy
-      BW::Reactor.schedule do
-        pp 'destroying screen'
-        @main_section = nil
-      end
+    def dealloc
+      pp 'Deallocating Screen'
+      super
+    end
+
+    def visible?
+      self.isViewLoaded && view.window
     end
   end
 end

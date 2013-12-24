@@ -7,17 +7,18 @@ module MotionPrime
     include HasStyleChainBuilder
     include HasSearchBar
 
-    class_attribute :async_data_options, :section_header_options
+    class_attribute :async_data_options, :section_header_options, :pull_to_refresh_block
+
     attr_accessor :table_element, :did_appear, :section_headers, :section_header_options
     attr_reader :decelerating
     before_render :render_table
+    after_render :init_pull_to_refresh
+    delegate :init_pull_to_refresh, to: :table_delegate
 
-    def dealloc
-      pp 'deallocating table. sections count:', @data.try(:count)
-      @data = nil
-      @async_loaded_data = nil
-      super
-    end
+    # def dealloc
+    #   pp 'deallocating table. sections count:', @data.try(:count)
+    #   super
+    # end
 
     def table_data
       []
@@ -107,12 +108,15 @@ module MotionPrime
       styles
     end
 
+    def table_delegate
+      @table_delegate ||= TableDelegate.new(section: self)
+    end
+
     def render_table
-      delegate = TableDelegate.new(section: self)
       options = {
         styles: table_styles.values.flatten,
-        delegate: delegate,
-        data_source: delegate,
+        delegate: table_delegate,
+        data_source: table_delegate,
         style: (UITableViewStyleGrouped unless flat_data?)
       }
       if async_data? && self.class.async_data_options.has_key?(:estimated_row_height)
@@ -389,6 +393,10 @@ module MotionPrime
         self.section_header_options ||= []
         section = options.delete(:id)
         self.section_header_options[section] = options
+      end
+
+      def pull_to_refresh(&block)
+        self.pull_to_refresh_block = block
       end
     end
   end

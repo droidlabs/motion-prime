@@ -3,6 +3,7 @@ class MPCellWithSection < UITableViewCell
 
   def setSection(section)
     @section = section.try(:weak_ref)
+    @section_name = section.name
   end
 
   def drawRect(rect)
@@ -11,6 +12,7 @@ class MPCellWithSection < UITableViewCell
   end
 
   def draw_in(rect)
-    section and section.draw_in(rect) if section.respond_to?(:draw_in)
+    return unless section
+    section.draw_in(rect) if section.respond_to?(:draw_in)
   end
 end

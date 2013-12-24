@@ -18,6 +18,7 @@ module MotionPrime
     define_callbacks :render
 
     def initialize(options = {})
+      options[:screen] = options[:screen].try(:weak_ref)
       @options = options
       @screen = options[:screen]
       @section = options[:section]
@@ -27,9 +28,14 @@ module MotionPrime
       @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
     end
 
-    def dealloc
-      pp 'deallocating elemenet', self.name
-      super
+    # def dealloc
+    #   pp 'deallocating elemenet', self.name, self.to_s, section.to_s
+    #   super
+    # end
+
+    def add_target(target = nil, action = 'on_click:', event = :touch)
+      return false unless self.view
+      self.view.addTarget(target || section, action: action, forControlEvents: event.uicontrolevent)
     end
 
     def render(options = {}, &block)

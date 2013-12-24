@@ -20,7 +20,7 @@ module MotionPrime
         render_image_elements
       elsif prerender_enabled?
         prerender_elements_for_state(state)
-        draw_in(rect, state)
+        draw_in(rect, state) if cached_draw_image[state]
       else
         draw_background_in_context(UIGraphicsGetCurrentContext(), rect)
         draw_elements(rect)

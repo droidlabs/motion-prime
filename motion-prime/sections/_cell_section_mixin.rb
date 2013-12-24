@@ -38,7 +38,7 @@ module MotionPrime
     def init_container_element(options = {})
       @container_element ||= begin
         options.merge!({
-          screen: screen.try(:weak_ref),
+          screen: screen,
           section: self.weak_ref,
           has_drawn_content: true
         })

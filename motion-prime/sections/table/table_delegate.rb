@@ -5,6 +5,13 @@ module MotionPrime
       self.table_section = options[:section].try(:weak_ref)
     end
 
+    def init_pull_to_refresh
+      return unless block = table_section.class.pull_to_refresh_block
+      table_section.add_pull_to_refresh do
+        table_section.instance_eval(&block)
+      end
+    end
+
     def numberOfSectionsInTableView(table)
       table_section.number_of_sections(table)
     end

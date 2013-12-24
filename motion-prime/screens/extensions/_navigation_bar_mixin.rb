@@ -41,7 +41,7 @@ module MotionPrime
 
     def create_navigation_button(title, args = {})
       args[:style]  ||= UIBarButtonItemStylePlain
-      args[:target] ||= self
+      args[:target] = (args[:target] || self).weak_ref
       args[:action] ||= nil
       # TODO: Find better place for this code, may be just create custom control
       if args[:image]

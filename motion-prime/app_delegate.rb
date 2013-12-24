@@ -32,7 +32,6 @@ module MotionPrime
 
     # TODO: move to private methods
     def open_root_screen(screen)
-      close_current_screens
       screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
       screen.wrap_in_navigation if screen.respond_to?(:wrap_in_navigation)
 
@@ -47,7 +46,6 @@ module MotionPrime
     # TODO: move to private methods
     def open_content_screen(screen)
       if sidebar?
-        close_current_screens
         sidebar_container.content_controller = screen
       else
         open_root_screen(screen)
@@ -85,24 +83,7 @@ module MotionPrime
       NSNotificationCenter.defaultCenter.postNotificationName(:on_current_user_reset, object: user_was)
     end
 
-    def close_screens(screens)
-      Array.wrap(screens).each { |screen| screen.on_destroy if screen.respond_to?(:on_destroy) }
-    end
-
     private
-      def close_current_screens
-        return unless self.window
-
-        screens = if sidebar? && sidebar_container.content_controller.is_a?(UINavigationController)
-          sidebar_container.content_controller.childViewControllers
-        elsif sidebar?
-          sidebar_container.content_controller
-        else
-          window.rootViewController
-        end
-        close_screens(screens)
-      end
-
       def create_tab_bar(screens)
         MotionPrime::TabBarController.new(screens)
       end

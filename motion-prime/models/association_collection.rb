@@ -41,17 +41,15 @@ module MotionPrime
 
     def all(*args)
       return [] unless bag.store.present?
-      data = bag.find(find_options(args[0]), sort_options(args[1]))
+      find_options = find_options(args[0])
+      sort_options = sort_options(args[1])
+      data = if sort_options.present? # TODO: check bag items count
+        bag.find(find_options, sort_options)
+      else
+        bag.to_a.select { |entity| find_options.all? { |field, value| entity.send(field) == value } }
+      end
       set_inverse_relation_for(data)
       data
-    end
-
-    def last
-      all.last
-    end
-
-    def first
-      all.first
     end
 
     def set_inverse_relation_for(models)
@@ -71,8 +69,7 @@ module MotionPrime
     end
 
     def sort_options(options)
-      return options if options.present?
-      {sort: model_class.default_sort_options}
+      options || {sort: model_class.default_sort_options}
     end
 
     def model_class
