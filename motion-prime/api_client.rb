@@ -53,7 +53,8 @@ class ApiClient
 
   def resource_url(path)
     # return if path.blank?
-    "#{MotionPrime::Config.api.base}#{path}"
+    base = Prime::Config.api.resource_base.present? ? Prime::Config.api.resource_base : Prime::Config.api.base
+    "#{base}#{path}"
   end
 
   def request(method, path, params = {}, &block)

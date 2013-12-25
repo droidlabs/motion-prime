@@ -34,10 +34,10 @@ module MotionPrime
       @on_appear_happened = true
     end
 
-    def dealloc
-      pp 'Deallocating Screen'
-      super
-    end
+    # def dealloc
+    #   pp 'Deallocating Screen'
+    #   super
+    # end
 
     def visible?
       self.isViewLoaded && view.window

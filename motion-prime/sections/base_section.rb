@@ -34,7 +34,7 @@ module MotionPrime
     end
 
     def dealloc
-      pp 'deallocating section. elements count: ', self.elements.try(:count), self.to_s
+      # pp 'deallocating section. elements count: ', self.elements.try(:count), self.to_s
 
       NSNotificationCenter.defaultCenter.removeObserver self
       self.delegate = nil if self.respond_to?(:delegate)

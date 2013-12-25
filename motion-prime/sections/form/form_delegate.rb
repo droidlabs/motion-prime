@@ -16,7 +16,7 @@ module MotionPrime
 
     def textField(text_field, shouldChangeCharactersInRange:range, replacementString:string)
       limit = (table_section.class.text_field_limits || {}).find do |field_name, limit|
-        view("#{field_name}:input") == text_field
+        table_section.view("#{field_name}:input") == text_field
       end.try(:last)
       return true unless limit
       table_section.allow_string_replacement?(text_field, limit, range, string)
