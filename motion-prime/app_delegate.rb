@@ -30,35 +30,6 @@ module MotionPrime
       end
     end
 
-    # TODO: move to private methods
-    def open_root_screen(screen)
-      screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
-      screen.wrap_in_navigation if screen.respond_to?(:wrap_in_navigation)
-
-      screen = screen.main_controller if screen.respond_to?(:main_controller)
-
-      self.window ||= UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-      self.window.rootViewController = screen
-      self.window.makeKeyAndVisible
-      screen
-    end
-
-    # TODO: move to private methods
-    def open_content_screen(screen)
-      if sidebar?
-        sidebar_container.content_controller = screen
-      else
-        open_root_screen(screen)
-      end
-    end
-
-    # TODO: move to private methods
-    def open_with_sidebar(content, sidebar, options={})
-      self.sidebar_container = SidebarContainerScreen.new(sidebar, content, options)
-      self.sidebar_container.delegate = self
-      open_root_screen(sidebar_container)
-    end
-
     def sidebar?
       self.window && self.window.rootViewController.is_a?(SidebarContainerScreen)
     end
@@ -84,6 +55,45 @@ module MotionPrime
     end
 
     private
+      def open_root_screen(screen)
+        screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
+        screen.wrap_in_navigation if screen.respond_to?(:wrap_in_navigation)
+
+        screen = screen.main_controller if screen.respond_to?(:main_controller)
+
+        self.window ||= UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+        self.window.rootViewController = screen
+        self.window.makeKeyAndVisible
+        screen
+      end
+    
+      def open_content_screen(screen)
+        if sidebar?
+          sidebar_container.content_controller = screen
+        else
+          open_root_screen(screen)
+        end
+      end
+
+      def open_with_sidebar(content, sidebar, options={})
+        self.sidebar_container = SidebarContainerScreen.new(sidebar, content, options)
+        self.sidebar_container.delegate = self
+        open_root_screen(sidebar_container)
+      end
+
+      def close_current_screens
+        return unless self.window
+
+        screens = if sidebar? && sidebar_container.content_controller.is_a?(UINavigationController)
+          sidebar_container.content_controller.childViewControllers
+        elsif sidebar?
+          sidebar_container.content_controller
+        else
+          window.rootViewController
+        end
+        close_screens(screens)
+      end
+
       def create_tab_bar(screens)
         MotionPrime::TabBarController.new(screens)
       end

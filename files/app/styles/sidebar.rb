@@ -1,6 +1,7 @@
 Prime::Styles.define :sidebar do
   style :screen,
     background_color: proc { Prime::Config.color.dark }
+
   style :table,
     top: 150,
     left: 0,
@@ -14,10 +15,9 @@ Prime::Styles.define :sidebar do
 
   style :action_title,
     text_color: :white,
+    left: 20,
     top: 10,
     width: 320,
     font: proc { :system.uifont(20) },
-    size_to_fit: true,
-    left: 20,
-    text_color: :white
+    size_to_fit: true
 end

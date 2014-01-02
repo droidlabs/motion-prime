@@ -1,5 +1,5 @@
 module MotionPrime
-  module ModelSyncMethods
+  module ModelSyncMixin
     def self.included(base)
       base.class_attribute :_sync_url
       base.class_attribute :_updatable_attributes
@@ -21,54 +21,47 @@ module MotionPrime
       delete
     end
 
-    # sync with server and save on local
-    def sync!(sync_options = {}, &block)
-      sync(sync_options.merge(save: true), &block)
+    # fetch from server and save on local
+    def fetch!(options = {}, &block)
+      fetch(options.merge(save: true), &block)
     end
 
-    # sync with with server
-    # TODO: order of fetch/update should be based on updated time?
-    def sync(sync_options = {}, &block)
+    # fetch from server
+    def fetch(options = {}, &block)
       use_callback = block_given?
-      should_fetch = sync_options[:fetch]
-      should_update = sync_options[:update]
-      should_fetch_associations = if sync_options.has_key?(:fetch_associations)
-        sync_options[:fetch_associations]
-      else # do not need to fetch unless this is a GET request
-        should_fetch
-      end
+      method = options[:method] || :get
+      url = sync_url(method, options)
 
-      should_fetch = persisted? if should_fetch.nil?
-      should_update ||= new_record? unless should_fetch
-
-      method = sync_options[:method]
-      method ||= if should_update
-        persisted? ? :put : :post
-      else
-        :get
-      end
-      url = sync_url(method, sync_options)
-
-      if url.blank?
-        should_fetch = false
-        should_update = false
-      end
+      will_fetch_model = !url.blank?
+      will_fetch_associations = !options.has_key?(:associations) || options[:associations]
 
       fetch_with_url url do |data, status_code|
-        save if sync_options[:save]
+        save if options[:save]
         block.call(data, status_code, data) if use_callback
-      end if should_fetch
+      end if will_fetch_model
 
-      update_with_url url, sync_options do |data, status_code|
-        save if sync_options[:save] && status_code.to_s =~ /20\d/
+      fetch_associations(options) do |data, status_code|
         # run callback only if it wasn't run on fetch
-        block.call(data, status_code, data) if use_callback && !should_fetch
-      end if should_update
+        block.call(data, status_code, data) if use_callback && !will_fetch_model
+      end if will_fetch_associations
+    end
 
-      fetch_associations(sync_options) do |data, status_code|
-        # run callback only if it wasn't run on fetch or update
-        block.call(data, status_code, data) if use_callback && !should_fetch && !should_update
-      end if should_fetch_associations
+    # update on server and save response on local
+    def update!(options = {}, &block)
+      update(options.merge(save_response: true), &block)
+    end
+
+    # update on server
+    def update(options = {}, &block)
+      use_callback = block_given?
+
+      method = options[:method] || (persisted? ? :put : :post)
+      url = sync_url(method, options)
+      will_update_model = !url.blank?
+
+      update_with_url url, options do |data, status_code|
+        block.call(data, status_code, data) if use_callback
+      end if will_update_model
     end
 
     # fetch from server using url
@@ -81,22 +74,23 @@ module MotionPrime
     end
 
     # update on server using url
-    def update_with_url(url, sync_options = nil, &block)
+    def update_with_url(url, options = {}, &block)
       use_callback = block_given?
-      filtered_attributes = filtered_updatable_attributes(sync_options)
+      filtered_attributes = filtered_updatable_attributes(options)
 
-      post_data = sync_options[:params_root] || {}
+      post_data = options[:params_root] || {}
       post_data[:files] = {}
       filtered_attributes.delete(:files).each do |file_name, file|
         post_data[:files][[model_name, file_name].join] = file
       end
       post_data[model_name] = filtered_attributes
 
-      method = sync_options[:method] || (id ? :put : :post)
+      method = options[:method] || (persisted? ? :put : :post)
       api_client.send(method, url, post_data) do |data, status_code|
-        update_from_response = sync_options.has_key?(:update_from_response) ? sync_options[:update_from_response] : true
-        if update_from_response && status_code.to_s =~ /20\d/ && data.is_a?(Hash)
+        save_response = !options.has_key?(:save_response) || options[:save_response]
+        if save_response && status_code.to_s =~ /20\d/ && data.is_a?(Hash)
           set_attributes_from_response(data)
+          save
         end
         block.call(data, status_code, data) if use_callback
       end
@@ -238,36 +232,36 @@ module MotionPrime
     def normalize_sync_url(url)
       url.to_s.gsub(':id', id.to_s)
     end
-  end
 
-  module ModelSyncClassMethods
-    def new(data = {}, options = {})
-      model = super
-      if fetch_attributes = options[:fetch_attributes]
-        model.fetch_with_attributes(fetch_attributes)
+    module ClassMethods
+      def new(data = {}, options = {})
+        model = super
+        if fetch_attributes = options[:fetch_attributes]
+          model.fetch_with_attributes(fetch_attributes)
+        end
+        model
       end
-      model
-    end
 
-    def sync_url(url = nil, &block)
-      if url || block_given?
-        self._sync_url = url || block
-      else
-        self._sync_url
+      def sync_url(url = nil, &block)
+        if url || block_given?
+          self._sync_url = url || block
+        else
+          self._sync_url
+        end
       end
-    end
 
-    def updatable_attributes(*attrs)
-      return self._updatable_attributes if attrs.blank?
-      attrs.each do |attribute|
-        updatable_attribute attribute
+      def updatable_attributes(*attrs)
+        return self._updatable_attributes if attrs.blank?
+        attrs.each do |attribute|
+          updatable_attribute attribute
+        end
       end
-    end
 
-    def updatable_attribute(attribute, options = {}, &block)
-      options[:block] = block if block_given?
-      self._updatable_attributes ||= {}
-      self._updatable_attributes[attribute] = options
+      def updatable_attribute(attribute, options = {}, &block)
+        options[:block] = block if block_given?
+        self._updatable_attributes ||= {}
+        self._updatable_attributes[attribute] = options
+      end
     end
   end
 end

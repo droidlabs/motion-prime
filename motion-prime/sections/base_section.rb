@@ -1,12 +1,12 @@
 motion_require '../helpers/has_authorization'
 module MotionPrime
-  class BaseSection
-    # MotionPrime::BaseSection is container for Elements.
+  class Section
+    # MotionPrime::Section is container for Elements.
     # Sections are located inside Screen and can contain multiple Elements.
     # On render, each element will be added to parent screen.
 
     # == Basic Sample
-    # class MySection < MotionPrime::BaseSection
+    # class MySection < MotionPrime::Section
     #   element :title, text: "Hello World"
     #   element :avatar, type: :image, image: 'defaults/avatar.jpg'
     # end

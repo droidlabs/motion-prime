@@ -5,11 +5,18 @@
 # For RubyOnRails developers the nearest analogy would be "Controllers".
 ---
 
+# ** Create a screen. **
+#
+# Just inherit it from `Prime::Screen`.
+
+class FooScreen < Prime::Screen
+end
+
 # ** Render the screen. **
 #
-# You should rewrite the `render` method of `Prime::BaseScreen`, which will be runned after first opening screen.
+# You should rewrite the `render` method of `Prime::Screen`, which will be runned after first opening screen.
 
-class FooScreen < Prime::BaseScreen
+class FooScreen < Prime::Screen
   def render
     @main_section = MyProfileSection.new(screen: self, model: User.first)
     @main_section.render
@@ -22,13 +29,13 @@ end
 #
 # NOTE: screen should be created with enabled navigation (see "Initialize screen" block).
 
-class FooScreen < Prime::BaseScreen
+class FooScreen < Prime::Screen
   title 'Foo screen'
 end
 
 # You can pass block to define screen's title
 
-class FooScreen < Prime::BaseScreen
+class FooScreen < Prime::Screen
   title { params[:title] }
 end
 
@@ -36,10 +43,10 @@ end
 #
 # Available options:
 # * `:navigation`. When this options is true, screen will be created with navigation support: it will allow adding title and left/right buttons.
-# This option is false by default.
+# This option is true by default.
 
 def open_foo_screen
-  foo_screen = FooScreen.new(navigation: true)
+  foo_screen = FooScreen.new(navigation: false)
 end
 
 # ** Open screen: using app delegate. **
@@ -51,12 +58,12 @@ end
 # You can use root: true when you have already opened screen with sidebar, and you want to open new screen without sidebar.
 # This option is false by default if you already have root screen and true if not.
 #
-# * `:sidebar`. Send `Prime::BaseScreen` instance to this option if you want to create root screen with sidebar. 
+# * `:sidebar`. Send `Prime::Screen` instance to this option if you want to create root screen with sidebar. 
 # Value of this options will be used as sidebar controller.
 
 def open_foo_screen
-  foo_screen = FooScreen.new(navigation: true)
-  sidebar = MySidebar.new
+  foo_screen = FooScreen.new
+  sidebar = MySidebar.new(navigation: false)
   app_delegate.open_screen foo_screen, sidebar: sidebar
 end
 

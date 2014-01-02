@@ -1,5 +1,5 @@
 module MotionPrime
-  class BaseHeaderSection < BaseSection
+  class BaseHeaderSection < Section
     include CellSectionMixin
     DEFAULT_HEADER_HEIGHT = 20
 

@@ -1,5 +1,5 @@
 module MotionPrime
-  class TabbedSection < BaseSection
+  class TabbedSection < Section
     # MotionPrime::TabbedSection is base class for building tabbed views.
 
     # == Basic Sample

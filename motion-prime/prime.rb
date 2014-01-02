@@ -15,5 +15,4 @@ module MotionPrime
     ENV['PRIME_ENV'] || ENV['RUBYMOTION_ENV'] || 'development'
   end
 end
-::MP = MotionPrime unless defined?(::MP)
 ::Prime = MotionPrime unless defined?(::Prime)

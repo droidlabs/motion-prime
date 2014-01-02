@@ -1,4 +1,4 @@
-describe MotionPrime::BaseModel do
+describe MotionPrime::Model do
   before do
     MotionPrime::Store.connect
     @store = MotionPrime::Store.shared_store
@@ -9,6 +9,12 @@ describe MotionPrime::BaseModel do
   end
 
   describe "::new" do
+    it "should have id attribute by default" do
+      user = stub_user("Bob", 10, Time.now)
+      user.respond_to?(:id).should.be.true
+      user.respond_to?(:id=).should.be.true
+    end
+
     it "create new object" do
       user = stub_user("Bob", 10, Time.now)
       user.save
@@ -32,12 +38,26 @@ describe MotionPrime::BaseModel do
       user.key.should.not.be.nil
     end
 
-    it "throw error when invalid parameter" do
+    it "throw error when invalid parameter and validate_attribute_presence=true" do
       lambda {
-        user = User.new(:name => "Eddie", :age => 12, :created_at => Time.now, :gender => "m")
+        user = User.new({
+          name: "Eddie", 
+          age: 12, 
+          created_at: Time.now, 
+          gender: "m",
+        }, validate_attribute_presence: true )
       }.should.raise(::MotionPrime::StoreError)
     end
 
+    it "creates model when invalid parameter and validate_attribute_presence=false" do
+      user = User.new({
+        name: "Eddie", 
+        age: 12, 
+        created_at: Time.now, 
+        gender: "m",
+      })
+      user.name.should == "Eddie"
+    end
   end
 
   describe "::create" do

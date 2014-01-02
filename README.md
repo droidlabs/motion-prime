@@ -2,10 +2,7 @@
 
 ![Prime](https://s3-us-west-2.amazonaws.com/webmate/assets/prime.jpg)
 
-MotionPrime is yet another framework written on RubyMotion.
-
-The main feature of MotionPrime is one more layer on UI elements: Section.
-"Section" is something like "Partial" in Ruby On Rails, but it's smarter and will help you build application UI.
+MotionPrime is yet another framework written on RubyMotion for creating really fast iOS applications.
 
 ## Getting Started
 
@@ -32,7 +29,7 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
   end
 
   # app/screens/main_screen.rb
-  class MainScreen < Prime::BaseScreen
+  class MainScreen < Prime::Screen
     title 'Main screen'
 
     def render
@@ -42,7 +39,7 @@ The main feature of MotionPrime is one more layer on UI elements: Section.
   end
 
   # app/sections/my_profile.rb
-  class MyProfileSection < Prime::BaseSection
+  class MyProfileSection < Prime::Section
     element :title, text: "Hello World"
     element :avatar, image: "images/avatar.png", type: :image
   end

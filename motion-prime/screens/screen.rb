@@ -6,7 +6,7 @@ motion_require './extensions/_navigation_bar_mixin'
 motion_require '../helpers/has_authorization'
 motion_require '../helpers/has_search_bar'
 module MotionPrime
-  class BaseScreen < MPViewController
+  class Screen < MPViewController
     include Layout
     include ScreenBaseMixin
 

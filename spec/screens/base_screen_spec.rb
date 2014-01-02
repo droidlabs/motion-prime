@@ -1,4 +1,4 @@
-describe "BaseScreen" do
+describe MotionPrime::Screen do
 
   before do
     @screen = BaseScreen.new()
@@ -12,6 +12,10 @@ describe "BaseScreen" do
 
   it "should set default title" do
     @screen.title.should == "Base"
+  end
+
+  it "should have navigation enabled by default" do
+    @screen.wrap_in_navigation?.should == true
   end
 
   it "#modal? should be false by default" do
