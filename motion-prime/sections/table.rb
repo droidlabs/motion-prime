@@ -50,10 +50,10 @@ module MotionPrime
       @did_appear = false
       @data = nil
       @async_loaded_data = nil
-      @next_portion_starts_from = nil
+      @preloader_next_starts_from = nil
       @preloader_cancelled = false
+      @preloader_queue[-1] = :cancelled if @preloader_queue.present?
       @data_stamp = nil
-      @queue_states[-1] = :cancelled if @queue_states.present?
     end
 
     def table_styles
@@ -148,7 +148,7 @@ module MotionPrime
       @rendered_cells[index.section][index.row] = view
       on_row_render(view, index)
 
-      preload_sections_for(index)
+      preload_sections_after(index)
 
       view
     end
@@ -255,7 +255,9 @@ module MotionPrime
 
     private
       def display_pending_cells
-        table_view.visibleCells.each { |cell_view| cell_view.section.display if cell_view.section.pending_display }
+        table_view.visibleCells.each do |cell_view| 
+          cell_view.section.display if cell_view.section.pending_display
+        end
       end
 
       def set_table_data
@@ -328,8 +330,8 @@ module MotionPrime
             rows = [id]
           end
           rows.map { |row| "#{section}_#{row}" }
-        end.flatten
-        set_data_stamp(keys)
+        end
+        set_data_stamp(keys.flatten)
       end
 
       def load_sections
@@ -341,45 +343,60 @@ module MotionPrime
         end
       end
 
-      def preload_sections_for(index)
-        return if !async_data? || @next_portion_starts_from == false
-        service = index_service
+
+      # Preloads sections after rendering cell in current sheduled index or given index.
+      # TODO: probably should be in separate class.
+      #
+      # @param index [NSIndexPath] Value of first index to load if current sheduled index not exists.
+      # @return [NSIndexPath, Boolean] Index of next sheduled index.
+      def preload_sections_after(index)
+        return if !async_data? || @preloader_next_starts_from == false
+        service = preloader_index_service
 
         load_limit = self.class.async_data_options.try(:[], :preload_rows_count)
-        @next_portion_starts_from ||= index
-        start_preload_when_index_loaded = service.sum_index(@next_portion_starts_from, load_limit ? -load_limit/2 : 0)
-        if service.compare_indexes(index, start_preload_when_index_loaded) >= 0
-          section = @next_portion_starts_from.section
-          next_row = @next_portion_starts_from.row
-          left_to_load = rows_for_section(section).count - next_row
-
-          load_count = [left_to_load, load_limit].compact.min
-
-          next_index = @next_portion_starts_from
-          @preloader_cancelled = false
-
-          @queue_states ||= []
-
-          BW::Reactor.schedule(@queue_states.count) do |queue_id|
-            @queue_states[queue_id] = :in_progress
-
-            result = load_count.times do |offset|
-              break if @queue_states[queue_id] == :cancelled
-              load_cell_by_index(next_index, preload: true)
-              next_index = service.sum_index(next_index, 1) unless offset == load_count - 1
-            end
-
-            if result
-              on_async_data_preloaded(next_index)
-              @queue_states[queue_id] = :completed
-            end
-          end
-
-          @next_portion_starts_from = service.sum_index(@next_portion_starts_from, load_count, false)
+        @preloader_next_starts_from ||= index
+        index_to_start_preloading = service.sum_index(@preloader_next_starts_from, load_limit ? -load_limit/2 : 0)
+        if service.compare_indexes(index, index_to_start_preloading) >= 0
+          load_count = preload_sections_schedule_next(@preloader_next_starts_from, load_limit)
+          @preloader_next_starts_from = service.sum_index(@preloader_next_starts_from, load_count, false)
+        else
+          false
         end
       end
 
-      def index_service
+      # Schedules preloading sections starting with given index with given limit.
+      # TODO: probably should be in separate class.
+      #
+      # @param index [NSIndexPath] Value of first index to load.
+      # @param limit [Integer] Limit of sections to load.
+      # @return [Integer] Count of sections scheduled to load.
+      def preload_sections_schedule_next(index, limit)
+        service = preloader_index_service
+
+        left_to_load = rows_for_section(index.section).count - index.row
+        load_count = [left_to_load, limit].compact.min
+        @preloader_cancelled = false
+        @preloader_queue ||= []
+
+        BW::Reactor.schedule(@preloader_queue.count) do |queue_id|
+          @preloader_queue[queue_id] = :in_progress
+
+          result = load_count.times do |offset|
+            break if @preloader_queue[queue_id] == :cancelled
+            load_cell_by_index(index, preload: true)
+            unless offset == load_count - 1
+              service.sum_index(index, 1)
+            end
+          end
+          if result
+            on_async_data_preloaded(index)
+            @preloader_queue[queue_id] = :completed
+          end
+        end
+        load_count
+      end
+
+      def preloader_index_service
         TableDataIndexes.new(@data)
       end
 

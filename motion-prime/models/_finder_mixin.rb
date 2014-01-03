@@ -4,6 +4,7 @@ module MotionPrime
     
     module ClassMethods      
       attr_accessor :bare_class
+      
       # Find all models
       #
       # @return [Array] array of models

@@ -81,7 +81,9 @@ module MotionPrime
     end
 
     def reload_section
-      self.elements_to_render.values.map(&:view).flatten.compact.each { |view| view.removeFromSuperview }
+      self.elements_to_render.values.map(&:view).flatten.each do |view| 
+        view.removeFromSuperview if view
+      end
       load_section!
       run_callbacks :render do
         render!
