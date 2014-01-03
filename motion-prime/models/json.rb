@@ -1,12 +1,13 @@
 module MotionPrime
-  module JSON
+  class JsonParseError < StandardError; end
+
+  class JSON
     PARAMETRIZE_CLASSES = [Time, Date]
-    class ParserError < StandardError; end
 
     # Parses a string or data object and converts it in data structure.
     #
     # @param [String, NSData] str_data the string or data to convert.
-    # @raise [ParserError] If the parsing of the passed string/data isn't valid.
+    # @raise [JsonParseError] If the parsing of the passed string/data isn't valid.
     # @return [Hash, Array, NilClass] the converted data structure, nil if the incoming string isn't valid.
     def self.parse(str_data, &block)
       return nil unless str_data
@@ -14,12 +15,8 @@ module MotionPrime
       opts = NSJSONReadingMutableContainers | NSJSONReadingMutableLeaves | NSJSONReadingAllowFragments
       error = Pointer.new(:id)
       obj = NSJSONSerialization.JSONObjectWithData(data, options: opts, error: error)
-      raise ParserError, error[0].description if error[0]
-      if block_given?
-        yield obj
-      else
-        obj
-      end
+      raise JsonParseError, error[0].description if error[0]
+      obj
     end
 
     # Generates a string from data structure.

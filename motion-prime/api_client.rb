@@ -6,7 +6,7 @@ class ApiClient
   end
 
   def parse_json(text)
-    BW::JSON.parse(text)
+    Prime::JSON.parse(text)
   rescue
     NSLog("Can't parse json: #{text}")
     false

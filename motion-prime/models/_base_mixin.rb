@@ -2,8 +2,8 @@ module MotionPrime
   module ModelBaseMixin
     extend ::MotionSupport::Concern
 
-    included do
-      class_attribute :default_sort_options
+    def self.included(base)
+      base.class_attribute :default_sort_options
     end
 
     def save
