@@ -1,4 +1,4 @@
-describe "Model StoreExtension" do
+describe "Prime::Model Store Extension" do
   before do
     MotionPrime::Store.connect
     @store = MotionPrime::Store.shared_store

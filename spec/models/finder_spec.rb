@@ -1,4 +1,4 @@
-describe "Model Finder" do
+describe "Prime::Model Finder" do
   before do
     MotionPrime::Store.connect
     @store = MotionPrime::Store.shared_store

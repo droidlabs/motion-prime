@@ -1,4 +1,4 @@
-describe "Bag" do
+describe "Prime::Model Bag" do
   Bag = MotionPrime::Bag
 
   before do

@@ -1,4 +1,4 @@
-describe MotionPrime::Model do
+describe MotionPrime::JSON do
 
   before do
     @json_string = <<-EOS

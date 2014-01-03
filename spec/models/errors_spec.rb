@@ -1,4 +1,4 @@
-describe "Model Errors" do
+describe "Prime::Model Errors" do
   before do
     MotionPrime::Store.connect
     @user = stub_user("Bob", 10, Time.now)
