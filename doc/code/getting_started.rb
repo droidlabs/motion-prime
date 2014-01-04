@@ -15,7 +15,7 @@ Visit http://www.rubymotion.com
 
 class AppDelegate < Prime::BaseAppDelegate
   def on_load(app, options)
-    open_screen MainScreen.new
+    open_screen :main
   end
 end
 

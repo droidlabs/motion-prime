@@ -7,7 +7,8 @@ module MotionPrime
 
       screens.each_with_index do |screen, index|
         if screen.is_a?(Hash)
-          screen, image, title = screen[:screen].try(:weak_ref), screen[:image], screen[:title]
+          screen, image, title = screen[:screen], screen[:image], screen[:title]
+          screen = Screen.create_with_options(screen).try(:weak_ref)
           title ||= screen.title
           image = image.uiimage if image
           screen.tabBarItem = UITabBarItem.alloc.initWithTitle title, image: image, tag: index

@@ -18,6 +18,8 @@ module MotionPrime
     include HasAuthorization
     include HasSearchBar
 
+    extend HasClassFactory
+
     def render
     end
 

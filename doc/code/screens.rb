@@ -77,3 +77,10 @@ def open_second_screen
   foo_screen.open_screen second_screen
 end
 
+# ** Open screen: using short version. **
+
+# Opening screen using short syntax available both for opening via app delegate and via parent screen.
+
+foo_screen.open_screen :hello_world
+app_delegate.open_screen :foo_bar, sidebar: true
+

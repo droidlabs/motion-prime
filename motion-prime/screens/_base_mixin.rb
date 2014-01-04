@@ -88,6 +88,13 @@ module MotionPrime
       def after_load(method_name)
         set_callback :load, :after, method_name
       end
+      def create_with_options(screen, navigation = true, options = {})
+        if screen.is_a?(Symbol)
+          options[:navigation] = navigation unless options.has_key?(:navigation)
+          screen = class_factory("#{screen}_screen").new(options)
+        end
+        screen
+      end
     end
   end
 end

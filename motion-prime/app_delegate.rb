@@ -1,7 +1,8 @@
 motion_require './helpers/has_authorization'
+motion_require './helpers/has_class_factory'
 module MotionPrime
   class BaseAppDelegate
-    include MotionPrime::HasAuthorization
+    include HasAuthorization
 
     attr_accessor :window, :sidebar_container
 
@@ -21,8 +22,11 @@ module MotionPrime
 
     def open_screen(screen, options = {})
       screen = create_tab_bar(screen) if screen.is_a?(Array)
-      if options[:sidebar]
-        open_with_sidebar(screen, options.delete(:sidebar), options)
+      screen = Screen.create_with_options(screen, true, options)
+      if sidebar_option = options.delete(:sidebar)
+        sidebar_option = :sidebar if sidebar_option == true
+        sidebar = Screen.create_with_options(sidebar_option, false, {})
+        open_with_sidebar(screen, sidebar, options)
       elsif options[:root] || !self.window
         open_root_screen(screen)
       else

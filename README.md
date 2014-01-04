@@ -24,7 +24,7 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
   # app/app_delegate.rb
   class AppDelegate < Prime::BaseAppDelegate
     def on_load(app, options)
-      open_screen MainScreen.new
+      open_screen :main
     end
   end
 
