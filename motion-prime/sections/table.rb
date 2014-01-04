@@ -144,12 +144,8 @@ module MotionPrime
       view = element.render do
         section.render
       end
-
-      @rendered_cells[index.section][index.row] = view
       on_row_render(view, index)
-
       preload_sections_after(index)
-
       view
     end
 
@@ -204,9 +200,6 @@ module MotionPrime
     end
 
     def cell_for_index(table, index)
-      @rendered_cells ||= []
-      @rendered_cells[index.section] ||= []
-
       cell = cached_cell(index, table) || render_cell(index, table)
 
       # run table view is appeared callback if needed
