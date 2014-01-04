@@ -9,6 +9,8 @@
 * Model.new with invalid parameter will not raise exception by default now.
 * "id" attribute always being added to model by default now.
 * screen.open_screen do not support root screen opening now. use app_delegate.open_screen for that.
+* added shorter syntax for opening screens.
+* fix rendering draw section without table.
 
 === 0.4.4
 * Added Prime.env support

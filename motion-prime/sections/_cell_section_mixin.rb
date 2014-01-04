@@ -1,3 +1,4 @@
+# This Mixin will be included only to sections, which added as cell to table section.
 module MotionPrime
   module CellSectionMixin
     extend ::MotionSupport::Concern
@@ -35,6 +36,11 @@ module MotionPrime
       @container_bounds ||= CGRectMake(0, 0, table.table_view.bounds.size.width, container_height)
     end
 
+    # should do nothing, because table section will care about it.
+    def render_container(options = {}, &block)
+      block.call
+    end
+
     def init_container_element(options = {})
       @container_element ||= begin
         options.merge!({
@@ -49,6 +55,7 @@ module MotionPrime
       end
     end
 
+    # FIXME: Why this duplicates functionality from other parts, e.g. draw_in? 
     def load_container_element(options = {})
       init_container_element(options)
       load_elements

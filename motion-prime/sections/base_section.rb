@@ -150,9 +150,22 @@ module MotionPrime
       end
     end
 
+    def render_container(options = {}, &block)
+      if should_render_container?
+        element = self.container_element || self.init_container_element(options)
+        element.render do
+          block.call
+        end
+      else
+        block.call
+      end
+    end
+
     def render!
-      elements_to_render.each do |key, element|
-        element.render
+      render_container(container_options) do
+        elements_to_render.each do |key, element|
+          element.render
+        end
       end
     end
 
@@ -243,6 +256,16 @@ module MotionPrime
       end
 
     private
+      def should_render_container?
+        has_drawn_content?
+      end
+
+      def has_drawn_content?
+        self.elements.values.any? do |element|
+          element.is_a?(DrawElement)
+        end
+      end
+
       def compute_container_options!
         raw_options = {}
         raw_options.merge!(self.class.container_options.try(:clone) || {})

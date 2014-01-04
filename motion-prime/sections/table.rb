@@ -142,7 +142,7 @@ module MotionPrime
       element = section.container_element || section.init_container_element(container_element_options_for(index))
 
       view = element.render do
-        rows_for_section(index.section)[index.row].render
+        section.render
       end
 
       @rendered_cells[index.section][index.row] = view

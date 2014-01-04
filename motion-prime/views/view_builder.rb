@@ -110,6 +110,13 @@ module MotionPrime
 
             klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
           },
+          'MPViewWithSection' => Proc.new{|klass, options|
+            if options[:has_drawn_content]
+              options[:background_color] = :clear
+              options.delete(:gradient)
+            end
+            klass.alloc.initWithFrame CGRectZero
+          },
           'UISearchBar' => Proc.new{|klass, options|
             klass = options[:search_field_background_image] ? MPSearchBarCustom : UISearchBar
             search_bar = klass.alloc.init

@@ -13,6 +13,23 @@ module MotionPrime
       container_element.try(:view)
     end
 
+    def init_container_element(options = {})
+      @container_element ||= begin
+        options.merge!({
+          screen: screen,
+          section: self.weak_ref,
+          has_drawn_content: true
+        })
+        options[:styles] ||= []
+        MotionPrime::BaseElement.factory(:view_with_section, options)
+      end
+    end
+
+    def load_container_element(options = {})
+      init_container_element(options)
+      @container_element.compute_options! unless @container_element.computed_options
+    end
+
     def draw_in(rect, state = :normal)
       if cached_draw_image[state]
         context = UIGraphicsGetCurrentContext()
