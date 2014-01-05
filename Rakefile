@@ -20,7 +20,7 @@ require 'motion-stump'
 require 'motion-redgreen'
 
 Motion::Project::App.setup do |app|
-  app.name = 'MotionPrime'
+  app.name = 'Prime'
   app.pods do
     pod 'NanoStore', '~> 2.7.7'
     pod 'SDWebImage'
