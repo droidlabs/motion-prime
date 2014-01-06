@@ -153,7 +153,8 @@ module MotionPrime
           # table element: categories_table_cell_icon, categories_table_title_icon
           @styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
         end
-        if section && section.name.present? && name.present?
+        # don't use present? here, it's slower, while this method should be very fast
+        if section && section.name && section.name != '' && name && name != ''
           # using for base sections
           @styles << [section.name, name].join('_').to_sym
         end

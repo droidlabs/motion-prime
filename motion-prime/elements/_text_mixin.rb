@@ -42,7 +42,7 @@ module MotionPrime
       attributes[NSForegroundColorAttributeName] = options[:text_color]
       attributes[NSFontAttributeName] = options[:font]
 
-      prepared_text = NSMutableAttributedString.alloc.initWithString(options[:text], attributes: attributes)
+      prepared_text = NSMutableAttributedString.alloc.initWithString(options[:text] || '', attributes: attributes)
       if underline_range = options[:underline]
         # FIXME
         # prepared_text = NSMutableAttributedString.alloc.initWithAttributedString(prepared_text)

@@ -39,12 +39,12 @@ module MotionPrime
 
       fetch_with_url url do |data, status_code|
         save if options[:save]
-        block.call(data, status_code, data) if use_callback
+        block.call(data, status_code, data) if use_callback && !will_fetch_associations
       end if will_fetch_model
 
       fetch_associations(options) do |data, status_code|
         # run callback only if it wasn't run on fetch
-        block.call(data, status_code, data) if use_callback && !will_fetch_model
+        block.call(data, status_code, data) if use_callback
       end if will_fetch_associations
     end
 

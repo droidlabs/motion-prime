@@ -378,7 +378,7 @@ module MotionPrime
             break if @preloader_queue[queue_id] == :cancelled
             load_cell_by_index(index, preload: true)
             unless offset == load_count - 1
-              service.sum_index(index, 1)
+              index = service.sum_index(index, 1)
             end
           end
           if result
