@@ -1,3 +1,6 @@
+=== 0.5.0
+* add cleanup for section events
+
 === 0.6.0
 * add dsl for push notifications
 * add some extensions/middleware system, at least for networking.

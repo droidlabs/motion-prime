@@ -209,6 +209,12 @@ module MotionPrime
       section.container_height
     end
 
+    def events_off
+      fields.values.each do |section|
+        section.events_off
+      end
+    end
+
     class << self
       def field(name, options = {}, &block)
         options[:name] = name

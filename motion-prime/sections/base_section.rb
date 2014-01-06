@@ -233,6 +233,9 @@ module MotionPrime
       self.elements.select { |key, element| element.is_a?(BaseElement) }
     end
 
+    def events_off
+    end
+
     protected
       def bind_keyboard_close
         return unless self.class.keyboard_close_bindings.present?
