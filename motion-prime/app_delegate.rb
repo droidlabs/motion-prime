@@ -16,6 +16,22 @@ module MotionPrime
       true
     end
 
+    def application(application, didRegisterForRemoteNotificationsWithDeviceToken: token)
+      on_apn_register_success(application, token)
+    end
+    def application(application, didFailToRegisterForRemoteNotificationsWithError: error)
+      on_apn_register_fail(application, error)
+    end
+
+    def on_load(application, launch_options)
+    end
+
+    def on_apn_register_success(application, token)
+    end
+
+    def on_apn_register_fail(application, error)
+    end
+
     def app_window
       self.app_delegate.window
     end
