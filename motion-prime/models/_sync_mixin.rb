@@ -105,11 +105,13 @@ module MotionPrime
 
     # set attributes, using fetch
     def fetch_with_attributes(attrs)
-      attrs.each do |key, value|
-        if respond_to?(:"fetch_#{key}")
-          self.send(:"fetch_#{key}", value)
-        elsif respond_to?(:"#{key}=")
-          self.send(:"#{key}=", value)
+      track_changed_attributes do
+        attrs.each do |key, value|
+          if respond_to?(:"fetch_#{key}")
+            self.send(:"fetch_#{key}", value)
+          elsif respond_to?(:"#{key}=")
+            self.send(:"#{key}=", value)
+          end
         end
       end
       self
@@ -152,16 +154,17 @@ module MotionPrime
       NSLog("SYNC: started sync for #{key} in #{self.class_name_without_kvo}")
       api_client.get normalize_sync_url(options[:sync_url]) do |response, status_code|
         data = options[:sync_key] && response ? response[options[:sync_key]] : response
+        model_class = key.classify.constantize
         if data
           # Update/Create existing records
           data.each do |attributes|
             model = old_collection.detect{ |model| model.id == attributes[:id]}
             unless model
-              model = key.classify.constantize.new
+              model = model_class.new
               self.send(:"#{key}_bag") << model
             end
             model.fetch_with_attributes(attributes)
-            model.save if sync_options[:save]
+            model.save if sync_options[:save] && model.has_changed?
           end
           old_collection.each do |old_model|
             model = data.detect{ |model| model[:id] == old_model.id}
