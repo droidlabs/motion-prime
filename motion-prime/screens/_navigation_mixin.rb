@@ -67,7 +67,7 @@ module MotionPrime
     private
       def setup_screen_for_open(screen, args = {})
         # Instantiate screen if given a class
-        screen = screen.new if screen.respond_to?(:new)
+        screen = Screen.create_with_options(screen, true, args)
 
         # Set parent, title & modal properties
         screen.parent_screen = self.weak_ref if screen.respond_to?("parent_screen=")
