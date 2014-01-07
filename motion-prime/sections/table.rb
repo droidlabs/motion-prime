@@ -15,10 +15,11 @@ module MotionPrime
     after_render :init_pull_to_refresh
     delegate :init_pull_to_refresh, to: :table_delegate
 
-    # def dealloc
-    #   pp 'deallocating table. sections count:', @data.try(:count)
-    #   super
-    # end
+    def dealloc
+      cancel_block = proc { :cancelled }.weak!
+      @preloader_queue.map!(&cancel_block) if @preloader_queue.present?
+      super
+    end
 
     def table_data
       []
@@ -52,8 +53,16 @@ module MotionPrime
       @async_loaded_data = nil
       @preloader_next_starts_from = nil
       @preloader_cancelled = false
-      @preloader_queue[-1] = :cancelled if @preloader_queue.present?
       @data_stamp = nil
+      @preloader_queue[-1] = :cancelled if @preloader_queue.present?
+      # @ids.each do |id|
+      #   table_view.dequeueReusableCellWithIdentifier(id)
+      # end if @ids
+      # table_view.valueForKey('_reusableTableCells').removeAllObjects
+
+      # releasing table_delegate
+      # @table_delegate = nil
+      # table_view.delegate = table_delegate
     end
 
     def table_styles
@@ -151,7 +160,7 @@ module MotionPrime
 
     def render_header(section)
       return unless options = self.section_header_options.try(:[], section)
-      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(screen: screen, table: self))
+      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(screen: screen, table: self.weak_ref))
     end
 
     def header_for_section(section)
@@ -248,7 +257,7 @@ module MotionPrime
 
     private
       def display_pending_cells
-        table_view.visibleCells.each do |cell_view| 
+        table_view.visibleCells.each do |cell_view|
           cell_view.section.display if cell_view.section.pending_display
         end
       end

@@ -5,6 +5,11 @@ module MotionPrime
       self.table_section = options[:section].try(:weak_ref)
     end
 
+    def dealloc
+      pp '@@ dealloc table_delegate'
+      super
+    end
+
     def init_pull_to_refresh
       return unless block = table_section.class.pull_to_refresh_block
       table_section.add_pull_to_refresh do

@@ -6,11 +6,12 @@ module MotionPrime
     attr_reader :form
     after_render :on_section_render
 
-    def initialize(options = {})
-      @form = options[:table].try(:weak_ref)
+    before_initialize :prepare_table_data
+    after_initialize :observe_model_errors
+
+    def prepare_table_data
+      @form = @options[:table]
       @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, self) if options[:observe_errors]
-      super
-      observe_model_errors
     end
 
     def render_element?(element_name)
@@ -30,17 +31,24 @@ module MotionPrime
 
     def observe_model_errors
       return unless observing_errors?
-      errors_observer_fields.each do |field|
-        observe observing_errors_for.errors, observing_errors_for.errors.unique_key(field) do |old_value, new_value|
-          next if old_value == new_value
-          if @status_for_updated == :rendered
-            reload_section
-          else
-            load_section!
-            form.reload_table_data
-          end
+      on_error_change = proc { |old_value, new_value|
+        next if old_value == new_value
+        if @status_for_updated == :rendered
+          reload_section
+        else
+          load_section!
+          form.reload_table_data
         end
+      }.weak!
+
+      errors_observer_fields.each do |field|
+        observe observing_errors_for.errors, observing_errors_for.errors.unique_key(field), &on_error_change
       end
+    end
+
+    def dealloc
+      clear_observers
+      super
     end
 
     def form_name
@@ -120,9 +128,12 @@ module MotionPrime
     end
 
     def clear_observers
-      errors_observer_fields.each do |field|
+      return unless observing_errors?
+      # unobserve_all cause double dealloc, following code is a replacement
+      block = proc { |field|
         unobserve observing_errors_for.errors, observing_errors_for.errors.unique_key(field)
-      end if observing_errors?
+      }.weak!
+      errors_observer_fields.each(&block)
     end
 
     def container_height

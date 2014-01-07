@@ -36,10 +36,13 @@ module MotionPrime
       @on_appear_happened = true
     end
 
-    # def dealloc
-    #   pp 'Deallocating Screen'
-    #   super
-    # end
+    def dealloc
+      pp 'Deallocating Screen'
+      # FIXME: calling instance_eval in title method (_base_screen_mixin) instance variables need to be cleared manually
+      # clear_instance_variables cause BAD_ACCESS errors too
+      @main_section = nil
+      super
+    end
 
     def visible?
       self.isViewLoaded && view.window

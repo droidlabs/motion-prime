@@ -6,9 +6,10 @@ module MotionPrime
     element :title, text: proc { @options[:title] }
     element :hint, text: proc { @options[:hint] }
 
-    def initialize(options = {})
+    before_initialize :prepare_header_options
+
+    def prepare_header_options
       @cell_type = :header
-      super
     end
 
     def render_element?(name)

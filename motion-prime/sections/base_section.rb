@@ -22,22 +22,23 @@ module MotionPrime
 
     attr_accessor :screen, :model, :name, :options, :elements, :section_styles
     class_attribute :elements_options, :container_options, :keyboard_close_bindings
-    define_callbacks :render
+    define_callbacks :render, :initialize
 
     def initialize(options = {})
-      options[:screen] = options[:screen].try(:weak_ref)
       @options = options
-      self.screen = options[:screen]
-      @model = options[:model]
-      @name = options[:name] ||= default_name
-      @options_block = options[:block]
+
+      run_callbacks :initialize do
+        @options[:screen] = @options[:screen].try(:weak_ref)
+        self.screen = options[:screen]
+        @model = options[:model]
+        @name = options[:name] ||= default_name
+        @options_block = options[:block]
+      end
     end
 
     def dealloc
-      # pp 'deallocating section. elements count: ', self.elements.try(:count), self.to_s
-
-      NSNotificationCenter.defaultCenter.removeObserver self
-      self.delegate = nil if self.respond_to?(:delegate)
+      pp 'deallocating section', self.name, self.elements.try(:count), self.to_s, self.object_id
+      NSNotificationCenter.defaultCenter.removeObserver self # unbinding events created in bind_keyboard_events
       super
     end
 
@@ -81,7 +82,7 @@ module MotionPrime
     end
 
     def reload_section
-      self.elements_to_render.values.map(&:view).flatten.each do |view| 
+      self.elements_to_render.values.map(&:view).flatten.each do |view|
         view.removeFromSuperview if view
       end
       load_section!
@@ -301,6 +302,12 @@ module MotionPrime
       end
       def after_render(method_name)
         set_callback :render, :after, method_name
+      end
+      def before_initialize(method_name)
+        set_callback :initialize, :before, method_name
+      end
+      def after_initialize(method_name)
+        set_callback :initialize, :after, method_name
       end
       def bind_keyboard_close(options)
         self.keyboard_close_bindings = options

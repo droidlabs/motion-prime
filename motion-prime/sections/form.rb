@@ -155,7 +155,7 @@ module MotionPrime
 
     def load_field(field)
       field_class = class_factory("#{field[:type]}_field_section", true)
-      field_class.new(field.merge(screen: screen, table: self))
+      field_class.new(field.merge(screen: screen, table: self.weak_ref))
     end
 
     def render_field?(name, options)

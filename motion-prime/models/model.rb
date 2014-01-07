@@ -20,7 +20,7 @@ module MotionPrime
     attribute :id
 
     def errors
-      @errors ||= Errors.new(self)
+      @errors ||= Errors.new(self.weak_ref)
     end
   end
 end
