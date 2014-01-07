@@ -55,6 +55,11 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
   end
 ```
 
+## Extensions
+
+* [ECSlidingViewController 2 integration](https://github.com/droidlabs/prime_sliding_menu) (Sidebar)
+* [RESideMenu integration](https://github.com/droidlabs/prime_reside_menu) (Sidebar)
+
 ## Contributing
 
 1. Fork it
@@ -65,7 +70,7 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 
 ## Documentation
 
-We are using Docco (http://jashkenas.github.io/docco/) to generate documentation.
+We are using [Docco](http://jashkenas.github.io/docco/) to generate documentation.
 
 Please install the tool and run this to update documentation:
 
