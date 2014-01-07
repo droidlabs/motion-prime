@@ -4,7 +4,7 @@ module MotionPrime
   class BaseAppDelegate
     include HasAuthorization
 
-    attr_accessor :window, :sidebar_container
+    attr_accessor :window
 
     def application(application, willFinishLaunchingWithOptions:opts)
       application.setStatusBarStyle UIStatusBarStyleLightContent
@@ -37,29 +37,12 @@ module MotionPrime
     end
 
     def open_screen(screen, options = {})
-      screen = create_tab_bar(screen) if screen.is_a?(Array)
-      screen = Screen.create_with_options(screen, true, options)
-      if sidebar_option = options.delete(:sidebar)
-        sidebar_option = :sidebar if sidebar_option == true
-        sidebar = Screen.create_with_options(sidebar_option, false, {})
-        open_with_sidebar(screen, sidebar, options)
-      elsif options[:root] || !self.window
+      screen = prepare_screen_for_open(screen, options)
+      if options[:root] || !self.window
         open_root_screen(screen)
       else
         open_content_screen(screen)
       end
-    end
-
-    def sidebar?
-      self.window && self.window.rootViewController.is_a?(SidebarContainerScreen)
-    end
-
-    def show_sidebar
-      sidebar_container.show_sidebar
-    end
-
-    def hide_sidebar
-      sidebar_container.hide_sidebar
     end
 
     def current_user
@@ -75,7 +58,12 @@ module MotionPrime
     end
 
     private
-      def open_root_screen(screen)
+      def prepare_screen_for_open(screen, options = {})
+        screen = create_tab_bar(screen) if screen.is_a?(Array)
+        Screen.create_with_options(screen, true, options)
+      end
+
+      def open_root_screen(screen, options = {})
         screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
         screen.wrap_in_navigation if screen.respond_to?(:wrap_in_navigation)
 
@@ -87,31 +75,8 @@ module MotionPrime
         screen
       end
     
-      def open_content_screen(screen)
-        if sidebar?
-          sidebar_container.content_controller = screen
-        else
-          open_root_screen(screen)
-        end
-      end
-
-      def open_with_sidebar(content, sidebar, options={})
-        self.sidebar_container = SidebarContainerScreen.new(sidebar, content, options)
-        self.sidebar_container.delegate = self
-        open_root_screen(sidebar_container)
-      end
-
-      def close_current_screens
-        return unless self.window
-
-        screens = if sidebar? && sidebar_container.content_controller.is_a?(UINavigationController)
-          sidebar_container.content_controller.childViewControllers
-        elsif sidebar?
-          sidebar_container.content_controller
-        else
-          window.rootViewController
-        end
-        close_screens(screens)
+      def open_content_screen(screen, options = {})
+        open_root_screen(screen)
       end
 
       def create_tab_bar(screens)

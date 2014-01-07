@@ -13,16 +13,6 @@ Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.name = 'Prime Project'
 
-  app.pods do
-    pod 'NanoStore', '~> 2.7.7'
-    pod 'SDWebImage'
-    pod 'SVPullToRefresh'
-    pod 'MBAlertView'
-    pod 'SDSegmentedControl'
-    pod 'RESideMenu', git: 'https://github.com/feklistov/RESideMenu.git'
-    pod 'MBProgressHUD'
-  end
-
   app.version = '0.0.1'
   app.icons = %w{Icon.png}
   app.fonts = ['fonts/ubuntu.ttf']

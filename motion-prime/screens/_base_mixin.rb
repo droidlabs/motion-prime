@@ -21,14 +21,6 @@ module MotionPrime
       UIApplication.sharedApplication.delegate
     end
 
-    def show_sidebar
-      app_delegate.show_sidebar
-    end
-
-    def hide_sidebar
-      app_delegate.hide_sidebar
-    end
-
     def on_screen_load
       run_callbacks :load do
         on_load

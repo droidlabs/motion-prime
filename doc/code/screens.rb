@@ -59,7 +59,8 @@ end
 # This option is false by default if you already have root screen and true if not.
 #
 # * `:sidebar`. Send `Prime::Screen` instance to this option if you want to create root screen with sidebar. 
-# Value of this options will be used as sidebar controller.
+# Value of this options will be used as sidebar controller. 
+# NOTE: you should install some gem providing sidebar functionality, e.g. 'prime_reside_menu'
 
 def open_foo_screen
   foo_screen = FooScreen.new
