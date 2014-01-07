@@ -3,7 +3,7 @@ module MotionPrime
     def show_activity_indicator
       if @activity_indicator_view.nil?
         @activity_indicator_view = UIActivityIndicatorView.gray
-        @activity_indicator_view.center = CGPointMake(view.center.x, view.center.y - 50)
+        @activity_indicator_view.center = CGPointMake(view.center.x, view.center.y)
         view.addSubview @activity_indicator_view
       end
       @activity_indicator_view.startAnimating
