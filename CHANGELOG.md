@@ -1,4 +1,4 @@
-=== 0.5.0.beta
+=== 0.5.0
 * renamed Prime::BaseModel to Prime::Model.
 * renamed Prime::BaseScreen to Prime::Screen.
 * renamed Prime::BaseSection to Prime::Section.
