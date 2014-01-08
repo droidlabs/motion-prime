@@ -55,7 +55,7 @@ module MotionPrime
       end
     end
 
-    # FIXME: Why this duplicates functionality from other parts, e.g. draw_in? 
+    # FIXME: Why this duplicates functionality from other parts, e.g. draw_in?
     def load_container_element(options = {})
       init_container_element(options)
       load_elements
@@ -73,6 +73,12 @@ module MotionPrime
     def display
       @pending_display = false
       container_view.setNeedsDisplay
+    end
+
+    def dealloc
+      # TODO: remove this when solve this problem: dealloc TableCells on TableView.reloadData (in case when reuseIdentifier has been used)
+      container_view.section = nil if container_view.respond_to?(:setSection)
+      super
     end
 
     module ClassMethods

@@ -25,7 +25,7 @@ module MotionPrime
     end
 
     def set_navigation_back_or_menu(back_title = 'Back')
-      if parent_screen.is_a?(MotionPrime::SidebarContainerScreen)
+      if parent_screen.is_a?(PrimeResideMenu::SidebarContainerScreen)
         set_navigation_left_button 'Menu', image: 'images/navigation/menu_button.png', action: :show_sidebar
       else
         set_navigation_back_button back_title, icon: 'images/navigation/back_icon.png'

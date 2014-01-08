@@ -3,22 +3,21 @@ class MPCellWithSection < UITableViewCell
 
   def setSection(section)
     @section = section.try(:weak_ref)
-    @section_name = section.name # TODO: remove after debug
+    @section_name = section.try(:name) # TODO: remove after debug
   end
 
   def drawRect(rect)
-    pp '+++ drawing sect', @section_name
     super
     draw_in(rect)
   end
 
   def draw_in(rect)
-    return unless section
-    section.draw_in(rect) if section.respond_to?(:draw_in)
+    # pp '++ drawing', @section_name, self.object_id
+    section.draw_in(rect) if section && section.respond_to?(:draw_in)
   end
 
-  def dealloc
-    pp '--- deallog cell with section', @section_name
-    super
-  end
+  # def dealloc
+  #   pp '--- deallog cell with section', @section_name, self.object_id
+  #   super
+  # end
 end
