@@ -24,6 +24,7 @@ module MotionPrime
       navigationItem.leftBarButtonItem = create_navigation_button(title, {action: :back}.merge(args))
     end
 
+    # should be extracted to sidebar gem
     def set_navigation_back_or_menu(back_title = 'Back')
       if parent_screen.is_a?(PrimeResideMenu::SidebarContainerScreen)
         set_navigation_left_button 'Menu', image: 'images/navigation/menu_button.png', action: :show_sidebar
