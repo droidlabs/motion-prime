@@ -1,7 +1,7 @@
 module MotionPrime
   module ModelSyncMixin
     extend ::MotionSupport::Concern
-    
+
     def self.included(base)
       base.class_attribute :_sync_url
       base.class_attribute :_updatable_attributes

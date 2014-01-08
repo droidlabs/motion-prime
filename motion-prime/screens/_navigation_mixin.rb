@@ -70,7 +70,7 @@ module MotionPrime
         screen = Screen.create_with_options(screen, true, args)
 
         # Set parent, title & modal properties
-        screen.parent_screen = self.weak_ref if screen.respond_to?("parent_screen=")
+        screen.parent_screen = self if screen.respond_to?("parent_screen=")
         screen.title = args[:title] if args[:title] && screen.respond_to?("title=")
         screen.modal = args[:modal] if args[:modal] && screen.respond_to?("modal=")
 
@@ -94,7 +94,7 @@ module MotionPrime
 
       def close_screen_navigational(args = {})
         if args[:to_screen] && args[:to_screen].is_a?(UIViewController)
-          self.parent_screen = args[:to_screen].weak_ref
+          self.parent_screen = args[:to_screen]
 
           screens = self.navigation_controller.childViewControllers
           self.navigation_controller.popToViewController(args[:to_screen], animated: args[:animated])

@@ -380,11 +380,12 @@ module MotionPrime
         @preloader_cancelled = false
         @preloader_queue ||= []
 
+        # TODO: do not release parent_objcets unless finished
         BW::Reactor.schedule(@preloader_queue.count) do |queue_id|
           @preloader_queue[queue_id] = :in_progress
 
           result = load_count.times do |offset|
-            break if @preloader_queue[queue_id] == :cancelled
+            break if @break_preload || @preloader_queue[queue_id] == :cancelled
             load_cell_by_index(index, preload: true)
             unless offset == load_count - 1
               index = service.sum_index(index, 1)

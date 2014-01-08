@@ -22,5 +22,9 @@ module MotionPrime
     def errors
       @errors ||= Errors.new(self.weak_ref)
     end
+
+    # def dealloc
+    #   pp 'deall model'
+    # end
   end
 end

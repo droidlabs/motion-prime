@@ -51,6 +51,10 @@ class ApiClient
     "#{MotionPrime::Config.api.base}/api/v1#{path}"
   end
 
+  def page_url(path)
+    "#{MotionPrime::Config.api.base}/#{path}"
+  end
+
   def resource_url(path)
     # return if path.blank?
     base = Prime::Config.api.resource_base.present? ? Prime::Config.api.resource_base : Prime::Config.api.base
