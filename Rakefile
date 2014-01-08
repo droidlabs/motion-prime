@@ -21,12 +21,4 @@ require 'motion-redgreen'
 
 Motion::Project::App.setup do |app|
   app.name = 'Prime'
-  app.pods do
-    pod 'NanoStore', '~> 2.7.7'
-    pod 'SDWebImage'
-    pod 'SVPullToRefresh'
-    pod 'MBAlertView'
-    pod 'RESideMenu', git: 'https://github.com/feklistov/RESideMenu.git'
-    pod 'MBProgressHUD', '~> 0.8'
-  end
 end
