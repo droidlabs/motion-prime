@@ -70,8 +70,10 @@ module MotionPrime
         input_value_text.blank? ? input_placeholder_text : input_value_text
       end
 
+      # TODO: normalize_object will not be required after refactoring computed options.
       def input_content_font
-        input_value_text.blank? ? computed_options[:placeholder_font] : computed_options[:font]
+        font = input_value_text.blank? ? computed_options[:placeholder_font] : computed_options[:font]
+        normalize_object(font, section || self)
       end
 
       def input_value_text

@@ -2,6 +2,7 @@
 * add cleanup for section events
 
 === 0.6.0
+* add computed_options.get(), this will allow to make sure that options is computed.
 * add dsl for push notifications
 * add some extensions/middleware system, at least for networking.
 * create "display_network_error" extension.
