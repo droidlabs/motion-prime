@@ -30,7 +30,7 @@ module MotionPrime
     end
 
     def dealloc
-      # pp 'deallocating elemenet', self.name, self.to_s, view_class, view.try(:to_s)
+      # Prime.logger.debug 'Deallocating elemenet: ', self.name, self.to_s, view_class, view.try(:to_s)
       super
     end
 

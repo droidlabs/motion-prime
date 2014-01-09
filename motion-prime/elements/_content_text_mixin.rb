@@ -39,7 +39,6 @@ module MotionPrime
     end
 
     def content_height
-      pp options[:width], section.name, name
       min, max = options[:min_height].to_f, options[:max_height]
       return min if content_text.blank?
       rect = get_content_rect(options[:width] - content_padding_width)

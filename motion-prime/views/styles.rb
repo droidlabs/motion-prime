@@ -65,9 +65,10 @@ module MotionPrime
         style_options
       end
 
-      def extend_and_normalize_options(options = {})
-        style_options = self.for(options.delete(:styles))
-        normalize_options(style_options.merge(options))
+      def extend_options(options = {})
+        options = ComputedOptions.new(options) unless options.is_a?(ComputedOptions)
+        options.add_styles(options.delete(:styles))
+        options
       end
     end
   end

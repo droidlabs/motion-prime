@@ -14,5 +14,9 @@ module MotionPrime
   def self.env
     @env ||= MotionPrime::Env.new
   end
+
+  def self.logger
+    @logger ||= MotionPrime::Logger.new
+  end
 end
 ::Prime = MotionPrime unless defined?(::Prime)

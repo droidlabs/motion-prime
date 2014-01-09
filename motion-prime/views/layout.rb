@@ -17,7 +17,7 @@ module MotionPrime
       elsif view_stack.any?
         view_stack.last.addSubview(view)
       end
-
+      puts "setup options: #{options.is_a?(MotionPrime::ComputedOptions)}"
       setup(view, options, &block)
       view.on_added if view.respond_to?(:on_added)
 

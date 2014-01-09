@@ -1,4 +1,6 @@
 require 'motion-require'
+require File.expand_path('../../motion-prime/env.rb', __FILE__)
+require File.expand_path('../../motion-prime/prime.rb', __FILE__)
 
 Motion::Require.all(Dir.glob(File.expand_path('../../motion-prime/**/*.rb', __FILE__)))
 

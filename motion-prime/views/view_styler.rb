@@ -7,7 +7,7 @@ module MotionPrime
     attr_reader :view, :options
 
     def initialize(view, bounds = CGRectZero, options = {})
-      @options = Styles.extend_and_normalize_options options
+      @options = Styles.extend_options(options)
       @view = view
       prepare_frame_for(bounds) if @options.delete(:calculate_frame)
     end
@@ -42,6 +42,7 @@ module MotionPrime
     end
 
     def set_option(key, value)
+      puts "set key: #{key} value: #{value}"
       # return if value.nil?
       # ignore options
       return if key == 'section' && !view.respond_to?(:section=)

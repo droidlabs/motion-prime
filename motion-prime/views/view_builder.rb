@@ -3,7 +3,7 @@ module MotionPrime
     attr_reader :view, :options
 
     def initialize(klass, options = {})
-      @options = Styles.extend_and_normalize_options(options)
+      @options = Styles.extend_options(options)
       @view = view_for_class(klass, klass, @options)
     end
 
