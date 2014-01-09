@@ -35,6 +35,38 @@ module MotionPrime
         @base_config ||= self.new()
         @base_config.send(name.to_sym, *args, &block)
       end
+
+      def configure(&block)
+        @configure_blocks ||= []
+        @configure_blocks << block
+      end
+
+      def configure!
+        @base_config ||= self.new()
+        @configure_blocks.each do |block|
+          block.call(@base_config)
+        end
+        setup_models
+        setup_colors
+      end
+
+      def setup_models
+        MotionPrime::Store.connect
+      end
+
+      def setup_colors
+        return unless @base_config
+        colors = @base_config.colors.to_hash.inject({}) do |res, (color, value)|
+          unless color == :prefix
+            unless @base_config.colors.prefix.nil?
+              res[:"#{@base_config.colors.prefix}_#{color}"] = value
+            end
+            res[:"app_#{color}"] = value
+          end
+          res
+        end
+        Symbol.css_colors.merge!(colors)
+      end
     end
 
     def method_missing(name, *args, &block)

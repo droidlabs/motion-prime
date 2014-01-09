@@ -41,7 +41,7 @@ MotionPrime::Styles.define :base_form do
     line_break_mode: :word_wrap,
     number_of_lines: 0,
     size_to_fit: true,
-    text_color: proc { MotionPrime::Config.color.error },
+    text_color: :app_error,
     font: proc { MotionPrime::Config.font.name.uifont(12) }
 
   # available options for input:
@@ -105,9 +105,9 @@ MotionPrime::Styles.define :base_form do
 
   style :field_input_with_errors,
     layer: {
-      border_color: proc { MotionPrime::Config.color.error }
+      border_color: :app_error
     },
-    text_color: proc { MotionPrime::Config.color.error }
+    text_color: :app_error
 
   style :switch_field_input,
     top: 10,

@@ -1,3 +1,6 @@
+=== 0.5.1
+* configurations and style definitions runs in correct order.
+
 === 0.5.0
 * renamed Prime::BaseModel to Prime::Model.
 * renamed Prime::BaseScreen to Prime::Screen.

@@ -39,8 +39,21 @@ module MotionPrime
       include HasNormalizer
 
       def define(*namespaces, &block)
-        Array.wrap(namespaces).each do |namespace|
-          self.new(namespace).instance_eval(&block)
+        @definition_blocks ||= []
+        namespaces = Array.wrap(namespaces)
+        if namespaces.any?
+          namespaces.each do |namespace|
+            @definition_blocks << {namespace: namespace, block: block}
+          end
+        else
+          @definition_blocks << {namespace: false, block: block}
+        end
+      end
+
+      def define!
+        @definition_blocks.each do |definition|
+          block = definition[:block]
+          self.new(definition[:namespace]).instance_eval(&block)
         end
       end
 

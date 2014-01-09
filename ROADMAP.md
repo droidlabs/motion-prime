@@ -5,6 +5,7 @@
 * add dsl for push notifications
 * add some extensions/middleware system, at least for networking.
 * create "display_network_error" extension.
+* add different templates. some templates should be more like final app.
 
 === 0.7.0
 * add testing framework

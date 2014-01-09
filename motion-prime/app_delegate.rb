@@ -7,6 +7,8 @@ module MotionPrime
     attr_accessor :window
 
     def application(application, willFinishLaunchingWithOptions:opts)
+      MotionPrime::Config.configure!
+      MotionPrime::Styles.define!
       application.setStatusBarStyle UIStatusBarStyleLightContent
       application.setStatusBarHidden false
     end
