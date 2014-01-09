@@ -52,7 +52,8 @@ module MotionPrime
     end
 
     def compute!
-      @options.each do |key, value|
+      cached = @options.clone
+      cached.each do |key, value|
         fetch(key)
       end
     end

@@ -10,8 +10,8 @@ module MotionPrime
     after_initialize :observe_model_errors
 
     def prepare_table_data
-      @form = @options[:table]
-      @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, self) if options[:observe_errors]
+      @form = options[:table]
+      @errors_observer_options = options.delete(:observe_errors).clone if options[:observe_errors]
     end
 
     def render_element?(element_name)
@@ -19,7 +19,7 @@ module MotionPrime
       when :error_message
         has_errors?
       when :label
-        not @options[:label] === false
+        not options[:label] === false
       else true
       end
     end

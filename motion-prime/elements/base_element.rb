@@ -53,7 +53,7 @@ module MotionPrime
     end
 
     def init_options
-      @options.merge(compute_block_options || {})
+      @options.merge!(compute_block_options || {})
       @options.add_styles compute_style_options(options)
     end
 

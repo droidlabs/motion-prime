@@ -15,7 +15,7 @@ module MotionPrime
     end
 
     def section_styles
-      @section_styles ||= table.try(:cell_styles, self) || {}
+      @section_styles ||= table.try(:cell_styles, self)
     end
 
     def cell_type
