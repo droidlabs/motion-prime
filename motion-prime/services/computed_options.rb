@@ -4,12 +4,13 @@ module MotionPrime
     def initialize(options = {}, params = {})
       @options = options
       @delegate = params[:delegate]
+      @normalizer_args = Array.wrap(params[:normalizer_args])
     end
 
     def fetch(key)
       object = @options[key]
-      if object.is_a?(Proc) || object.is_a?(Hash) 
-        @options[key] = normalize_object(object, @delegate)
+      if object.is_a?(Proc) || object.is_a?(Hash)
+        @options[key] = normalize_object(object, @delegate, *@normalizer_args)
       else
         object
       end

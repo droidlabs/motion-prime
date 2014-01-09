@@ -25,7 +25,7 @@ module MotionPrime
       @screen = options.delete(:screen)
       @block = options.delete(:block)
       @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
-      @options = ComputedOptions.new(options, delegate: section)
+      @options = ComputedOptions.new(options, delegate: section, normalizer_args: [self.weak_ref])
       init_options
     end
 
@@ -154,6 +154,7 @@ module MotionPrime
         end.flatten
         @styles += custom_styles
         # puts @view_class.to_s + @styles.inspect, ''
+        @styles
       end
 
     class << self
