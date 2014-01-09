@@ -19,13 +19,14 @@ module MotionPrime
 
     def initialize(options = {})
       options[:screen] = options[:screen].try(:weak_ref)
-      @options = options
-      @screen = options[:screen]
       @section = options[:section]
-      @view_class = options[:view_class] || 'UIView'
-      @name = options[:name]
-      @block = options[:block]
+      @name = options.delete(:name)
+      @view_class = options.delete(:view_class) || 'UIView'
+      @screen = options.delete(:screen)
+      @block = options.delete(:block)
       @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
+      @options = ComputedOptions.new(options, delegate: section)
+      init_options
     end
 
     def dealloc
@@ -45,30 +46,19 @@ module MotionPrime
     end
 
     def render!(&block)
-      screen.add_view class_factory(view_class), computed_options do |view|
+      screen.add_view class_factory(view_class), options.to_hash do |view|
         @view = view
         block.try(:call, view, self)
       end
     end
 
-    # Lazy-computing options
-    def computed_options
-      compute_options! unless @computed_options
-      @computed_options
-    end
-
-    def compute_options!
-      block_options = compute_block_options || {}
-      raw_options = self.options.except(:screen, :name, :block, :view_class).merge(block_options)
-      compute_style_options(raw_options)
-      raw_options = Styles.for(styles).merge(raw_options)
-      @computed_options = raw_options
-      normalize_options(@computed_options, section, %w[text placeholder font title_label padding padding_left padding_right min_width min_outer_width max_width max_outer_width width left right])
+    def init_options
+      @options.merge(compute_block_options || {})
+      @options.add_styles compute_style_options(options)
     end
 
     def update_with_options(new_options = {})
-      options.merge!(new_options)
-      compute_options!
+      @options.merge!(new_options)
       view.try(:removeFromSuperview)
       @view = nil
       render

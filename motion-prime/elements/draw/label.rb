@@ -6,7 +6,6 @@ module MotionPrime
     include DrawBackgroundMixin
 
     def draw_options
-      options = computed_options
       text = (options[:html] || options[:text]).to_s.gsub(/^[\n\r]+/, '')
       text_color = (options[:text_color] || :black).uicolor
       font = (options[:font] || :system).uifont
@@ -41,7 +40,7 @@ module MotionPrime
     end
 
     def draw_in_context(context)
-      return if computed_options[:hidden]
+      return if options[:hidden]
       size_to_fit_if_needed
       set_text_position
 
@@ -79,17 +78,17 @@ module MotionPrime
     end
 
     def size_to_fit_if_needed
-      if computed_options[:size_to_fit]
-        computed_options[:width] ||= cached_content_outer_width
-        computed_options[:height] ||= cached_content_outer_height
+      if options[:size_to_fit]
+        options[:width] ||= cached_content_outer_width
+        options[:height] ||= cached_content_outer_height
         reset_computed_values
       end
     end
 
     def set_text_position
-      if computed_options.slice(:padding_top, :padding_bottom, :padding).values.none?
-        computed_options[:width] ||= computed_width
-        @padding_top = (computed_outer_height - cached_content_height)/2
+      if options.to_hash.slice(:padding_top, :padding_bottom, :padding).values.none?
+        options[:width] ||= computed_width
+        @padding_top = (computed_outer_height - cached_content_height) / 2
         # @padding_top += 1 unless @padding_top.zero?
       end
     end

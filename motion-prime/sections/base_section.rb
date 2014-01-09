@@ -25,14 +25,15 @@ module MotionPrime
     define_callbacks :render, :initialize
 
     def initialize(options = {})
-      @options = options
+      @options = ComputedOptions.new(options, delegate: self.weak_ref)
 
       run_callbacks :initialize do
-        @options[:screen] = @options[:screen].try(:weak_ref)
-        self.screen = options[:screen]
-        @model = options[:model]
-        @name = options[:name] ||= default_name
-        @options_block = options[:block]
+        @screen = options.delete(:screen).try(:weak_ref)
+        @model = options.delete(:model)
+        @name = options.delete(:name) || default_name
+        @block = options.delete(:block)
+
+        init_container_options
       end
     end
 
@@ -44,11 +45,6 @@ module MotionPrime
 
     def container_bounds
       options[:container_bounds] or raise "You must pass `container bounds` option to prerender base section"
-    end
-
-    def container_options
-      compute_container_options! unless @container_options
-      @container_options
     end
 
     def container_height
@@ -101,13 +97,12 @@ module MotionPrime
       elements_options.each do |key, opts|
         add_element(key, opts)
       end
-      self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
+      self.instance_eval(&@block) if @block.is_a?(Proc)
     end
 
     def load_elements
       self.elements.values.each do |element|
         element.size_to_fit_if_needed if element.is_a?(LabelDrawElement)
-        element.compute_options! if element.respond_to?(:computed_options) && !element.computed_options
       end
     end
 
@@ -145,7 +140,7 @@ module MotionPrime
 
     def render(container_options = {})
       load_section
-      self.container_options.merge!(container_options)
+      @container_options.merge!(container_options)
       run_callbacks :render do
         render!
       end
@@ -270,19 +265,12 @@ module MotionPrime
         end
       end
 
-      def compute_container_options!
-        raw_options = {}
-        raw_options.merge!(self.class.container_options.try(:clone) || {})
-        raw_options.merge!(options.delete(:container) || {})
-
-        @container_options = raw_options
-
-        # must be here because section_styles may use container_options for custom styles
-        container_options_from_styles = Styles.for(section_styles.values.flatten)[:container] if section_styles
-        if container_options_from_styles.present?
-          @container_options = container_options_from_styles.merge(@container_options)
-        end
-        normalize_options(@container_options)
+      def init_container_options
+        container_options = {}
+        container_options.merge!(self.class.container_options.try(:clone) || {})
+        container_options.merge!(options.delete(:container) || {})
+        @container_options = ComputedOptions.new(options, delegate: self.weak_ref)
+        @container_options.add_styles(section_styles.values.flatten) if section_styles
       end
 
     class << self

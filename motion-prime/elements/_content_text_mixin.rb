@@ -18,16 +18,16 @@ module MotionPrime
         return text
       end
 
-      options = {
+      string_options = {
         text: content_text,
         font: content_font,
-        line_spacing: computed_options[:line_spacing]
+        line_spacing: options[:line_spacing]
       }
-      computed_options[:html].present? ? html_string(options) : attributed_string(options)
+      options[:html].present? ? html_string(string_options) : attributed_string(string_options)
     end
 
     def content_width
-      min, max = computed_options[:min_width].to_f, computed_options[:max_width]
+      min, max = options[:min_width].to_f, options[:max_width]
       return min if content_text.blank?
 
       rect = get_content_rect(Float::MAX)
@@ -39,9 +39,9 @@ module MotionPrime
     end
 
     def content_height
-      min, max = computed_options[:min_height].to_f, computed_options[:max_height]
+      min, max = options[:min_height].to_f, options[:max_height]
       return min if content_text.blank?
-      rect = get_content_rect(computed_options[:width] - content_padding_width)
+      rect = get_content_rect(options[:width] - content_padding_width)
       @content_height = [[rect.size.height.ceil, max].compact.min, min].max.ceil
     end
 
@@ -59,29 +59,27 @@ module MotionPrime
       end
 
       def button_content_text
-        view ? view.titleLabel.text : computed_options[:title]
+        view ? view.titleLabel.text : options[:title]
       end
 
       def button_content_font
-        computed_options[:title_label].try(:[], :font)
+        options[:title_label].try(:[], :font)
       end
 
       def input_content_text
         input_value_text.blank? ? input_placeholder_text : input_value_text
       end
 
-      # TODO: normalize_object will not be required after refactoring computed options.
       def input_content_font
-        font = input_value_text.blank? ? computed_options[:placeholder_font] : computed_options[:font]
-        normalize_object(font, section || self)
+        input_value_text.blank? ? options[:placeholder_font] : options[:font]
       end
 
       def input_value_text
-        view && !is_a?(DrawElement) ? view.text : (computed_options[:html] || computed_options[:text])
+        view && !is_a?(DrawElement) ? view.text : (options[:html] || options[:text])
       end
 
       def input_placeholder_text
-        computed_options[:placeholder]
+        options[:placeholder]
       end
   end
 end

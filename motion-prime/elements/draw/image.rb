@@ -10,23 +10,23 @@ module MotionPrime
     end
 
     def draw_options
-      image = image_data || computed_options[:image]
-      image ||= computed_options[:default] if computed_options[:url]
+      image = image_data || options[:image]
+      image ||= options[:default] if options[:url]
 
       # already initialized image or image from resources or default image
       super.merge({image: image.try(:uiimage)})
     end
 
     def draw_in(rect)
-      return if computed_options[:hidden]
+      return if options[:hidden]
 
       draw_background_in_context(UIGraphicsGetCurrentContext())
-      computed_options[:draw_in_rect] ? draw_in_context(UIGraphicsGetCurrentContext()) : draw_with_layer
+      options[:draw_in_rect] ? draw_in_context(UIGraphicsGetCurrentContext()) : draw_with_layer
       load_image
     end
 
     def draw_in_context(context)
-      return if computed_options[:hidden]
+      return if options[:hidden]
 
       draw_background_in_context(context)
       options = draw_options
@@ -70,10 +70,10 @@ module MotionPrime
     end
 
     def load_image
-      return if image_data || !computed_options[:url]
+      return if image_data || !options[:url]
       BW::Reactor.schedule do
         manager = SDWebImageManager.sharedManager
-        manager.downloadWithURL(computed_options[:url],
+        manager.downloadWithURL(options[:url],
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|

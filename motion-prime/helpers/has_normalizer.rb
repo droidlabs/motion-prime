@@ -1,14 +1,8 @@
 module MotionPrime
   module HasNormalizer
-    def normalize_options(unordered_options, receiver = nil, order = nil)
-      options = if order
-        Hash[unordered_options.sort_by { |k,v| order.index(k.to_s).to_i }]
-      else
-        unordered_options
-      end
-
+    def normalize_options(options, receiver = nil)
       options.each do |key, option|
-        unordered_options[key] = normalize_object(option, receiver)
+        options[key] = normalize_object(option, receiver)
       end
     end
 

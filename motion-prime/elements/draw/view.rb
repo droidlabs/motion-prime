@@ -8,7 +8,7 @@ module MotionPrime
     end
 
     def draw_in_context(context)
-      return if computed_options[:hidden]
+      return if options[:hidden]
 
       draw_background_in_context(context)
     end

@@ -1,26 +1,26 @@
 module MotionPrime
   module ElementContentPaddingMixin
     def content_padding_left
-      computed_options[:padding_left] ||
-        computed_options[:padding] ||
+      options[:padding_left] ||
+        options[:padding] ||
         default_padding_for(:left) || 0
     end
 
     def content_padding_right
-      computed_options[:padding_right] ||
-        computed_options[:padding] ||
+      options[:padding_right] ||
+        options[:padding] ||
         default_padding_for(:right) || 0
     end
 
     def content_padding_top
-      computed_options[:padding_top] ||
-        computed_options[:padding] ||
+      options[:padding_top] ||
+        options[:padding] ||
         default_padding_for(:top) || 0
     end
 
     def content_padding_bottom
-      computed_options[:padding_bottom] ||
-        computed_options[:padding] ||
+      options[:padding_bottom] ||
+        options[:padding] ||
         default_padding_for(:bottom) || 0
     end
 
@@ -34,7 +34,7 @@ module MotionPrime
 
     def content_outer_height(cached = false)
       height = content_padding_height + (cached ? cached_content_height : content_height)
-      [[height, computed_options[:min_outer_height]].compact.max, computed_options[:max_outer_height]].compact.min
+      [[height, options[:min_outer_height]].compact.max, options[:max_outer_height]].compact.min
     end
 
     def cached_content_outer_height
@@ -43,7 +43,7 @@ module MotionPrime
 
     def content_outer_width(cached = false)
       width = content_padding_width + (cached ? cached_content_width : content_width)
-      [[width, computed_options[:min_outer_width]].compact.max, computed_options[:max_outer_width]].compact.min
+      [[width, options[:min_outer_width]].compact.max, options[:max_outer_width]].compact.min
     end
 
     def cached_content_outer_width

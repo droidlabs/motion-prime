@@ -8,15 +8,15 @@ module MotionPrime
     include ElementContentPaddingMixin
 
     def draw_options
-      options = computed_options
       background_color = options[:background_color].try(:uicolor)
+      layer = options[:layer]
       {
         rect: CGRectMake(computed_left, computed_top, computed_outer_width, computed_outer_height),
         background_color: background_color,
-        masks_to_bounds: options[:layer].try(:[], :masks_to_bounds) || options[:clips_to_bounds],
-        corner_radius: options[:layer].try(:[], :corner_radius).to_f,
-        border_width: options[:layer].try(:[], :border_width).to_f,
-        border_color: options[:layer].try(:[], :border_color).try(:uicolor) || background_color
+        masks_to_bounds: layer.try(:[], :masks_to_bounds) || options[:clips_to_bounds],
+        corner_radius: layer.try(:[], :corner_radius).to_f,
+        border_width: layer.try(:[], :border_width).to_f,
+        border_color: layer.try(:[], :border_color).try(:uicolor) || background_color
       }
     end
 
@@ -27,7 +27,7 @@ module MotionPrime
     end
 
     def computed_frame
-      @computed_frame ||= calculate_frome_for(view.try(:bounds) || section.container_bounds, computed_options)
+      @computed_frame ||= calculate_frome_for(view.try(:bounds) || section.container_bounds, options)
     end
 
     def default_padding_for(side)
@@ -65,18 +65,17 @@ module MotionPrime
     end
 
     def hide
-      computed_options[:hidden] = true
+      options[:hidden] = true
       view.setNeedsDisplay
     end
 
     def show
-      computed_options[:hidden] = false
+      options[:hidden] = false
       view.setNeedsDisplay
     end
 
     def update_with_options(new_options = {})
       options.merge!(new_options)
-      compute_options!
       view.setNeedsDisplay
     end
 

@@ -27,7 +27,7 @@ module MotionPrime
 
     def load_container_element(options = {})
       init_container_element(options)
-      @container_element.compute_options! unless @container_element.computed_options
+      @container_element.compute_options! unless @container_element.options
     end
 
     def draw_in(rect, state = :normal)
@@ -101,7 +101,7 @@ module MotionPrime
       def draw_background_in_context(context, rect)
         return unless container_element
 
-        options = container_element.computed_options
+        options = container_element.options
         background_color = options[:background_color].try(:uicolor)
 
         if gradient_options = options[:gradient]

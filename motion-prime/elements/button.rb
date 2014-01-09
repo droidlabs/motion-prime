@@ -6,8 +6,8 @@ module MotionPrime
     after_render :size_to_fit
 
     def size_to_fit
-      if computed_options[:size_to_fit]
-        if computed_options[:width]
+      if options[:size_to_fit]
+        if options[:width]
           view.setHeight cached_content_outer_height
         end
       end
@@ -18,11 +18,11 @@ module MotionPrime
     end
 
     def text_value
-      view.try(:currentTitle) || computed_options[:title]
+      view.try(:currentTitle) || options[:title]
     end
 
     def font
-      computed_options[:title_label].try(:[], :font) || :system.uifont
+      options[:title_label].try(:[], :font) || :system.uifont
     end
   end
 end
