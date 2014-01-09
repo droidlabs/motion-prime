@@ -1,11 +1,9 @@
 motion_require './config.rb'
 MotionPrime::Config.configure do |config|
-  config.model do |model|
-    if MotionPrime.env == 'test'
-      model.store_type = :memory
-    else
-      model.store_type = :file
-    end
+  if MotionPrime.env.test?
+    config.model.store_type = :memory
+  else
+    config.model.store_type = :file
   end
   config.font.name = "Ubuntu"
   config.colors do |colors|

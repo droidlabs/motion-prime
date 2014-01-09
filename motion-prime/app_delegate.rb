@@ -9,6 +9,7 @@ module MotionPrime
     def application(application, willFinishLaunchingWithOptions:opts)
       MotionPrime::Config.configure!
       MotionPrime::Styles.define!
+      MotionPrime::Logger.info "Loading Prime application with env: #{Prime.env}"
       application.setStatusBarStyle UIStatusBarStyleLightContent
       application.setStatusBarHidden false
     end
@@ -21,6 +22,7 @@ module MotionPrime
     def application(application, didRegisterForRemoteNotificationsWithDeviceToken: token)
       on_apn_register_success(application, token)
     end
+    
     def application(application, didFailToRegisterForRemoteNotificationsWithError: error)
       on_apn_register_fail(application, error)
     end

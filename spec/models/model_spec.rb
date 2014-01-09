@@ -88,12 +88,14 @@ describe MotionPrime::Model do
     # per object store since NanoStore 2.5.1
     it "user per instance store to save" do
       store1 = MotionPrime::Store.create
+      puts store1.inspect
       user = stub_user("Bob", 10, Time.now)
       user.store = store1
       user.save
       store1.count(User).should == 1
 
       store2 = MotionPrime::Store.create
+      puts store2.inspect
       user2 = stub_user("Lee", 10, Time.now)
       user2.store = store2
       user2.save
