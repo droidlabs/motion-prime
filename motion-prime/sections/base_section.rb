@@ -270,7 +270,7 @@ module MotionPrime
         container_options.merge!(self.class.container_options.try(:clone) || {})
         container_options.merge!(options.delete(:container) || {})
         @container_options = ComputedOptions.new(options, delegate: self.weak_ref)
-        @container_options.add_styles(section_styles.values.flatten) if section_styles
+        @container_options.add_styles(section_styles.values.flatten, container: true) if section_styles
       end
 
     class << self

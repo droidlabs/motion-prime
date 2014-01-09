@@ -46,7 +46,7 @@ module MotionPrime
     end
 
     def render!(&block)
-      screen.add_view class_factory(view_class), options.to_hash do |view|
+      screen.add_view class_factory(view_class), options do |view|
         @view = view
         block.try(:call, view, self)
       end

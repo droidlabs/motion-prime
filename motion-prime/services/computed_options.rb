@@ -34,7 +34,7 @@ module MotionPrime
     def add_styles(style_names, params = {})
       options = Styles.for(style_names)
       options = options[:container] if params[:container]
-      @options = options.merge(@options)
+      @options = options.merge(@options) if options
     end
 
     def merge(options)
