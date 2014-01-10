@@ -35,6 +35,22 @@ describe MotionPrime::Config do
     end
   end
 
+  describe ":key_name?" do
+    it "returns true if there is value and it's not false" do
+      @config.foo = true
+      @config.foo?.should == true
+    end
+
+    it "returns false if there is value and it's false" do
+      @config.foo = false
+      @config.foo?.should == false
+    end
+
+    it "returns false if there is no value" do
+      @config.foo?.should == false
+    end
+  end
+
   describe "class methods" do
     it "should allow to set value for class" do
       MotionPrime::Config.foo.nil?.should == true

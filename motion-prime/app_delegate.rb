@@ -9,6 +9,7 @@ module MotionPrime
     def application(application, willFinishLaunchingWithOptions:opts)
       MotionPrime::Config.configure!
       MotionPrime::Styles.define!
+      Prime.logger.info "Loading Prime application with env: #{Prime.env}"
       application.setStatusBarStyle UIStatusBarStyleLightContent
       application.setStatusBarHidden false
     end

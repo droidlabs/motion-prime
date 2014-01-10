@@ -22,6 +22,10 @@ module MotionPrime
     end
     alias :blank? :nil?
 
+    def present?
+      !blank?
+    end
+
     def has_key?(key)
       !self[key].is_a?(self.class)
     end
@@ -42,6 +46,7 @@ module MotionPrime
       end
 
       def configure!
+        @configure_blocks ||= []
         @base_config ||= self.new()
         @configure_blocks.each do |block|
           block.call(@base_config)
@@ -74,10 +79,13 @@ module MotionPrime
         yield self[name]
       else
         name = name.to_s
-        if /(.+)=$/.match(name)
-          return store($1, args[0])
+        if /(.+)\=$/.match(name)
+          store($1, args[0])
+        elsif /(.+)\?$/.match(name)
+          value = self[$1]
+          value.present? && !!value
         else
-          return self[name]
+          self[name]
         end
       end
     end
