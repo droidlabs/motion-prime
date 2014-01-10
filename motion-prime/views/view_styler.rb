@@ -20,10 +20,10 @@ module MotionPrime
     end
 
     def convert_primitives_to_objects(options)
-      options.inject({}) do |result, (k, v)|
-        v = STRUCTS_MAP[v.class].call(v) if STRUCTS_MAP.has_key?(v.class)
-        result[k] = v
-        result
+      options.each do |k, v|
+        if STRUCTS_MAP.has_key?(v.class)
+          options[k] =  STRUCTS_MAP[v.class].call(v)
+        end
       end
     end
 

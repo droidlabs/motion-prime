@@ -66,11 +66,6 @@ module MotionPrime
       @options.has_key?(key)
     end
 
-    def inject(*args, &block)
-      to_hash.inject(*args, &block)
-      self
-    end
-
     def slice(*args, &block)
       compute!(args)
       @options.slice(*args, &block)
@@ -78,6 +73,7 @@ module MotionPrime
 
     def each(&block)
       to_hash.each(&block)
+      self
     end
   end
 end

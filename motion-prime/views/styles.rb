@@ -67,8 +67,8 @@ module MotionPrime
 
       def extend_options(options = {})
         options = ComputedOptions.new(options) unless options.is_a?(ComputedOptions)
-        options.add_styles(options.delete(:styles))
-        options
+        options.add_styles(options.delete(:styles) || {})
+        options.to_hash
       end
     end
   end
