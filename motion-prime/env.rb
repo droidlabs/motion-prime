@@ -16,7 +16,7 @@ module MotionPrime
 
     def method_missing(name, *args, &block)
       if /(.+)?$/.match(name.to_s)
-        env == $1
+        env == name.to_s.gsub('?', '')
       else
         false
       end

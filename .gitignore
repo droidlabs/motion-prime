@@ -6,6 +6,7 @@ resources/*.nib
 resources/*.momd
 resources/*.storyboardc
 files/vendor/
+files/.repl_history
 .DS_Store
 nbproject
 .redcar

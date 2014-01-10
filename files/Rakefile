@@ -5,8 +5,6 @@ require "rubygems"
 require 'motion-cocoapods'
 require 'bundler'
 Bundler.require
-require 'sugarcube-common'
-require 'bubble-wrap/reactor'
 require 'motion-prime'
 
 Motion::Project::App.setup do |app|

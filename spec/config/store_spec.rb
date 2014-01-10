@@ -35,7 +35,6 @@ describe MotionPrime::Config do
     end
   end
 
-
   describe ":key_name?" do
     it "returns true if there is value and it's not false" do
       @config.foo = true
