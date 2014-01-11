@@ -1,4 +1,5 @@
 === 0.6.0
+* don't send screen to sections/elements, only send view where to render.
 * add cleanup for section events
 * add computed_options.get(), this will allow to make sure that options is computed.
 * add dsl for push notifications
