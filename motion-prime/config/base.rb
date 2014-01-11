@@ -1,21 +1,18 @@
 motion_require './config.rb'
-MotionPrime::Config.model do |model|
-  if RUBYMOTION_ENV == 'test'
-    model.store_type = :memory
+MotionPrime::Config.configure do |config|
+  if MotionPrime.env.test?
+    config.model.store_type = :memory
   else
-    model.store_type = :file
+    config.model.store_type = :file
   end
-end
-MotionPrime::Config.font.name = "Ubuntu"
-MotionPrime::Config.color do |color|
-  color.base = 0x424242
-  color.error = 0xef471f
-end
-MotionPrime::Config.sidebar do |sidebar|
-  sidebar.background_image = "images/sidebar/background.png".uiimage
-end
-MotionPrime::Config.api do |api|
-  api.base = "http://example.com"
-  api.client_id = ""
-  api.client_secret = ""
+  config.font.name = "Ubuntu"
+  config.colors do |colors|
+    colors.base = 0x424242
+    colors.error = 0xef471f
+  end
+  config.api do |api|
+    api.base = "http://example.com"
+    api.client_id = ""
+    api.client_secret = ""
+  end
 end

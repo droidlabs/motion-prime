@@ -14,7 +14,12 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 
     $ prime new myapp
 
-### 3. Run application
+### 3. Setup application
+  
+    $ bundle install
+    $ rake pod:install
+
+### 4. Run application
 
     $ rake
 

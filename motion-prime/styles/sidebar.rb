@@ -1,13 +1,13 @@
 Prime::Styles.define :sidebar do
   style :screen,
-    background_color: proc { Prime::Config.color.dark }
+    background_color: :app_dark
 
   style :table,
     top: 150,
     left: 0,
     width: 320,
     bottom: 0,
-    background_color: proc { Prime::Config.color.dark },
+    background_color: :app_dark,
     separator_color: :clear
 
   style :table_cell,

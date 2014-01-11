@@ -22,6 +22,10 @@ module MotionPrime
     end
     alias :blank? :nil?
 
+    def present?
+      !blank?
+    end
+
     def has_key?(key)
       !self[key].is_a?(self.class)
     end
@@ -35,6 +39,39 @@ module MotionPrime
         @base_config ||= self.new()
         @base_config.send(name.to_sym, *args, &block)
       end
+
+      def configure(&block)
+        @configure_blocks ||= []
+        @configure_blocks << block
+      end
+
+      def configure!
+        @configure_blocks ||= []
+        @base_config ||= self.new()
+        @configure_blocks.each do |block|
+          block.call(@base_config)
+        end
+        setup_models
+        setup_colors
+      end
+
+      def setup_models
+        MotionPrime::Store.connect
+      end
+
+      def setup_colors
+        return unless @base_config
+        colors = @base_config.colors.to_hash.inject({}) do |res, (color, value)|
+          unless color == :prefix
+            unless @base_config.colors.prefix.nil?
+              res[:"#{@base_config.colors.prefix}_#{color}"] = value
+            end
+            res[:"app_#{color}"] = value
+          end
+          res
+        end
+        Symbol.css_colors.merge!(colors)
+      end
     end
 
     def method_missing(name, *args, &block)
@@ -42,10 +79,13 @@ module MotionPrime
         yield self[name]
       else
         name = name.to_s
-        if /(.+)=$/.match(name)
-          return store($1, args[0])
+        if /(.+)\=$/.match(name)
+          store($1, args[0])
+        elsif /(.+)\?$/.match(name)
+          value = self[$1]
+          value.present? && !!value
         else
-          return self[name]
+          self[name]
         end
       end
     end
