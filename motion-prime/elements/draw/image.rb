@@ -4,11 +4,6 @@ module MotionPrime
     include DrawBackgroundMixin
     attr_accessor :image_data
 
-    def dealloc
-      @break_async_block = true
-      super
-    end
-
     def draw_options
       image = image_data || computed_options[:image]
       image ||= computed_options[:default] if computed_options[:url]
@@ -73,19 +68,22 @@ module MotionPrime
       return if image_data || !computed_options[:url]
       BW::Reactor.schedule do
         manager = SDWebImageManager.sharedManager
+        @screen_ref = screen.strong_ref
         manager.downloadWithURL(computed_options[:url],
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|
-            break if @break_async_block || !image
-            self.image_data = image
+            if image
+              self.image_data = image
 
-            section.cached_draw_image = nil
-            if section.respond_to?(:cell_name)
-              section.pending_display!
-            else
-              self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
+              section.cached_draw_image = nil
+              if section.respond_to?(:cell_name)
+                section.pending_display!
+              else
+                self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
+              end
             end
+            @screen_ref = nil
           }
         )
       end

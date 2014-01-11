@@ -37,8 +37,7 @@ module MotionPrime
     end
 
     def dealloc
-      pp 'Deallocating Screen'
-      @main_section.instance_variable_set(:"@break_preload", true) # TODO: find a better option
+      pp self.object_id, 'Deallocating Screen', self.retainCount
       # FIXME: calling instance_eval in title method (_base_screen_mixin) instance variables need to be cleared manually
       # clear_instance_variables cause BAD_ACCESS errors too
       @main_section = nil

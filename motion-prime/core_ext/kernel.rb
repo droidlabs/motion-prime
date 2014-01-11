@@ -11,6 +11,10 @@ class Kernel
     WeakRef.new(self)
   end
 
+  def strong_ref
+    self
+  end
+
   def clear_instance_variables(options = {})
     ivars = self.instance_variables.clone
     ivars.each do |ivar|

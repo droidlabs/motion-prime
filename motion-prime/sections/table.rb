@@ -15,12 +15,6 @@ module MotionPrime
     after_render :init_pull_to_refresh
     delegate :init_pull_to_refresh, to: :table_delegate
 
-    def dealloc
-      cancel_block = proc { :cancelled }.weak!
-      @preloader_queue.map!(&cancel_block) if @preloader_queue.present?
-      super
-    end
-
     def table_data
       []
     end
@@ -379,22 +373,36 @@ module MotionPrime
         load_count = [left_to_load, limit].compact.min
         @preloader_cancelled = false
         @preloader_queue ||= []
+        @strong_refs ||= []
 
         # TODO: do not release parent_objcets unless finished
         BW::Reactor.schedule(@preloader_queue.count) do |queue_id|
           @preloader_queue[queue_id] = :in_progress
+          @strong_refs[queue_id] = screen.strong_ref
 
           result = load_count.times do |offset|
-            break if @break_preload || @preloader_queue[queue_id] == :cancelled
+            if @preloader_queue[queue_id] == :cancelled
+              @strong_refs[queue_id] = nil
+              break
+            end
+
+            if screen.retainCount == 1
+              @strong_refs[queue_id] = nil
+              @preloader_queue[queue_id] = :dealloc
+              break
+            end
+
             load_cell_by_index(index, preload: true)
             unless offset == load_count - 1
               index = service.sum_index(index, 1)
             end
           end
+
           if result
             on_async_data_preloaded(index)
             @preloader_queue[queue_id] = :completed
           end
+          @strong_refs[queue_id] = nil
         end
         load_count
       end
