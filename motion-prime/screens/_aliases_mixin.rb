@@ -28,7 +28,5 @@ module MotionPrime
     end
 
     def on_rotate; end;
-
-    def on_load; end
   end
 end

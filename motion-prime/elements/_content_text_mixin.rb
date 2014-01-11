@@ -21,7 +21,8 @@ module MotionPrime
       options = {
         text: content_text,
         font: content_font,
-        line_spacing: computed_options[:line_spacing]
+        line_spacing: computed_options[:line_spacing],
+        line_height: computed_options[:line_height]
       }
       computed_options[:html].present? ? html_string(options) : attributed_string(options)
     end

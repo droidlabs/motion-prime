@@ -13,18 +13,8 @@ module MotionPrime
     attr_accessor :parent_screen, :modal, :params, :main_section, :options, :tab_bar
     class_attribute :current_screen
 
-    included do
-      define_callbacks :load
-    end
-
     def app_delegate
       UIApplication.sharedApplication.delegate
-    end
-
-    def on_screen_load
-      run_callbacks :load do
-        on_load
-      end
     end
 
     # Setup the screen, this method will be called when you run MPViewController.new
@@ -74,11 +64,11 @@ module MotionPrime
           t ? @title = t : @title ||= self.to_s
         end
       end
-      def before_load(method_name)
-        set_callback :load, :before, method_name
+      def before_render(method_name)
+        set_callback :render, :before, method_name
       end
-      def after_load(method_name)
-        set_callback :load, :after, method_name
+      def after_render(method_name)
+        set_callback :render, :after, method_name
       end
       def create_with_options(screen, navigation = true, options = {})
         if screen.is_a?(Symbol)

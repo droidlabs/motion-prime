@@ -13,7 +13,7 @@ module MotionPrime
     def html_string(options)
       styles = []
       styles << "color: #{options[:text_color].hex};" if options[:text_color]
-      styles << "line-height: #{options[:line_spacing].to_f + options[:font].pointSize}px;"
+      styles << "line-height: #{options.fetch(:line_height, options[:line_spacing].to_f + options[:font].pointSize)}px;"
       styles << "font-family: '#{options[:font].familyName}';"
       styles << "font-size: #{options[:font].pointSize}px;"
       styles << "text-align: #{options[:text_alignment_name]};" if options[:text_alignment_name]
@@ -28,13 +28,17 @@ module MotionPrime
       # DTCoreTextFontDescriptor.setOverrideFontName(Prime::Config.font.bold_italic, forFontFamily: 'Calibri', bold: true, italic: true)
 
       text = "#{options[:text]}<style>* { #{styles.join} }</style>"
-      NSAttributedString.alloc.initWithData(text.dataUsingEncoding(NSString.defaultCStringEncoding), options: html_options, documentAttributes: nil, error: nil)
+      NSAttributedString.alloc.initWithData(text.dataUsingEncoding(NSUTF8StringEncoding), options: html_options, documentAttributes: nil, error: nil)
     end
 
     def attributed_string(options)
       paragrahStyle = NSMutableParagraphStyle.alloc.init
 
-      paragrahStyle.setLineSpacing(options[:line_spacing]) if options[:line_spacing]
+      if options[:line_height]
+        paragrahStyle.setMinimumLineHeight(options[:line_height])
+      elsif options[:line_spacing]
+        paragrahStyle.setLineSpacing(options[:line_spacing])
+      end
       paragrahStyle.setAlignment(options[:text_alignment]) if options[:text_alignment]
       paragrahStyle.setLineBreakMode(options[:line_break_mode]) if options[:line_break_mode]
       attributes = {}

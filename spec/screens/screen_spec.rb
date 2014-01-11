@@ -2,7 +2,6 @@ describe MotionPrime::Screen do
 
   before do
     @screen = BaseScreen.new()
-    @screen.on_load
     @screen.will_appear
   end
 

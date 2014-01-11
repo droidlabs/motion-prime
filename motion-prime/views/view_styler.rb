@@ -106,9 +106,9 @@ module MotionPrime
         view.mask = mask_layer
       elsif key == 'attributed_text_options'
         attributes = {}
-        if line_spacing = value[:line_spacing]
+        if line_spacing = value[:line_spacing] || line_height = value[:line_height]
           paragrahStyle = NSMutableParagraphStyle.alloc.init
-          paragrahStyle.setLineSpacing(line_spacing)
+          line_height ? paragrahStyle.setMinimumLineHeight(line_height) : paragrahStyle.setLineSpacing(line_spacing)
           attributes[NSParagraphStyleAttributeName] = paragrahStyle
         end
 

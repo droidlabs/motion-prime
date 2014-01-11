@@ -49,14 +49,6 @@ module MotionPrime
       @preloader_cancelled = false
       @data_stamp = nil
       @preloader_queue[-1] = :cancelled if @preloader_queue.present?
-      # @ids.each do |id|
-      #   table_view.dequeueReusableCellWithIdentifier(id)
-      # end if @ids
-      # table_view.valueForKey('_reusableTableCells').removeAllObjects
-
-      # releasing table_delegate
-      # @table_delegate = nil
-      # table_view.delegate = table_delegate
     end
 
     def table_styles

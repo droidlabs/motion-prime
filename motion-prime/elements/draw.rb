@@ -65,18 +65,23 @@ module MotionPrime
     end
 
     def hide
+      return if computed_options[:hidden]
       computed_options[:hidden] = true
+      section.cached_draw_image = nil
       view.setNeedsDisplay
     end
 
     def show
+      return if !computed_options[:hidden]
       computed_options[:hidden] = false
+      section.cached_draw_image = nil
       view.setNeedsDisplay
     end
 
     def update_with_options(new_options = {})
       options.merge!(new_options)
       compute_options!
+      section.cached_draw_image = nil
       view.setNeedsDisplay
     end
 

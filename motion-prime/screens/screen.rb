@@ -20,6 +20,8 @@ module MotionPrime
 
     extend HasClassFactory
 
+    define_callbacks :render
+
     def render
     end
 
@@ -30,7 +32,7 @@ module MotionPrime
     def will_appear
       unless @on_appear_happened
         setup view, styles: default_styles do
-          render
+          run_callbacks :render { render }
         end
       end
       @on_appear_happened = true

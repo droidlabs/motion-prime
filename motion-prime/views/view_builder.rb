@@ -32,10 +32,11 @@ module MotionPrime
         {
           'UIView' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
           'UILabel' => Proc.new {|klass, options|
-            if options.slice(:line_spacing, :underline, :fragment_color).any?
+            if options.slice(:line_spacing, :line_height, :underline, :fragment_color).any?
               options[:attributed_text_options] = {
                 text: options.delete(:text),
                 line_spacing: options.delete(:line_spacing),
+                line_height: options.delete(:line_height),
                 fragment_color: options.delete(:fragment_color),
                 underline: options.delete(:underline)
               }

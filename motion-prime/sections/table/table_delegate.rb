@@ -22,6 +22,16 @@ module MotionPrime
     end
 
     def tableView(table, cellForRowAtIndexPath: index)
+      curCallTime = Time.now.to_f
+      curCallOffset = table.contentOffset.y
+      if @prevCallTime
+        timeDelta = curCallTime - @prevCallTime
+        offsetDelta = curCallOffset - @prevCallOffset
+        @deceleration_speed = offsetDelta/timeDelta
+      end
+      @prevCallTime = curCallTime
+      @prevCallOffset = curCallOffset
+
       table_section.cell_for_index(table, index)
     end
 

@@ -69,21 +69,25 @@ module MotionPrime
       BW::Reactor.schedule do
         manager = SDWebImageManager.sharedManager
         @screen_ref = screen.strong_ref
+        @section_ref = section.strong_ref
         manager.downloadWithURL(computed_options[:url],
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|
-            if image
-              self.image_data = image
-
-              section.cached_draw_image = nil
-              if section.respond_to?(:cell_name)
-                section.pending_display!
-              else
-                self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
-              end
+            if !image || screen.retainCount == 1 || section.retainCount == 1
+              @screen_ref = @section_ref = nil
+              return
             end
-            @screen_ref = nil
+
+            self.image_data = image
+
+            section.cached_draw_image = nil
+            if section.respond_to?(:cell_name)
+              section.pending_display!
+            else
+              self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
+            end
+            @screen_ref = @section_ref = nil
           }
         )
       end

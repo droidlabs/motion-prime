@@ -30,6 +30,7 @@ module MotionPrime
         line_break_mode_name: line_break_mode_name,
         line_break_mode: line_break_mode,
         line_spacing: options[:line_spacing],
+        line_height: options[:line_height],
         underline: options[:underline],
         top_left_corner: top_left_corner,
         inner_rect: inner_rect
@@ -49,7 +50,7 @@ module MotionPrime
 
       UIGraphicsPushContext(context)
       options = draw_options
-      if options[:is_html] || options[:line_spacing] || options[:underline]
+      if options[:is_html] || options[:line_spacing] || options[:line_height] || options[:underline]
         prepared_text = options[:is_html] ? html_string(options) : attributed_string(options)
 
         if options[:inner_rect]
