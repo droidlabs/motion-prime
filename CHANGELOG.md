@@ -1,3 +1,6 @@
+=== 0.5.2
+* fix bugs.
+
 === 0.5.1
 * configurations and style definitions runs in correct order.
 
