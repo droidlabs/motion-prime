@@ -109,7 +109,9 @@ module MotionPrime
               options.delete(:gradient)
             end
 
-            klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
+            obj = klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
+            obj.initialize_content
+            obj
           },
           'MPViewWithSection' => Proc.new{|klass, options|
             if options[:has_drawn_content]
@@ -133,11 +135,13 @@ module MotionPrime
           },
           'UIWebView' => Proc.new{|klass, options|
             web_view = klass.alloc.initWithFrame CGRectZero
+            if delegate = options.delete(:delegate)
+              web_view.delegate = delegate
+            end
             if url = options.delete(:url)
               request = NSURLRequest.requestWithURL url.nsurl
-              web_view.loadRequest request
+              web_view.loadRequest(request)
             end
-            web_view.delegate = options.delete(:delegate)
             web_view
           }
         }

@@ -14,6 +14,10 @@ module MotionPrime
       env
     end
 
+    def ==(obj)
+      env == obj
+    end
+
     def method_missing(name, *args, &block)
       if /(.+)?$/.match(name.to_s)
         env == name.to_s.gsub('?', '')
