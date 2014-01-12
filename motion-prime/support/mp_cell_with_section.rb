@@ -1,11 +1,16 @@
 class MPCellWithSection < UITableViewCell
   attr_reader :section
-  attr_accessor :scroll_view, :content_view 
+  attr_accessor :scroll_view, :content_view
+
+  def setNeedsDisplay
+    content_view.try(:setNeedsDisplay)
+    super
+  end
 
   def setSection(section)
-    # @section = section.try(:weak_ref)
+    @section = section.try(:weak_ref)
     # @section_name = section.try(:name) # TODO: remove after debug
-    self.content_view.setSection(section)
+    self.content_view.setSection(@section)
   end
 
   # def drawRect(rect)
