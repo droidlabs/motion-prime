@@ -77,7 +77,7 @@ module MotionPrime
         self.window.makeKeyAndVisible
         screen
       end
-    
+
       def open_content_screen(screen, options = {})
         open_root_screen(screen)
       end

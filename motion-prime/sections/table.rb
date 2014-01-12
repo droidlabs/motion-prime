@@ -371,7 +371,6 @@ module MotionPrime
         BW::Reactor.schedule(@preloader_queue.count) do |queue_id|
           @preloader_queue[queue_id] = :in_progress
           @strong_refs[queue_id] = screen.strong_ref
-
           result = load_count.times do |offset|
             if @preloader_queue[queue_id] == :cancelled
               @strong_refs[queue_id] = nil

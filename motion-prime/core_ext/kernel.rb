@@ -16,10 +16,11 @@ class Kernel
   end
 
   def clear_instance_variables(options = {})
-    ivars = self.instance_variables.clone
-    ivars.each do |ivar|
+    ivars = self.instance_variables
+    clear_block = proc { |ivar|
       next if Array.wrap(options[:except]).include?(ivar[1..-1])
       self.instance_variable_set(ivar, nil)
-    end
+    }.weak!
+    ivars.each(&clear_block)
   end
 end

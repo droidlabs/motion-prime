@@ -30,19 +30,19 @@ module MotionPrime
     end
 
     def will_appear
-      unless @on_appear_happened
+      @on_appear_happened ||= {}
+      unless @on_appear_happened[view.object_id]
         setup view, styles: default_styles do
           run_callbacks :render { render }
         end
       end
-      @on_appear_happened = true
+      @on_appear_happened[view.object_id] = true
     end
 
     def dealloc
-      pp self.object_id, 'Deallocating Screen', self.retainCount
+      pp 'Deallocating Screen', self.object_id, self.to_s
       # FIXME: calling instance_eval in title method (_base_screen_mixin) instance variables need to be cleared manually
-      # clear_instance_variables cause BAD_ACCESS errors too
-      @main_section = nil
+      clear_instance_variables
       super
     end
 
