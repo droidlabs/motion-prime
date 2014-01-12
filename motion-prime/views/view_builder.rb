@@ -109,7 +109,9 @@ module MotionPrime
               options.delete(:gradient)
             end
 
-            klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
+            obj = klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
+            obj.initialize_content
+            obj
           },
           'MPViewWithSection' => Proc.new{|klass, options|
             if options[:has_drawn_content]
