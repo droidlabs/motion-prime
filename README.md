@@ -4,6 +4,11 @@
 
 MotionPrime is yet another framework written on RubyMotion for creating really fast iOS applications.
 
+## Why MotionPrime?
+
+* Performance. MotionPrime designed to improve creating and scrolling performance of table views.
+* Simplicity. Creating first MotionPrime application is as simple as creating new RubyOnRails application.
+
 ## Getting Started
 
 ### 1. Install MotionPrime:
@@ -65,6 +70,10 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 * [ECSlidingViewController 2 integration](https://github.com/droidlabs/prime_sliding_menu) (Sidebar)
 * [RESideMenu integration](https://github.com/droidlabs/prime_reside_menu) (Sidebar)
 
+## Samples
+
+* [Simple to-do app](https://github.com/droidlabs/prime_sample_todo)
+
 ## Contributing
 
 1. Fork it
@@ -73,7 +82,7 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## Documentation
+## Help with Documentation
 
 We are using [Docco](http://jashkenas.github.io/docco/) to generate documentation.
 
