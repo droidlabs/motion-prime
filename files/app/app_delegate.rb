@@ -1,7 +1,7 @@
 class AppDelegate < Prime::BaseAppDelegate
   def on_load(app, options)
     setup_navigation_styles
-    open_screen HomeScreen.new, sidebar: SidebarScreen.new(navigation: false)
+    open_screen :home, sidebar: true
   end
 
   def setup_navigation_styles
