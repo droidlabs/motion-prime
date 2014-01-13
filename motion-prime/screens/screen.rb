@@ -47,7 +47,7 @@ module MotionPrime
     end
 
     def visible?
-      self.isViewLoaded && view.window
+      # self.isViewLoaded && view.window.present? # FIXME
     end
   end
 end

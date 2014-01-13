@@ -37,7 +37,7 @@ module MotionPrime
     end
 
     def dealloc
-      pp 'deallocating section', self.name, self.elements.try(:count), self.to_s, self.object_id
+      # pp 'deallocating section', self.name, self.elements.try(:count), self.to_s, self.object_id
       NSNotificationCenter.defaultCenter.removeObserver self # unbinding events created in bind_keyboard_events
       super
     end

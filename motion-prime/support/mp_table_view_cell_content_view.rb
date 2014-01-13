@@ -6,6 +6,7 @@ class MPTableViewCellContentView < UITableViewCellContentView
   end
 
   def drawRect(rect)
-    section.draw_in(rect)
+    section.try(:draw_in, rect)
+    super
   end
 end
