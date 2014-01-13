@@ -82,7 +82,7 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## Documentation
+## Help with Documentation
 
 We are using [Docco](http://jashkenas.github.io/docco/) to generate documentation.
 
