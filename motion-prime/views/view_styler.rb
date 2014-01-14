@@ -114,6 +114,7 @@ module MotionPrime
 
         attributedString = NSAttributedString.alloc.initWithString(value[:text], attributes: attributes)
         if underline_range = value[:underline]
+          underline_range = [0, value[:text].length] if underline_range === true
           attributedString = NSMutableAttributedString.alloc.initWithAttributedString(attributedString)
           attributedString.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
         end
