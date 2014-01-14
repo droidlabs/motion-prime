@@ -1,7 +1,9 @@
 module MotionPrime
   class Env
     def env
-      ENV['PRIME_ENV'] || ENV['RUBYMOTION_ENV'] || 
+      (defined?(NSBundle) && NSBundle.mainBundle.objectForInfoDictionaryKey('PRIME_ENV')) || 
+      ENV['PRIME_ENV'] || 
+      ENV['RUBYMOTION_ENV'] || 
       (defined?(RUBYMOTION_ENV) && RUBYMOTION_ENV) || 
       'development'
     end
