@@ -3,6 +3,7 @@ require 'motion-support'
 require 'sugarcube-common'
 require 'bubble-wrap'
 require 'bubble-wrap/reactor'
+require 'rm-digest'
 require File.expand_path('../../motion-prime/env.rb', __FILE__)
 require File.expand_path('../../motion-prime/prime.rb', __FILE__)
 

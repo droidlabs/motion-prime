@@ -5,35 +5,38 @@ class ApiClient
     self.access_token = options[:access_token]
   end
 
-  def parse_json(text)
-    Prime::JSON.parse(text)
-  rescue
-    NSLog("Can't parse json: #{text}")
-    false
-  end
-
   def request_params(data)
     files = data.delete(:files)
-    params = {payload: data, no_redirect: true, format: :form_data}
+    params = {
+      payload: data, 
+      no_redirect: !config.allow_redirect, 
+      format: config.request_format
+    }
     if files.present?
       params.merge!(files: files)
     end
-    if MotionPrime::Config.api.http_auth.present?
-      params.merge!(credentials: MotionPrime::Config.api.http_auth.to_hash)
+    if config.http_auth?
+      params.merge!(credentials: config.http_auth.to_hash)
+    end
+    if config.sign_request?
+      signature = RmDigest::MD5.hexdigest(
+        config.signature_secret + data.keys.map(&:to_s).sort.join
+      )
+      params[:payload].merge!(sign: signature)
     end
     params
   end
 
-  def authenticate(username, password, &block)
-    data = {
+  def authenticate(username = nil, password = nil, data = nil, &block)
+    data ||= {
       grant_type: "password",
       username: username,
       password: password,
-      client_id: MotionPrime::Config.api.client_id,
-      client_secret: MotionPrime::Config.api.client_secret
+      client_id: config.client_id,
+      client_secret: config.client_secret
     }
     use_callback = block_given?
-    BW::HTTP.post("#{MotionPrime::Config.api.base}/oauth/token", request_params(data)) do |response|
+    BW::HTTP.post("#{config.base}#{config.auth_path}", request_params(data)) do |response|
       access_token = if response.ok?
         json = parse_json(response.body)
         json[:access_token]
@@ -48,16 +51,16 @@ class ApiClient
 
   def api_url(path)
     return path if path =~ /^http(s)?:\/\//
-    "#{MotionPrime::Config.api.base}/api/v1#{path}"
+    "#{config.base}#{config.api_namespace}#{path}"
   end
 
   def page_url(path)
-    "#{MotionPrime::Config.api.base}/#{path}"
+    "#{config.base}#{path}"
   end
 
   def resource_url(path)
     # return if path.blank?
-    base = Prime::Config.api.resource_base.present? ? Prime::Config.api.resource_base : Prime::Config.api.base
+    base = config.resource_base? ? config.resource_base : config.base
     "#{base}#{path}"
   end
 
@@ -84,4 +87,16 @@ class ApiClient
   def delete(path, params = {}, &block)
     request(:delete, path, params, &block)
   end
+
+  private
+    def parse_json(text)
+      Prime::JSON.parse(text)
+    rescue
+      NSLog("Can't parse json: #{text}")
+      false
+    end
+
+    def config
+      MotionPrime::Config.api_client
+    end
 end
