@@ -6,6 +6,7 @@ class ApiClient
   end
 
   def request_params(data)
+    data = data.clone
     files = data.delete(:files)
     params = {
       payload: data, 
@@ -64,31 +65,57 @@ class ApiClient
     "#{base}#{path}"
   end
 
-  def request(method, path, params = {}, &block)
+  def request(method, path, params = {}, options = {}, &block)
     params.merge!(access_token: access_token)
+    use_callback = block_given?
     BW::HTTP.send method, api_url(path), request_params(params) do |response|
-      json = parse_json(response.body.to_s)
-      block.call(json, response.status_code)
+      if !response.ok? && options[:allow_queue]
+        add_to_queue(method: method, path: path, params: params)
+      else
+        json = parse_json(response.body.to_s)
+        block.call(json, response.status_code) if use_callback
+        process_queue
+      end
     end
   end
 
-  def get(path, params = {}, &block)
-    request(:get, path, params, &block)
+  def process_queue
+    queue = user_defaults['api_client_queue']
+    user_defaults['api_client_queue'] = []
+    queue.each do |item|
+      request(item[:method], item[:path], item[:params].clone.symbolize_keys)
+    end
   end
 
-  def put(path, params = {}, &block)
-    request(:put, path, params, &block)
+  def add_to_queue(item)
+    queue = user_defaults['api_client_queue'].clone || []
+    queue.push(item)
+    user_defaults['api_client_queue'] = queue
   end
 
-  def post(path, params = {}, &block)
-    request(:post, path, params, &block)
+  def get(path, params = {}, options = {}, &block)
+    request(:get, path, params, options, &block)
   end
 
-  def delete(path, params = {}, &block)
-    request(:delete, path, params, &block)
+  def put(path, params = {}, options = {}, &block)
+    request(:put, path, params, options, &block)
+  end
+
+  def post(path, params = {}, options = {}, &block)
+    options[:allow_queue] = true unless options.has_key?(:allow_queue)
+    request(:post, path, params, options, &block)
+  end
+
+  def delete(path, params = {}, options = {}, &block)
+    options[:allow_queue] = true unless options.has_key?(:allow_queue)
+    request(:delete, path, params, options, &block)
   end
 
   private
+    def user_defaults
+      @user_defaults ||= NSUserDefaults.standardUserDefaults
+    end
+
     def parse_json(text)
       Prime::JSON.parse(text)
     rescue
