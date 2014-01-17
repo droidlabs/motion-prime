@@ -10,9 +10,15 @@ MotionPrime::Config.configure do |config|
     colors.base = 0x424242
     colors.error = 0xef471f
   end
-  config.api do |api|
+  config.api_client do |api|
     api.base = "http://example.com"
     api.client_id = ""
     api.client_secret = ""
+    api.signature_secret = ""
+    api.sign_request = false
+    api.auth_path = '/oauth/token'
+    api.api_namespace = '/api'
+    api.request_format = :form_data
+    api.allow_redirect = false
   end
 end

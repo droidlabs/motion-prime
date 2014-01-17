@@ -1,3 +1,6 @@
+=== 0.5.3
+* add selected image support for tab bar items.
+
 === 0.5.2
 * fix bugs.
 
