@@ -9,8 +9,8 @@ class ApiClient
     data = data.clone
     files = data.delete(:files)
     params = {
-      payload: data, 
-      no_redirect: !config.allow_redirect, 
+      payload: data,
+      no_redirect: !config.allow_redirect,
       format: config.request_format
     }
     if files.present?
@@ -82,7 +82,7 @@ class ApiClient
   def process_queue
     queue = user_defaults['api_client_queue']
     user_defaults['api_client_queue'] = []
-    queue.each do |item|
+    Array.wrap(queue).each do |item|
       request(item[:method], item[:path], item[:params].clone.symbolize_keys)
     end
   end
