@@ -7,13 +7,13 @@ module MotionPrime
 
     def draw_options
       options = computed_options
-      text = (options[:html] || options[:text]).to_s.gsub(/^[\n\r]+/, '')
+      text = (options[:html] || options[:text]).to_s.gsub(/\A[\n\r]+/, '')
       text_color = (options[:text_color] || :black).uicolor
       font = (options[:font] || :system).uifont
 
-      text_alignment_name = options.has_key?(:text_alignment) ? options[:text_alignment] : :left
+      text_alignment_name = options.fetch(:text_alignment, :left)
       text_alignment = text_alignment_name.uitextalignment
-      line_break_mode_name = options.has_key?(:line_break_mode) ? options[:line_break_mode] : :tail_truncation
+      line_break_mode_name = options.fetch(:line_break_mode, :tail_truncation)
       line_break_mode = line_break_mode_name.uilinebreakmode
 
       top_left_corner = CGPointMake(computed_inner_left, computed_inner_top)

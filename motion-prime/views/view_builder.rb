@@ -35,6 +35,7 @@ module MotionPrime
             if options.slice(:line_spacing, :line_height, :underline, :fragment_color).any?
               options[:attributed_text_options] = {
                 text: options.delete(:text),
+                html: options.delete(:html),
                 line_spacing: options.delete(:line_spacing),
                 line_height: options.delete(:line_height),
                 fragment_color: options.delete(:fragment_color),

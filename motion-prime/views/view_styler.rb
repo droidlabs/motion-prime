@@ -106,25 +106,40 @@ module MotionPrime
         view.mask = mask_layer
       elsif key == 'attributed_text_options'
         attributes = {}
-        if line_spacing = value[:line_spacing] || line_height = value[:line_height]
-          paragrahStyle = NSMutableParagraphStyle.alloc.init
-          line_height ? paragrahStyle.setMinimumLineHeight(line_height) : paragrahStyle.setLineSpacing(line_spacing)
-          attributes[NSParagraphStyleAttributeName] = paragrahStyle
-        end
+        if value[:html] # TODO: use _text_mixin
+          styles = []
+          styles << "color: #{options[:text_color].hex};" if options[:text_color]
+          styles << "line-height: #{options[:line_height] || (options[:line_spacing].to_f + options[:font].pointSize)}px;"
+          styles << "font-family: '#{options[:font].familyName}';"
+          styles << "font-size: #{options[:font].pointSize}px;"
 
-        attributedString = NSAttributedString.alloc.initWithString(value[:text], attributes: attributes)
-        if underline_range = value[:underline]
-          attributedString = NSMutableAttributedString.alloc.initWithAttributedString(attributedString)
-          attributedString.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
-        end
-        if fragment_color = value[:fragment_color]
-          attributedString = NSMutableAttributedString.alloc.initWithAttributedString(attributedString)
-          attributedString.addAttributes({NSForegroundColorAttributeName => fragment_color[:color].uicolor}, range: fragment_color[:range])
-        end
-        if view.is_a?(UIButton)
-          view.setAttributedTitle attributedString, forState: UIControlStateNormal
+          html_options = {
+            NSDocumentTypeDocumentAttribute => NSHTMLTextDocumentType,
+            NSCharacterEncodingDocumentAttribute => NSNumber.numberWithInt(NSUTF8StringEncoding)
+          }
+          text = "#{value[:html]}<style>* { #{styles.join} }</style>"
+          view.attributedText = NSAttributedString.alloc.initWithData(text.dataUsingEncoding(NSUTF8StringEncoding), options: html_options, documentAttributes: nil, error: nil)
         else
-          view.attributedText = attributedString
+          if line_spacing = value[:line_spacing] || line_height = value[:line_height]
+            paragrahStyle = NSMutableParagraphStyle.alloc.init
+            line_height ? paragrahStyle.setMinimumLineHeight(line_height) : paragrahStyle.setLineSpacing(line_spacing)
+            attributes[NSParagraphStyleAttributeName] = paragrahStyle
+          end
+
+          attributedString = NSAttributedString.alloc.initWithString(value[:text].to_s, attributes: attributes)
+          if underline_range = value[:underline]
+            attributedString = NSMutableAttributedString.alloc.initWithAttributedString(attributedString)
+            attributedString.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
+          end
+          if fragment_color = value[:fragment_color]
+            attributedString = NSMutableAttributedString.alloc.initWithAttributedString(attributedString)
+            attributedString.addAttributes({NSForegroundColorAttributeName => fragment_color[:color].uicolor}, range: fragment_color[:range])
+          end
+          if view.is_a?(UIButton)
+            view.setAttributedTitle attributedString, forState: UIControlStateNormal
+          else
+            view.attributedText = attributedString
+          end
         end
       elsif key == 'gradient'
         gradient = prepare_gradient(value)

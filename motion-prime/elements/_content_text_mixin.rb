@@ -54,9 +54,11 @@ module MotionPrime
       def get_content_rect(width)
         raise "Please set element width for content size calculation" unless width
 
-        content_attributed_text.boundingRectWithSize(
-          [width, Float::MAX], options: NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading | NSStringDrawingTruncatesLastVisibleLine, context:nil
-        )
+        options = NSStringDrawingUsesLineFragmentOrigin
+        if is_a?(TextViewElement)
+          options |= NSStringDrawingUsesFontLeading | NSStringDrawingTruncatesLastVisibleLine
+        end
+        content_attributed_text.boundingRectWithSize([width, Float::MAX], options: options, context:nil)
       end
 
       def button_content_text

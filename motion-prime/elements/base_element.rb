@@ -164,6 +164,7 @@ module MotionPrime
         end.flatten
         @styles += custom_styles
         # puts @view_class.to_s + @styles.inspect, ''
+        @styles
       end
 
     class << self

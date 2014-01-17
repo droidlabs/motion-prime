@@ -51,6 +51,12 @@ module MotionPrime
       @preloader_queue[-1] = :cancelled if @preloader_queue.present?
     end
 
+    def reload_cell(section)
+      section.elements.values.each(&:compute_options!)
+      section.cached_draw_image = nil
+      # TODO: reset date stamps, reload row
+    end
+
     def table_styles
       type = self.is_a?(FormSection) ? :base_form : :base_table
 

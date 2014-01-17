@@ -30,6 +30,7 @@ module MotionPrime
     end
 
     def will_appear
+      @visible = true
       @on_appear_happened ||= {}
       unless @on_appear_happened[view.object_id]
         setup view, styles: default_styles do
@@ -37,6 +38,10 @@ module MotionPrime
         end
       end
       @on_appear_happened[view.object_id] = true
+    end
+
+    def will_disappear
+      @visible = false
     end
 
     def dealloc
@@ -47,7 +52,7 @@ module MotionPrime
     end
 
     def visible?
-      # self.isViewLoaded && view.window.present? # FIXME
+      @visible
     end
   end
 end

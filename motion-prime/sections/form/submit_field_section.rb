@@ -3,6 +3,8 @@ module MotionPrime
     element :submit, type: :button do
       {title: options[:title]}
     end
+    element :error_message, type: :error_message, text: proc { all_errors.join("\n") if observing_errors? }
+
     after_render :bind_submit
 
     def bind_submit

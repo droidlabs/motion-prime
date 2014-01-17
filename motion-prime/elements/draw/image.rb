@@ -68,14 +68,13 @@ module MotionPrime
       return if image_data || !computed_options[:url]
       BW::Reactor.schedule do
         manager = SDWebImageManager.sharedManager
-        @screen_ref = screen.strong_ref
-        @section_ref = section.strong_ref
+        @strong_refs = section.strong_references
         manager.downloadWithURL(computed_options[:url],
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|
             if !image || screen.retainCount == 1 || section.retainCount == 1
-              @screen_ref = @section_ref = nil
+              @strong_refs = nil
               return
             end
 
@@ -87,7 +86,7 @@ module MotionPrime
             else
               self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
             end
-            @screen_ref = @section_ref = nil
+            @strong_refs = nil
           }
         )
       end

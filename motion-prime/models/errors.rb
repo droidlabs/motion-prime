@@ -34,6 +34,7 @@ module MotionPrime
     end
 
     def add(key, error)
+      initialize_for_key(key)
       send(unique_key(key)) << error
     end
 

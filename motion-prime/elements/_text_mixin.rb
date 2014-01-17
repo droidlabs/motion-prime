@@ -13,7 +13,7 @@ module MotionPrime
     def html_string(options)
       styles = []
       styles << "color: #{options[:text_color].hex};" if options[:text_color]
-      styles << "line-height: #{options.fetch(:line_height, options[:line_spacing].to_f + options[:font].pointSize)}px;"
+      styles << "line-height: #{options[:line_height] || (options[:line_spacing].to_f + options[:font].pointSize)}px;"
       styles << "font-family: '#{options[:font].familyName}';"
       styles << "font-size: #{options[:font].pointSize}px;"
       styles << "text-align: #{options[:text_alignment_name]};" if options[:text_alignment_name]

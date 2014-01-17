@@ -254,7 +254,7 @@ module MotionPrime
         # we should clone options to prevent overriding options
         # in next element with same name in another class
         options = opts.clone
-        options[:type] ||= (options[:text] || options[:attributed_text_options]) ? :label : :view
+        options[:type] ||= (options[:text] || options[:html] || options[:attributed_text_options]) ? :label : :view
         options.merge(screen: screen, section: self.weak_ref)
       end
 

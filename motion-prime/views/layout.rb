@@ -2,7 +2,8 @@
 motion_require '../support/mp_cell_with_section'
 module MotionPrime
   module Layout
-    def add_view(klass, options = {}, &block)    
+    def add_view(klass, options = {}, &block)
+      options = options.clone
       bounds = if view_stack.empty?
         options.delete(:parent_view).try(:bounds) || CGRectZero
       else

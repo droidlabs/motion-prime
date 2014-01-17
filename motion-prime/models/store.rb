@@ -11,7 +11,7 @@ module MotionPrime
       when :persistent, :file
         path ||= begin
           documents_path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)[0]
-          documents_path + "/nano.db"
+          documents_path + "/nano_#{Prime.env.to_s}.db"
         end
         store = NSFNanoStore.createAndOpenStoreWithType(NSFPersistentStoreType, path: path, error: error_ptr)
       else
