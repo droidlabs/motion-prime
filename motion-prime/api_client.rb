@@ -69,7 +69,7 @@ class ApiClient
     params.merge!(access_token: access_token)
     use_callback = block_given?
     BW::HTTP.send method, api_url(path), request_params(params) do |response|
-      if !response.ok? && options[:allow_queue]
+      if !response.ok? && options[:allow_queue] && config.allow_queue?
         add_to_queue(method: method, path: path, params: params)
       else
         json = parse_json(response.body.to_s)

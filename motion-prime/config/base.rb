@@ -20,5 +20,6 @@ MotionPrime::Config.configure do |config|
     api.api_namespace = '/api'
     api.request_format = :form_data
     api.allow_redirect = false
+    api.allow_queue = false
   end
 end
