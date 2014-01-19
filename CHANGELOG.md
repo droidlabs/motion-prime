@@ -1,4 +1,7 @@
 === 0.5.3
+* bug fixes.
+* improve form fields.
+* memory fixes.
 * add selected image support for tab bar items.
 
 === 0.5.2
