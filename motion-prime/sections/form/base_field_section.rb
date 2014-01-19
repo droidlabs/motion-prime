@@ -24,6 +24,14 @@ module MotionPrime
       end
     end
 
+    def update_height(height)
+      container_options[:height] = height
+      field_index = form.field_indexes[name]
+      index = field_index.split('_').map(&:to_i)
+      path = NSIndexPath.indexPathForRow(index.last, inSection: index.first)
+      form.table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
+    end
+
     def on_section_render
       @status_for_updated = :rendered
       form.register_elements_from_section(self)

@@ -4,14 +4,21 @@ module MotionPrime
     element :label, type: :label do
       options[:label] || {}
     end
-    element :date_picker, type: :date_picker
+    element :date_picker, type: :date_picker do
+      options[:input] || {}
+    end
 
     after_render :bind_date_picker
 
     def bind_date_picker
       picker = view(:date_picker)
       picker.setDelegate form
-      picker.setDate NSDate.date, animated: true
+      unless picker.date
+        picker.setDate NSDate.date, animated: true
+      end
+      picker.on :change do
+        form.send(options[:action]) if options[:action]
+      end
     end
   end
 end
