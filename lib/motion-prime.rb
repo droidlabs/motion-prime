@@ -17,7 +17,6 @@ Motion::Project::App.setup do |app|
     pod 'SDWebImage'
     pod 'SVPullToRefresh'
     pod 'MBAlertView'
-    pod 'SDSegmentedControl'
-    pod 'MBProgressHUD'
+    pod 'MBProgressHUD', '~> 0.8'
   end
 end

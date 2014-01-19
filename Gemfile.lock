@@ -8,6 +8,7 @@ PATH
       motion-cocoapods
       motion-require
       motion-support
+      rm-digest
       sugarcube
 
 GEM
@@ -53,6 +54,7 @@ GEM
     nap (0.6.0)
     open4 (1.3.0)
     rake (10.1.0)
+    rm-digest (0.0.2)
     sugarcube (1.3.7)
     xcodeproj (0.14.1)
       activesupport (~> 3.0)
