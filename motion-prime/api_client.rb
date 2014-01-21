@@ -38,14 +38,13 @@ class ApiClient
     }
     use_callback = block_given?
     BW::HTTP.post("#{config.base}#{config.auth_path}", request_params(data)) do |response|
-      access_token = if response.ok?
-        json = parse_json(response.body)
-        json[:access_token]
+      auth_data = if response.ok?
+        parse_json(response.body)
       else
         false
       end
-      self.access_token = access_token
-      block.call(access_token) if use_callback
+      self.access_token = auth_data[:access_token] if auth_data
+      block.call(auth_data, response.status_code) if use_callback
     end
     true
   end
@@ -112,8 +111,9 @@ class ApiClient
   end
 
   private
-    def user_defaults
-      @user_defaults ||= NSUserDefaults.standardUserDefaults
+
+    def config
+      MotionPrime::Config.api_client
     end
 
     def parse_json(text)
@@ -122,8 +122,8 @@ class ApiClient
       NSLog("Can't parse json: #{text}")
       false
     end
-
-    def config
-      MotionPrime::Config.api_client
+  
+    def user_defaults
+      @user_defaults ||= NSUserDefaults.standardUserDefaults
     end
 end

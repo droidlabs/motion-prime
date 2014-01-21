@@ -1,3 +1,6 @@
+=== 0.6.0
+* ApiClient#authenticate returns full data and status instead of only token.
+
 === 0.5.3
 * bug fixes.
 * improve form fields.
