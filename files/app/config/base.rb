@@ -6,7 +6,7 @@ Prime::Config.configure do |config|
 
   config.font.name = "Ubuntu"
 
-  config.api do |api|
+  config.api_client do |api|
     api.base = "http://example.com"
     api.client_id = ""
     api.client_secret = ""

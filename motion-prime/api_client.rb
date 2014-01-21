@@ -44,7 +44,7 @@ class ApiClient
         false
       end
       self.access_token = auth_data[:access_token] if auth_data
-      block.call(access_token, auth_data, response.status_code) if use_callback
+      block.call(auth_data, response.status_code) if use_callback
     end
     true
   end

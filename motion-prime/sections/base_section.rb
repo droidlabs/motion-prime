@@ -247,6 +247,7 @@ module MotionPrime
       end
 
       def keyboard_close_bindings_options
+        return {} unless self.class.keyboard_close_bindings.present?
         @keyboard_close_bindings_options ||= normalize_options(self.class.keyboard_close_bindings.clone, self)
       end
 
