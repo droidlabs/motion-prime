@@ -61,7 +61,7 @@ module MotionPrime
       type = self.is_a?(FormSection) ? :base_form : :base_table
 
       base_styles = [type]
-      base_styles << :"#{type}_with_sections" #unless flat_data?
+      base_styles << :"#{type}_with_sections" unless flat_data?
       item_styles = [name.to_sym]
       item_styles << @styles if @styles.present?
       {common: base_styles, specific: item_styles}

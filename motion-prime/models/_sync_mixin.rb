@@ -88,7 +88,7 @@ module MotionPrime
       post_data[model_name] = filtered_attributes
 
       method = options[:method] || (persisted? ? :put : :post)
-      api_client.send(method, url, post_data) do |data, status_code|
+      api_client.send(method, url, post_data, options) do |data, status_code|
         save_response = !options.has_key?(:save_response) || options[:save_response]
         if save_response && status_code.to_s =~ /20\d/ && data.is_a?(Hash)
           set_attributes_from_response(data)

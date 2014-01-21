@@ -45,7 +45,8 @@ class ApiClient
         false
       end
       self.access_token = access_token
-      block.call(access_token) if use_callback
+      json = parse_json(response.body.to_s)
+      block.call(access_token, json, response.status_code) if use_callback
     end
     true
   end
