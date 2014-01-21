@@ -12,12 +12,13 @@ module MotionPrime
     def prepare_table_data
       @form = @options[:table]
       if options[:observe_errors]
-        @errors_observer_options = normalize_options(options.delete(:observe_errors), self)
+        # Do not remove clone() after delete()
+        @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, self)
       end
     end
 
     # Returns true if we should render element in current state
-    # 
+    #
     # @param element_name [Symbol] name of element in field
     # @return [Boolean]
     def render_element?(element_name)
@@ -31,7 +32,7 @@ module MotionPrime
     end
 
     # Changes height of the field (the cell in table) with animation.
-    # 
+    #
     # @param height [Integet] new height of field
     # @return [MotionPrime::BaseFieldSection]
     def update_height(height)
