@@ -22,4 +22,5 @@ MotionPrime::Config.configure do |config|
     api.allow_redirect = false
     api.allow_queue = false
   end
+  config.prime.cell_section.mixins = [Prime::CellSectionMixin]
 end

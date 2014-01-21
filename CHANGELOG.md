@@ -1,5 +1,6 @@
-=== 0.6.0
+=== 0.5.4
 * ApiClient#authenticate returns full data and status instead of only token.
+* Made table cell more configuralble.
 
 === 0.5.3
 * bug fixes.

@@ -284,7 +284,9 @@ module MotionPrime
         if cell.is_a?(Array)
           cell.each { |c| prepare_table_cells(c) }
         else
-          cell.class.send(:include, CellSectionMixin)
+          Prime::Config.prime.cell_section.mixins.each do |mixin|
+            cell.class.send(:include, mixin)
+          end
           cell.screen ||= screen
           cell.table ||= WeakRef.new(self) if cell.respond_to?(:table=)
         end
