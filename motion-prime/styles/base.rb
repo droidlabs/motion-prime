@@ -19,8 +19,8 @@ MotionPrime::Styles.define :base do
   # basic form styles
   # ----------
   style :form,
-    width: 260,
-    left: 30,
+    width: 280,
+    left: 20,
     top: 0,
     right: 30,
     bottom: 0,

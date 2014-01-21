@@ -37,7 +37,8 @@ MotionPrime::Styles.define :base_form do
   style :field_error_message,
     top: nil,
     bottom: 0,
-    width: 300,
+    width: 280,
+    left: 0,
     line_break_mode: :word_wrap,
     number_of_lines: 0,
     size_to_fit: true,
@@ -79,6 +80,7 @@ MotionPrime::Styles.define :base_form do
     title_label: {
       font: proc { MotionPrime::Config.font.name.uifont(16) }
     }
+
   style :select_field_image,
     image: "images/forms/select_arrow.png",
     top: 40,
@@ -89,7 +91,11 @@ MotionPrime::Styles.define :base_form do
   style :with_sections_field_switch,
     right: 20
 
-  style :with_sections_field_text_field, :with_sections_field_text_view, :with_sections_field_password_field, :with_sections_field_label, :with_sections_field_button,
+  style :with_sections_field_text_field, 
+    :with_sections_field_text_view, 
+    :with_sections_field_password_field, 
+    :with_sections_field_label, 
+    :with_sections_field_button,
     left: 20,
     right: 20
 

@@ -38,15 +38,13 @@ class ApiClient
     }
     use_callback = block_given?
     BW::HTTP.post("#{config.base}#{config.auth_path}", request_params(data)) do |response|
-      access_token = if response.ok?
-        json = parse_json(response.body)
-        json[:access_token]
+      auth_data = if response.ok?
+        parse_json(response.body.to_s)
       else
         false
       end
-      self.access_token = access_token
-      json = parse_json(response.body.to_s)
-      block.call(access_token, json, response.status_code) if use_callback
+      self.access_token = auth_data[:access_token] if auth_data
+      block.call(access_token, auth_data, response.status_code) if use_callback
     end
     true
   end
@@ -70,7 +68,7 @@ class ApiClient
     params.merge!(access_token: access_token)
     use_callback = block_given?
     BW::HTTP.send method, api_url(path), request_params(params) do |response|
-      if !response.ok? && options[:allow_queue]
+      if !response.ok? && options[:allow_queue] && config.allow_queue?
         add_to_queue(method: method, path: path, params: params)
       else
         json = parse_json(response.body.to_s)
@@ -113,8 +111,9 @@ class ApiClient
   end
 
   private
-    def user_defaults
-      @user_defaults ||= NSUserDefaults.standardUserDefaults
+
+    def config
+      MotionPrime::Config.api_client
     end
 
     def parse_json(text)
@@ -124,7 +123,7 @@ class ApiClient
       false
     end
 
-    def config
-      MotionPrime::Config.api_client
+    def user_defaults
+      @user_defaults ||= NSUserDefaults.standardUserDefaults
     end
 end

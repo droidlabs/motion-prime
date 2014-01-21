@@ -1,4 +1,11 @@
+=== 0.5.4
+* ApiClient#authenticate returns full data and status instead of only token.
+* Made table cell more configuralble.
+
 === 0.5.3
+* bug fixes.
+* improve form fields.
+* memory fixes.
 * add selected image support for tab bar items.
 
 === 0.5.2

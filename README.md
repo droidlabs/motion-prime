@@ -43,8 +43,8 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
     title 'Main screen'
 
     def render
-      @main_section = MyProfileSection.new(model: User.first)
-      @main_section.render(to: self)
+      @main_section = MyProfileSection.new(screen: self)
+      @main_section.render
     end
   end
 
@@ -69,6 +69,7 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 
 * [ECSlidingViewController 2 integration](https://github.com/droidlabs/prime_sliding_menu) (Sidebar)
 * [RESideMenu integration](https://github.com/droidlabs/prime_reside_menu) (Sidebar)
+* [Sliding actions support](https://github.com/droidlabs/prime_sliding_action)
 
 ## Samples
 

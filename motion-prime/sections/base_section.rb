@@ -110,7 +110,7 @@ module MotionPrime
       end
     end
 
-    def add_element(key, options)
+    def add_element(key, options = {})
       return unless render_element?(key)
       opts = options.clone
       index = opts.delete(:at)

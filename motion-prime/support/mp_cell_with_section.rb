@@ -4,6 +4,7 @@ class MPCellWithSection < UITableViewCell
 
   def setNeedsDisplay
     content_view.try(:setNeedsDisplay)
+
     super
   end
 
@@ -20,6 +21,7 @@ class MPCellWithSection < UITableViewCell
     self.content_view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight
     self.content_view.top = 0
     self.content_view.left = 0
+
     self.scroll_view.addSubview(content_view)
   end
 end

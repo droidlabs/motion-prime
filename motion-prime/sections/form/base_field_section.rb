@@ -11,9 +11,15 @@ module MotionPrime
 
     def prepare_table_data
       @form = @options[:table]
-      @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, self) if options[:observe_errors]
+      if options[:observe_errors]
+        @errors_observer_options = normalize_options(options.delete(:observe_errors), self)
+      end
     end
 
+    # Returns true if we should render element in current state
+    # 
+    # @param element_name [Symbol] name of element in field
+    # @return [Boolean]
     def render_element?(element_name)
       case element_name.to_sym
       when :error_message
@@ -22,6 +28,19 @@ module MotionPrime
         not @options[:label] === false
       else true
       end
+    end
+
+    # Changes height of the field (the cell in table) with animation.
+    # 
+    # @param height [Integet] new height of field
+    # @return [MotionPrime::BaseFieldSection]
+    def update_height(height)
+      container_options[:height] = height
+      field_index = form.field_indexes[name]
+      index = field_index.split('_').map(&:to_i)
+      path = NSIndexPath.indexPathForRow(index.last, inSection: index.first)
+      form.table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
+      self
     end
 
     def on_section_render
@@ -57,7 +76,7 @@ module MotionPrime
 
     def focus(begin_editing = true)
       # scroll to cell
-      path = form.table_view.indexPathForCell cell
+      path = form.table_view.indexPathForCell(cell)
       form.table_view.scrollToRowAtIndexPath path,
         atScrollPosition: UITableViewScrollPositionTop, animated: true
       # focus on text field
