@@ -5,6 +5,7 @@
 * add more and better default options for fields
 
 === 0.7.0
+* bug: if mp label do not have text and was set as hidden, it should unhide after setting text
 * add cleanup for section events
 * add dsl for push notifications
 * add some extensions/middleware system, at least for networking.

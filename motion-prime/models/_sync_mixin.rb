@@ -156,28 +156,33 @@ module MotionPrime
         data = options[:sync_key] && response ? response[options[:sync_key]] : response
         model_class = key.classify.constantize
         if data
-          # Update/Create existing records
-          data.each do |attributes|
-            model = old_collection.detect{ |model| model.id == attributes[:id]}
-            unless model
-              model = model_class.new
-              self.send(:"#{key}_bag") << model
-            end
-            model.fetch_with_attributes(attributes)
-            model.save if sync_options[:save] && model.has_changed?
-          end
-          old_collection.each do |old_model|
-            model = data.detect{ |model| model[:id] == old_model.id}
-            unless model
-              old_model.delete
-            end
-          end
+          fetch_has_many_with_attributes(key, data, sync_options)
           save if sync_options[:save]
           NSLog("SYNC: finished sync for #{key} in #{self.class_name_without_kvo}")
           block.call(data, status_code, response) if use_callback
         else
           NSLog("SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}")
           block.call(data, status_code, response) if use_callback
+        end
+      end
+    end
+
+    def fetch_has_many_with_attributes(key, data, sync_options = {})
+      old_collection = self.send(key)
+      # Update/Create existing records
+      data.each do |attributes|
+        model = old_collection.detect{ |model| model.id == attributes[:id]}
+        unless model
+          model = model_class.new
+          self.send(:"#{key}_bag") << model
+        end
+        model.fetch_with_attributes(attributes)
+        model.save if sync_options[:save] && model.has_changed?
+      end
+      old_collection.each do |old_model|
+        model = data.detect{ |model| model[:id] == old_model.id}
+        unless model
+          old_model.delete
         end
       end
     end

@@ -40,7 +40,7 @@ module MotionPrime
       field_index = form.field_indexes[name]
       index = field_index.split('_').map(&:to_i)
       path = NSIndexPath.indexPathForRow(index.last, inSection: index.first)
-      form.table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
+      form.table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationFade)
       self
     end
 
