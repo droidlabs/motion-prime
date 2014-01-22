@@ -38,8 +38,9 @@ class ApiClient
     }
     use_callback = block_given?
     BW::HTTP.post("#{config.base}#{config.auth_path}", request_params(data)) do |response|
-      auth_data = if response.ok?
-        parse_json(response.body.to_s)
+      body = response.body.to_s
+      auth_data = if body.present?
+        parse_json(body)
       else
         false
       end
