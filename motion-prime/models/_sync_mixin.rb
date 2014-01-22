@@ -154,7 +154,6 @@ module MotionPrime
       NSLog("SYNC: started sync for #{key} in #{self.class_name_without_kvo}")
       api_client.get normalize_sync_url(options[:sync_url]) do |response, status_code|
         data = options[:sync_key] && response ? response[options[:sync_key]] : response
-        model_class = key.classify.constantize
         if data
           fetch_has_many_with_attributes(key, data, sync_options)
           save if sync_options[:save]
@@ -169,6 +168,7 @@ module MotionPrime
 
     def fetch_has_many_with_attributes(key, data, sync_options = {})
       old_collection = self.send(key)
+      model_class = key.classify.constantize
       # Update/Create existing records
       data.each do |attributes|
         model = old_collection.detect{ |model| model.id == attributes[:id]}
