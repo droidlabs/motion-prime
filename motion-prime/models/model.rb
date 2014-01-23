@@ -10,6 +10,7 @@ motion_require './store_extension.rb'
 module MotionPrime
   class Model < NSFNanoObject
     include MotionPrime::HasAuthorization
+    include MotionPrime::HasNormalizer
     include MotionPrime::ModelBaseMixin
     include MotionPrime::ModelAssociationMixin
     include MotionPrime::ModelSyncMixin

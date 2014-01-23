@@ -221,7 +221,9 @@ module MotionPrime
       elements = Array.wrap(keyboard_close_bindings_options[:elements])
       views = Array.wrap(keyboard_close_bindings_options[:views])
 
-      elements.each { |el| views << el.view if %w[text_field text_view].include?(el.view_name) && el.view }
+      elements.each do |el| 
+        views << el.view if %w[text_field text_view].include?(el.view_name) && el.view
+      end
       views.compact.each(&:resignFirstResponder)
     end
 

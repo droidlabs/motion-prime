@@ -156,7 +156,6 @@ module MotionPrime
         data = options[:sync_key] && response ? response[options[:sync_key]] : response
         if data
           fetch_has_many_with_attributes(key, data, sync_options)
-          save if sync_options[:save]
           NSLog("SYNC: finished sync for #{key} in #{self.class_name_without_kvo}")
           block.call(data, status_code, response) if use_callback
         else
@@ -185,6 +184,7 @@ module MotionPrime
           old_model.delete
         end
       end
+      save if sync_options[:save]
     end
 
     def fetch_has_one(key, options = {}, &block)
@@ -240,7 +240,7 @@ module MotionPrime
     end
 
     def normalize_sync_url(url)
-      url.to_s.gsub(':id', id.to_s)
+      normalize_object(url).to_s.gsub(':id', id.to_s)
     end
 
     module ClassMethods

@@ -12,7 +12,7 @@ module MotionPrime
       end
     end
 
-    def normalize_object(object, receiver)
+    def normalize_object(object, receiver = nil)
       receiver ||= self
       if object.is_a?(Proc)
         receiver.send(:instance_exec, self, &object)
