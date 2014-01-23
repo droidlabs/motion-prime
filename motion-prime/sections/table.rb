@@ -250,7 +250,9 @@ module MotionPrime
     private
       def display_pending_cells
         table_view.visibleCells.each do |cell_view|
-          cell_view.section.display if cell_view.section.pending_display
+          if cell_view.section && cell_view.section.pending_display
+            cell_view.section.display
+          end
         end
       end
 
