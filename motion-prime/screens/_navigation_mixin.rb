@@ -21,6 +21,7 @@ module MotionPrime
       screen
     end
 
+    # @return scrren [Prime::Screen] screen appearing after close
     def close_screen(args = {})
       args[:animated] = args.has_key?(:animated) ? args[:animated] : true
       # Pop current view, maybe with arguments, if in navigation controller
@@ -85,22 +86,33 @@ module MotionPrime
         navigation_controller.pushViewController(screen, animated: args[:animated])
       end
 
+      # @return scrren [Prime::Screen] screen appearing after close
       def close_screen_modal(args = {})
         parent_screen.dismissViewControllerAnimated(args[:animated], completion: lambda {
           send_on_return(args)
         })
+        parent_screen
       end
 
+      # @return scrren [Prime::Screen] screen appearing after close
       def close_screen_navigational(args = {})
         if args[:to_screen] && args[:to_screen].is_a?(UIViewController)
           self.parent_screen = args[:to_screen]
 
           screens = self.navigation_controller.childViewControllers
           self.navigation_controller.popToViewController(args[:to_screen], animated: args[:animated])
+          result = self.parent_screen
         else
-          self.navigation_controller.popViewControllerAnimated(args[:animated])
+          if args[:to_root]
+            self.navigation_controller.popToRootViewControllerAnimated(args[:animated])
+            result = self.navigation_controller.childViewControllers.first
+          else
+            self.navigation_controller.popViewControllerAnimated(args[:animated])
+            result = self.navigation_controller.childViewControllers.last
+          end
         end
         send_on_return(args)
+        result
       end
 
       def wrap_in_navigation!
