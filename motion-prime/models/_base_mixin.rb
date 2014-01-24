@@ -167,13 +167,23 @@ module MotionPrime
         self.store.count(self)
       end
 
-      # Delete objects from store
+      # Delete objects from store by given options
+      #
+      # Examples:
+      #   User.delete(:name => "Bob") #
       #
       # @param [Array, MotionPrime::Model] objects to delete
-      # @return [Array] result
+      # @return [Array] removed item keys
       def delete(*args)
+        if args.blank?
+          raise "Using delete with no args is not allowed. Please use delete_all to delete all records"
+        end
         keys = find_keys(*args)
         self.store.delete_keys(keys)
+      end
+
+      def delete_all
+        self.store.clear
       end
 
       def default_sort(sort_options)

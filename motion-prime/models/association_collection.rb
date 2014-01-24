@@ -75,5 +75,9 @@ module MotionPrime
     def model_class
       @model_class ||= @association_name.classify.constantize
     end
+
+    def delete_all
+      all.each { |obj| obj.delete }
+    end
   end
 end

@@ -1,3 +1,6 @@
+=== 0.6.0
+* "delete" method is not supported for collection now.
+
 === 0.5.4
 * ApiClient#authenticate returns full data and status instead of only token.
 * Made table cell more configuralble.

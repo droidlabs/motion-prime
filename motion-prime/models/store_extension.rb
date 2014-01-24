@@ -57,14 +57,6 @@ class NSFNanoStore
     result
   end
 
-  # Delete objects by keys
-  def delete_keys(keys)
-    error_ptr = Pointer.new(:id)
-    success = self.store.removeObjectsWithKeysInArray(keys, error: error_ptr)
-    raise MotionPrime::StoreError, error_ptr[0].description if error_ptr[0]
-    result
-  end
-
 
   # delete all objects from store
   def clear
