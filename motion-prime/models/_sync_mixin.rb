@@ -135,7 +135,7 @@ module MotionPrime
     end
 
     def has_association?(key)
-      (self.class._associations || {})[key.to_sym]
+      !(self.class._associations || {})[key.to_sym].nil?
     end
 
     def fetch_association?(key)
@@ -155,7 +155,7 @@ module MotionPrime
     end
 
     def fetch_association_with_attributes(key, data, sync_options = {})
-      options = (self.class._associations || {})[key]
+      options = (self.class._associations || {})[key.to_sym]
       return unless options
       if options[:type] == :many
         fetch_has_many_with_attributes(key, data, sync_options)
