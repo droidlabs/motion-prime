@@ -104,11 +104,14 @@ module MotionPrime
     end
 
     # set attributes, using fetch
-    def fetch_with_attributes(attrs)
+    def fetch_with_attributes(attrs, sync_options = {})
       track_changed_attributes do
         attrs.each do |key, value|
           if respond_to?(:"fetch_#{key}")
             self.send(:"fetch_#{key}", value)
+          elsif has_association?(key) && (value.is_a?(Hash) || value.is_a?(Array))
+            save = sync_options[:save_associations]
+            fetch_association_with_attributes(key, value, save: save)
           elsif respond_to?(:"#{key}=")
             self.send(:"#{key}=", value)
           end
@@ -131,9 +134,13 @@ module MotionPrime
       end
     end
 
+    def has_association?(key)
+      (self.class._associations || {})[key.to_sym]
+    end
+
     def fetch_association?(key)
       options = self.class._associations[key]
-      return if options[:if] && !options[:if].to_proc.call(self)
+      return false if options[:if] && !options[:if].to_proc.call(self)
       options[:sync_url].present?
     end
 
@@ -144,6 +151,16 @@ module MotionPrime
         fetch_has_many(key, options, sync_options, &block)
       else
         fetch_has_one(key, options, sync_options, &block)
+      end
+    end
+
+    def fetch_association_with_attributes(key, data, sync_options = {})
+      options = (self.class._associations || {})[key]
+      return unless options
+      if options[:type] == :many
+        fetch_has_many_with_attributes(key, data, sync_options)
+      else
+        fetch_has_one_with_attributes(key, data, sync_options)
       end
     end
 
@@ -175,7 +192,7 @@ module MotionPrime
           model = model_class.new
           self.send(:"#{key}_bag") << model
         end
-        model.fetch_with_attributes(attributes)
+        model.fetch_with_attributes(attributes, save_associations: sync_options[:save])
         model.save if sync_options[:save] && model.has_changed?
       end
       old_collection.each do |old_model|
@@ -193,19 +210,23 @@ module MotionPrime
       api_client.get normalize_sync_url(options[:sync_url]) do |response, status_code|
         data = options.has_key?(:sync_key) ? response[options[:sync_key]] : response
         if data.present?
-          model = self.send(key)
-          unless model
-            model = key.classify.constantize.new
-            self.send(:"#{key}_bag") << model
-          end
-          model.fetch_with_attributes(data)
-          model.save if sync_options[:save]
+          fetch_has_one_with_attributes(key, data, save_associations: sync_options[:save])
           block.call(data, status_code, response) if use_callback
         else
           NSLog("SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}")
           block.call(data, status_code, response) if use_callback
         end
       end
+    end
+
+    def fetch_has_one_with_attributes(key, data, sync_options = {})
+      model = self.send(key)
+      unless model
+        model = key.classify.constantize.new
+        self.send(:"#{key}_bag") << model
+      end
+      model.fetch_with_attributes(data)
+      model.save if sync_options[:save]
     end
 
     def filtered_updatable_attributes(options = {})
