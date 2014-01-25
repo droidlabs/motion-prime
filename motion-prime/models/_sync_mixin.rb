@@ -14,6 +14,12 @@ module MotionPrime
       normalize_sync_url(url)
     end
 
+    def association_sync_url(key, options)
+      url = options[:sync_url]
+      url = url.call(self) if url.is_a?(Proc)
+      normalize_sync_url(url)
+    end
+
     # destroy on server and delete on local
     def destroy(&block)
       use_callback = block_given?
@@ -110,8 +116,8 @@ module MotionPrime
           if respond_to?(:"fetch_#{key}")
             self.send(:"fetch_#{key}", value)
           elsif has_association?(key) && (value.is_a?(Hash) || value.is_a?(Array))
-            save = sync_options[:save_associations]
-            fetch_association_with_attributes(key, value, save: save)
+            should_save = sync_options[:save_associations]
+            fetch_association_with_attributes(key, value, save: should_save)
           elsif respond_to?(:"#{key}=")
             self.send(:"#{key}=", value)
           end
@@ -141,7 +147,7 @@ module MotionPrime
     def fetch_association?(key)
       options = self.class._associations[key]
       return false if options[:if] && !options[:if].to_proc.call(self)
-      options[:sync_url].present?
+      association_sync_url(key, options).present?
     end
 
     def fetch_association(key, sync_options = {}, &block)
@@ -165,11 +171,9 @@ module MotionPrime
     end
 
     def fetch_has_many(key, options = {}, sync_options = {}, &block)
-      old_collection = self.send(key)
-
       use_callback = block_given?
       NSLog("SYNC: started sync for #{key} in #{self.class_name_without_kvo}")
-      api_client.get normalize_sync_url(options[:sync_url]) do |response, status_code|
+      api_client.get association_sync_url(key, options) do |response, status_code|
         data = options[:sync_key] && response ? response[options[:sync_key]] : response
         if data
           fetch_has_many_with_attributes(key, data, sync_options)
@@ -207,7 +211,7 @@ module MotionPrime
     def fetch_has_one(key, options = {}, &block)
       use_callback = block_given?
       NSLog("SYNC: started sync for #{key} in #{self.class_name_without_kvo}")
-      api_client.get normalize_sync_url(options[:sync_url]) do |response, status_code|
+      api_client.get association_sync_url(key, options) do |response, status_code|
         data = options.has_key?(:sync_key) ? response[options[:sync_key]] : response
         if data.present?
           fetch_has_one_with_attributes(key, data, save_associations: sync_options[:save])
