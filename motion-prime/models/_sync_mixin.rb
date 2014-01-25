@@ -189,6 +189,7 @@ module MotionPrime
     def fetch_has_many_with_attributes(key, data, sync_options = {})
       old_collection = self.send(key)
       model_class = key.classify.constantize
+      self.class.store.save_interval = data.count
       # Update/Create existing records
       data.each do |attributes|
         model = old_collection.detect{ |model| model.id == attributes[:id]}
@@ -206,6 +207,7 @@ module MotionPrime
         end
       end
       save if sync_options[:save]
+      self.class.store.save_interval = 1
     end
 
     def fetch_has_one(key, options = {}, &block)
