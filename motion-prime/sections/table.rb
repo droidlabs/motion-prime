@@ -243,6 +243,9 @@ module MotionPrime
       display_pending_cells
     end
 
+    def scroll_view_did_scroll(scroll)
+    end
+
     def scroll_view_did_end_dragging(scroll, willDecelerate: will_decelerate)
       display_pending_cells unless @decelerating = will_decelerate
     end

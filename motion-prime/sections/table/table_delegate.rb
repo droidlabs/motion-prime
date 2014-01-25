@@ -55,6 +55,10 @@ module MotionPrime
       table_section.height_for_header_in_section(table, section)
     end
 
+    def scrollViewDidScroll(scroll)
+      table_section.scroll_view_did_scroll(scroll)
+    end
+
     def scrollViewWillBeginDragging(scroll)
       table_section.scroll_view_will_begin_dragging(scroll)
     end

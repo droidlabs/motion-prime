@@ -1,13 +1,13 @@
 module MotionPrime
   class TabBarController < UITabBarController
-    def self.new(screens)
+    def self.new(screens, global_options = {})
       controller = alloc.init
 
       view_controllers = []
 
       screens.each_with_index do |options, index|
         if options.is_a?(Hash)
-          screen = init_screen_with_options(options, tag: index)
+          screen = init_screen_with_options(global_options.merge(options), tag: index)
         else
           screen = options
           screen.tabBarItem.tag = index
@@ -33,10 +33,9 @@ module MotionPrime
 
     protected
       def self.init_screen_with_options(options, tag: tag)
-        screen, image, title = options[:screen], options[:image], options[:title]
-        screen = Screen.create_with_options(screen).try(:weak_ref)
+        screen, image, title = options.delete(:screen), options.delete(:image), options.delete(:title)
+        screen = Screen.create_with_options(screen, true, options).try(:weak_ref)
         title ||= screen.title
-
         image = extract_image_from_options(options, with_key: :image)
         screen.tabBarItem = UITabBarItem.alloc.initWithTitle title, image: image, tag: tag
 

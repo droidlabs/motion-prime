@@ -62,7 +62,7 @@ module MotionPrime
 
     private
       def prepare_screen_for_open(screen, options = {})
-        screen = create_tab_bar(screen) if screen.is_a?(Array)
+        screen = create_tab_bar(screen, options) if screen.is_a?(Array)
         Screen.create_with_options(screen, true, options)
       end
 
@@ -82,8 +82,8 @@ module MotionPrime
         open_root_screen(screen)
       end
 
-      def create_tab_bar(screens)
-        MotionPrime::TabBarController.new(screens)
+      def create_tab_bar(screens, options = {})
+        MotionPrime::TabBarController.new(screens, options)
       end
   end
 end
