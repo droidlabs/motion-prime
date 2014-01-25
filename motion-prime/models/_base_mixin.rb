@@ -6,6 +6,9 @@ module MotionPrime
       base.class_attribute :default_sort_options
     end
 
+    # Saves model to default store.
+    #
+    # @return [Prime::Model] model
     def save
       raise StoreError, 'No store provided' unless self.store
       error_ptr = Pointer.new(:id)
@@ -14,6 +17,9 @@ module MotionPrime
       self
     end
 
+    # Removed model from default store.
+    #
+    # @return [Prime::Model] model
     def delete
       raise StoreError, 'No store provided' unless self.store
 
@@ -27,6 +33,13 @@ module MotionPrime
       super || self.class.store
     end
 
+    # Assigns attributes to model 
+    #
+    # @params attributes [Hash] attributes to be assigned
+    # @params options [Hash] options
+    # @option options [Boolean] :skip_nil_values Do not assign nil values
+    # @option options [Boolean] :validate_attribute_presence Raise error if model do not have attribute
+    # @return [Hash] attributes
     def assign_attributes(new_attributes, options = {})
       attributes = new_attributes.symbolize_keys
       attributes.each do |k, v|
@@ -40,30 +53,54 @@ module MotionPrime
       end
     end
 
+    # Assigns attribute to model 
+    #
+    # @params name [String, Symbol] attribute name
+    # @params value [Object] attribute value
+    # @return [Object] assigned object if has been assigned
     def assign_attribute(name, value)
       self.send("#{name}=", value) if has_attribute?(name)
     end
 
+    # Check if model has attribute
+    #
+    # @params name [String, Symbol] attribute name
+    # @return [Boolean] result
     def has_attribute?(name)
       respond_to?("#{name}=")
     end
 
+    # Hash of all attributes in model
+    #
+    # @return [Hash] key-value hash
     def attributes_hash
       self.info.to_hash.symbolize_keys
     end
 
+    # Checks if model has been saved in server (have an ID)
+    #
+    # @return [Boolean] true if model is not saved
     def new_record?
       id.blank?
     end
 
+    # Checks if model has been saved in server (have an ID)
+    #
+    # @return [Boolean] true if model is saved
     def persisted?
       !new_record?
     end
 
+    # Model class name
+    #
+    # @return [String] model class name
     def model_name
       self.class_name_without_kvo.underscore
     end
 
+    # Returns json-formatted representation of model
+    #
+    # @return [String] model representation
     def inspect
       "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + MotionPrime::JSON.generate(info)
     end
@@ -71,9 +108,12 @@ module MotionPrime
     module ClassMethods
       # Initialize a new object
       #
-      # Examples:
+      # @example:
       #   User.new(name: "Bob", age: 10)
       #
+      # @params attributes [Hash] attributes beeing assigned to model
+      # @params options [Hash] options
+      # @option options [Boolean] :validate_attribute_presence Raise error if model do not have attribute
       # @return MotionPrime::Model unsaved model
       def new(data = {}, options = {})
         data.keys.each do |key|
@@ -90,20 +130,22 @@ module MotionPrime
         object
       end
 
-      # Initialize a new object and save it
+      # Initialize a new object and save it to store
       #
-      # Examples:
+      # @example:
       #   User.create(name: "Bob", age: 10)
       #
-      # @return MotionPrime::Model saved model
+      # @params attributes [Hash] attributes beeing assigned to model
+      # @return model [MotionPrime::Model] saved model
       def create(data = {})
         object = self.new(data)
         object.save
+        object
       end
 
       # Define model attribute
       #
-      # Examples:
+      # @example:
       #   class User < MotionPrime::Model
       #     attribute :name
       #     attribute :age
@@ -134,46 +176,45 @@ module MotionPrime
         end
       end
 
-      # Set or return all model attribute names
+      # Set and/or return all model attribute names
       #
-      # @return Array array of attribute names
+      # @return array [Array<Symbol>] array of attribute names
       def attributes(*attrs)
         if attrs.size > 0
           attrs.each{|attr| attribute attr}
-        else
-          @attributes ||= []
         end
+        @attributes ||= []
       end
 
       # Return store associated with model class, or shared store by default
       #
-      # @return MotionPrime::Store store
+      # @return store [MotionPrime::Store] store
       def store
         @store ||= MotionPrime::Store.shared_store
       end
 
       # Define store associated with model class
       #
-      # @param MotionPrime::Store store
-      # @return MotionPrime::Store store
+      # @param store [MotionPrime::Store] store
+      # @return store [MotionPrime::Store] store
       def store=(store)
         @store = store
       end
 
       # Count of models
       #
-      # @return Fixnum count
+      # @return count [Fixnum] count of objects with this Prime::Model
       def count
         self.store.count(self)
       end
 
       # Delete objects from store by given options
       #
-      # Examples:
+      # @example:
       #   User.delete(:name => "Bob") #
       #
-      # @param [Array, MotionPrime::Model] objects to delete
-      # @return [Array] removed item keys
+      # @param options [Hash, Array, MotionPrime::Model] objects to delete. See find_keys for list of options.
+      # @return keys [Array] removed item keys
       def delete(*args)
         if args.blank?
           raise "Using delete with no args is not allowed. Please use delete_all to delete all records"
@@ -182,6 +223,12 @@ module MotionPrime
         self.store.delete_keys(keys)
       end
 
+      # Delete all objects with this Prime::Model
+      #
+      # @example:
+      #   User.delete_all
+      #
+      # @return keys [Array] removed item keys
       def delete_all
         self.store.delete_keys(find_keys)
       end

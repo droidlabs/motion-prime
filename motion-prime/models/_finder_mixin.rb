@@ -7,7 +7,7 @@ module MotionPrime
       
       # Find all models
       #
-      # @return [Array] array of models
+      # @return items [Array] array of models
       def all(*args)
         return [] unless self.store
 
@@ -26,23 +26,27 @@ module MotionPrime
       end
 
       # Find last model model by default order
+      #
+      # @return item [Prime::Model] result
       def last
         all.last
       end
 
       # Find first model model by default order
+      #
+      # @return item [Prime::Model] result
       def first
         all.first
       end
 
       # Find model by criteria
       #
-      # Examples:
+      # @example:
       #   User.find(:name, NSFEqualTo, "Bob") # => [<User#1>]
       #   User.find(:name => "Bob") # => [<User#1>]
       #   User.find(:name => {NSFEqualTo => "Bob"}) # => [<User#1>]
       #
-      # @return [Array] array of models
+      # @return items [Array] array of models
       def find(*arg)
         if arg[0].is_a?(Hash)
           # hash style
@@ -88,12 +92,12 @@ module MotionPrime
 
       # Find model keys by criteria
       #
-      # Examples:
+      # @example:
       #   User.find_keys(:name, NSFEqualTo, "Bob") # => ["1"]
       #   User.find_keys(:name => "Bob") # => ["1"]
       #   User.find_keys(:name => {NSFEqualTo => "Bob"}) # => ["1"]
       #
-      # @return [Array] array of models
+      # @return keys [Array] array of models
       def find_keys(*arg)
         if arg[0].is_a?(Hash)
           # hash style
@@ -140,7 +144,7 @@ module MotionPrime
 
       # Find a model by key
       #
-      # Examples:
+      # @example:
       #   User.find_by_key(my_key)
       #
       # @return [Object, Nil] an object or nil (if not found)

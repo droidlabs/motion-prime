@@ -8,19 +8,30 @@ module MotionPrime
       base.class_attribute :_associations
     end
 
+    # Get normalized sync url of this Prime::Model
+    # 
+    # @param method [Symbol] http method 
+    # @return url [String] url to use in model sync
     def sync_url(method = :get, options = {})
       url = self.class.sync_url
       url = url.call(method, self, options) if url.is_a?(Proc)
       normalize_sync_url(url)
     end
 
+    # Get normalized sync url of associated Prime::Model
+    # 
+    # @param key [Symbol] association name
+    # @return url [String] url to use in model association sync
     def association_sync_url(key, options)
       url = options[:sync_url]
       url = url.call(self) if url.is_a?(Proc)
       normalize_sync_url(url)
     end
 
-    # destroy on server and delete on local
+    # Destroy model on server and delete on local
+    # 
+    # @param block [Proc] block to be executed after destroy
+    # @return self[Prime::Model] deleted model.
     def destroy(&block)
       use_callback = block_given?
       api_client.delete(sync_url(:delete)) do
@@ -29,12 +40,19 @@ module MotionPrime
       delete
     end
 
-    # fetch from server and save on local
+    # Fetch model from server and save on local
+    # 
     def fetch!(options = {}, &block)
       fetch(options.merge(save: true), &block)
     end
 
-    # fetch from server
+    # Fetch model from server
+    # 
+    # @param options [Hash] fetch options
+    # @option options [Symbol] :method Http method to calculate url, `:get` by default
+    # @option options [Boolean] :associations Also fetch associations
+    # @option options [Boolean] :save Save model after fetch
+    # @param block [Proc] block to be executed after fetch
     def fetch(options = {}, &block)
       use_callback = block_given?
       method = options[:method] || :get
@@ -54,12 +72,16 @@ module MotionPrime
       end if will_fetch_associations
     end
 
-    # update on server and save response on local
+    # Update on server and save response on local
+    #
     def update!(options = {}, &block)
       update(options.merge(save_response: true), &block)
     end
 
-    # update on server
+    # Update on server
+    # @param options [Hash] update options
+    # @option options [Symbol] :method Http method to calculate url, by default  `:post` for new record and `:put` for existing
+    # @param block [Proc] block to be executed after update
     def update(options = {}, &block)
       use_callback = block_given?
 
@@ -72,7 +94,10 @@ module MotionPrime
       end if will_update_model
     end
 
-    # fetch from server using url
+    # Fetch model from server using url
+    #
+    # @param url [String] url to fetch
+    # @param block [Proc] block to be executed after fetch
     def fetch_with_url(url, &block)
       use_callback = block_given?
       api_client.get(url) do |data, status_code|
@@ -81,7 +106,10 @@ module MotionPrime
       end
     end
 
-    # update on server using url
+    # Update on server using url
+    #
+    # @param url [String] url to update
+    # @param block [Proc] block to be executed after update
     def update_with_url(url, options = {}, &block)
       use_callback = block_given?
       filtered_attributes = filtered_updatable_attributes(options)
@@ -109,14 +137,31 @@ module MotionPrime
       fetch_with_attributes(data)
     end
 
-    # set attributes, using fetch
-    def fetch_with_attributes(attrs, sync_options = {})
+    # Assign model attributes, using fetch. Differenct between assign_attributes and fetch_with_attributes is
+    # ths you can create method named fetch_:attribute and it will be used to assign attribute only on fetch.
+    #
+    # @example
+    #   class User < Prime::Model
+    #     attribute :created_at
+    #     def fetch_created_at(value)
+    #       self.created_at = Date.parse(value)
+    #     end
+    #   end
+    #   user = User.new
+    #   user.fetch_with_attributes(created_at: '2007-03-01T13:00:00Z')
+    #   user.created_at # => 2007-03-01 13:00:00 UTC
+    #
+    # @params attributes [Hash] attributes to be assigned
+    # @params options [Hash] options
+    # @option options [Boolean] :save_associations Save included to hash associations
+    # @return model [Prime::Model] the model
+    def fetch_with_attributes(attrs, options = {})
       track_changed_attributes do
         attrs.each do |key, value|
           if respond_to?(:"fetch_#{key}")
             self.send(:"fetch_#{key}", value)
           elsif has_association?(key) && (value.is_a?(Hash) || value.is_a?(Array))
-            should_save = sync_options[:save_associations]
+            should_save = options[:save_associations]
             fetch_association_with_attributes(key, value, save: should_save)
           elsif respond_to?(:"#{key}=")
             self.send(:"#{key}=", value)
@@ -189,7 +234,7 @@ module MotionPrime
     def fetch_has_many_with_attributes(key, data, sync_options = {})
       old_collection = self.send(key)
       model_class = key.classify.constantize
-      self.class.store.save_interval = data.count
+      self.store.save_interval = data.count
       # Update/Create existing records
       data.each do |attributes|
         model = old_collection.detect{ |model| model.id == attributes[:id]}
@@ -207,7 +252,7 @@ module MotionPrime
         end
       end
       save if sync_options[:save]
-      self.class.store.save_interval = 1
+      self.store.save_interval = 1
     end
 
     def fetch_has_one(key, options = {}, &block)

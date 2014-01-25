@@ -29,7 +29,7 @@ module MotionPrime
 
     # Add an object or array of objects to bag
     #
-    # @return self
+    # @return self [Prime::Model]
     def add(object_or_array)
       error_ptr = Pointer.new(:id)
       prepared = prepare_for_store(object_or_array)
@@ -59,8 +59,8 @@ module MotionPrime
 
     # Remove object from bag with key
     #
-    # @param [String] key - a key or array of keys
-    # @return self
+    # @param key [String] a key or array of keys
+    # @return self [Prime::Model]
     def delete_key(key)
       if key.is_a?(Array)
         self.removeObjectsWithKeysInArray(key)
@@ -72,7 +72,7 @@ module MotionPrime
 
     # Remove an object or array of objects from bag
     #
-    # @param [String] object_or_array
+    # @param items [Array<Prime::Model>, Prime::Model] model or array of models to remove
     # @return self
     def delete(object_or_array)
       error_ptr = Pointer.new(:id)
