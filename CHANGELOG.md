@@ -1,5 +1,6 @@
-=== 0.6.0
-* "delete" method is not supported for collection now.
+=== 0.5.5
+* improve association fetch speed and login.
+* "delete" method is not supported for model collection now, use delete_all.
 
 === 0.5.4
 * ApiClient#authenticate returns full data and status instead of only token.
