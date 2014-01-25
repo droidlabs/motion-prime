@@ -183,7 +183,7 @@ module MotionPrime
       end
 
       def delete_all
-        self.store.clear
+        self.store.delete_keys(find_keys)
       end
 
       def default_sort(sort_options)
