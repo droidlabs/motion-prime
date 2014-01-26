@@ -1,5 +1,5 @@
 === 0.5.6
-* sending "title" in options is deprecated now. use dsl with Proc for that.
+* sending "title" in options is not supported now. use dsl with Proc for that.
 * ability to open root screen with animation.
 * refactored screens navigation.
 

@@ -46,23 +46,60 @@ module MotionPrime
       options[:container_bounds] or raise "You must pass `container bounds` option to prerender base section"
     end
 
+    # Get computed container options
+    #
+    # @return options [Hash] computed options
     def container_options
       compute_container_options! unless @container_options
       @container_options
     end
 
+    # Get computed container height
+    # 
+    # @example
+    #   class MySection < Prime::Section
+    #     container height: proc { element(:title).content_outer_height }
+    #     element :title, text: 'Hello world'
+    #   end
+    #   section = MySection.new
+    #   section.container_height # => 46
+    # 
+    # @return height [Float, Integer] computed height
     def container_height
       container_options[:height] || DEFAULT_CONTENT_HEIGHT
     end
 
+    # Get section default name, based on class name
+    # 
+    # @example
+    #   class ProfileSection < Prime::Section
+    #   end
+    # 
+    #   section = ProfileSection.new
+    #   section.default_name # => 'profile'
+    #   section.name         # => 'profile'
+    # 
+    #   another_section = ProfileSection.new(name: 'another')
+    #   another_section.default_name # => 'profile'
+    #   another_section.name         # => 'another'
+    # 
+    # @return name [String] section default name
     def default_name
       self.class_name_without_kvo.demodulize.underscore.gsub(/\_section$/, '')
     end
 
+    # Get section elements options, where the key is element name.
+    # 
+    # @return options [Hash] elements options
     def elements_options
       self.class.elements_options || {}
     end
 
+    # Create elements if they are not created yet.
+    # This will not cause rendering elements, 
+    # they will be rendered immediately after that or rendered async later, based on type of section.
+    # 
+    # @return result [Boolean] true if has been loaded by this thread.
     def load_section
       return if @section_loaded
       if @section_loading
@@ -75,11 +112,16 @@ module MotionPrime
       return @section_loaded = true
     end
 
+    # Force load section
+    # 
+    # @return result [Boolean] true if has been loaded by this thread.
     def load_section!
       @section_loaded = false
       load_section
     end
 
+    # Force reload section, will also re-render elements.
+    # For table view cells will also reload it's table data.
     def reload_section
       self.elements_to_render.values.map(&:view).flatten.each do |view|
         view.removeFromSuperview if view
