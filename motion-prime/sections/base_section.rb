@@ -158,18 +158,22 @@ module MotionPrime
       index = opts.delete(:at)
       options = build_options_for_element(opts)
       options[:name] ||= key
-
-      type = options.delete(:type)
-      element = if self.is_a?(BaseFieldSection) || self.is_a?(BaseHeaderSection) || options.delete(:as).to_s == 'view'
-        MotionPrime::BaseElement.factory(type, options)
-      else
-        MotionPrime::DrawElement.factory(type, options) || MotionPrime::BaseElement.factory(type, options)
-      end
-
+      element = build_element(options)
       if index
-        self.elements = Hash[self.elements.to_a.insert index, [key, element]]
+        new_elements_array = elements.to_a.insert(index, [key, element])
+        self.elements = Hash[new_elements_array]
       else
         self.elements[key] = element
+      end
+    end
+
+    def build_element(options = {})
+      type = options.delete(:type)
+      render_as = options.delete(:as).to_s
+      if self.is_a?(BaseFieldSection) || self.is_a?(BaseHeaderSection) || render_as == 'view'
+        BaseElement.factory(type, options)
+      else
+        DrawElement.factory(type, options) || BaseElement.factory(type, options)
       end
     end
 
@@ -282,8 +286,11 @@ module MotionPrime
 
     protected
       def bind_keyboard_close
-        return unless self.class.keyboard_close_bindings.present?
-        Array.wrap(self.instance_eval(&self.class.keyboard_close_bindings[:tap_on])).each do |view|
+        bindings = self.class.keyboard_close_bindings
+        return unless bindings.present?
+        bind_proc = bindings[:tap_on]
+        bind_views = instance_eval(&bind_proc)
+        Array.wrap(bind_views).each do |view|
           gesture_recognizer = UITapGestureRecognizer.alloc.initWithTarget(self, action: :hide_keyboard)
           view.addGestureRecognizer(gesture_recognizer)
           gesture_recognizer.cancelsTouchesInView = false
