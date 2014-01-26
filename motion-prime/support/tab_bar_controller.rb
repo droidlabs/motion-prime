@@ -33,7 +33,7 @@ module MotionPrime
 
     protected
       def self.init_screen_with_options(options, tag: tag)
-        screen, image, title = options.delete(:screen), options.delete(:image), options.delete(:title)
+        screen, image, title = options.delete(:screen), options.delete(:title)
         screen = Screen.create_with_options(screen, true, options).try(:weak_ref)
         title ||= screen.title
         image = extract_image_from_options(options, with_key: :image)
@@ -45,7 +45,7 @@ module MotionPrime
       end
 
       def self.extract_image_from_options(options, with_key: key)
-        image = options[key]
+        image = options.delete(key)
         return unless image
         image = image.uiimage
         if options[:translucent] === false

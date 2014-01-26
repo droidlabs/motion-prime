@@ -316,6 +316,14 @@ module MotionPrime
     end
 
     module ClassMethods
+      def fetch_all_with_attributes(data)
+        data.map do |attrs|
+          item = self.new
+          item.fetch_with_attributes(attrs)
+          item
+        end
+      end
+
       def new(data = {}, options = {})
         model = super
         if fetch_attributes = options[:fetch_attributes]
