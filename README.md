@@ -75,6 +75,10 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 
 * [Simple to-do app](https://github.com/droidlabs/prime_sample_todo)
 
+## Documentation
+
+* [RubyDoc](http://rubydoc.info/gems/motion-prime/)
+
 ## Contributing
 
 1. Fork it
@@ -82,10 +86,6 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
-
-## Documentation
-
-* [RubyDoc](http://rubydoc.info/gems/motion-prime/)
 
 ## Help us with documentation
 
