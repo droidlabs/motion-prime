@@ -1,4 +1,4 @@
-# MotionPrime [![Build Status](https://travis-ci.org/droidlabs/motion-prime.png)](https://travis-ci.org/droidlabs/motion-prime) [![Code Climate](https://codeclimate.com/github/droidlabs/motion-prime.png)](https://codeclimate.com/github/droidlabs/motion-prime) [![Roadchange](http://roadchange.com/droidlabs/motion-prime/badge.png)](http://roadchange.com/droidlabs/motion-prime) 
+# MotionPrime [![Build Status](https://travis-ci.org/droidlabs/motion-prime.png)](https://travis-ci.org/droidlabs/motion-prime) [![Code Climate](https://codeclimate.com/github/droidlabs/motion-prime.png)](https://codeclimate.com/github/droidlabs/motion-prime) [![Roadchange](https://roadchange.com/droidlabs/motion-prime/badge.png)](https://roadchange.com/droidlabs/motion-prime) 
 
 ![Prime](https://s3-us-west-2.amazonaws.com/webmate/assets/prime.jpg)
 
