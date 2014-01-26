@@ -1,3 +1,8 @@
+=== 0.5.6
+* sending "title" in options is deprecated now. use dsl with Proc for that.
+* ability to open root screen with animation.
+* refactored screens navigation.
+
 === 0.5.5
 * improve association fetch speed and login.
 * "delete" method is not supported for model collection now, use delete_all.

@@ -42,9 +42,9 @@ module MotionPrime
     def open_screen(screen, options = {})
       screen = prepare_screen_for_open(screen, options)
       if options[:root] || !self.window
-        open_root_screen(screen)
+        open_root_screen(screen, options)
       else
-        open_content_screen(screen)
+        open_content_screen(screen, options)
       end
     end
 
@@ -62,7 +62,6 @@ module MotionPrime
 
     private
       def prepare_screen_for_open(screen, options = {})
-        screen = create_tab_bar(screen, options) if screen.is_a?(Array)
         Screen.create_with_options(screen, true, options)
       end
 
@@ -73,17 +72,21 @@ module MotionPrime
         screen = screen.main_controller if screen.respond_to?(:main_controller)
 
         self.window ||= UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-        self.window.rootViewController = screen
+        if options[:animated]
+          UIView.transitionWithView self.window,
+                  duration: 0.5,
+                   options: UIViewAnimationOptionTransitionFlipFromLeft,
+                animations: proc { self.window.rootViewController = screen },
+                completion: nil
+        else
+          self.window.rootViewController = screen
+        end
         self.window.makeKeyAndVisible
         screen
       end
 
       def open_content_screen(screen, options = {})
         open_root_screen(screen)
-      end
-
-      def create_tab_bar(screens, options = {})
-        MotionPrime::TabBarController.new(screens, options)
       end
   end
 end

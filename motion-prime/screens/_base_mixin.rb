@@ -71,11 +71,16 @@ module MotionPrime
         set_callback :render, :after, method_name
       end
       def create_with_options(screen, navigation = true, options = {})
+        screen = create_tab_bar(screen, options) if screen.is_a?(Array)
         if screen.is_a?(Symbol)
           options[:navigation] = navigation unless options.has_key?(:navigation)
           screen = class_factory("#{screen}_screen").new(options)
         end
         screen
+      end
+
+      def create_tab_bar(screens, options = {})
+        MotionPrime::TabBarController.new(screens, options)
       end
     end
   end

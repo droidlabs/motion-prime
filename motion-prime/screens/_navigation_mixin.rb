@@ -14,7 +14,7 @@ module MotionPrime
       screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
       args[:animated] = args.has_key?(:animated) ? args[:animated] : true
       if args[:modal] || !has_navigation?
-        open_screen_modal(screen, args)
+        open_screen_modal(screen, args.merge(modal: true))
       else
         open_screen_navigational(screen, args)
       end
@@ -66,19 +66,13 @@ module MotionPrime
 
     private
       def setup_screen_for_open(screen, args = {})
-        # Instantiate screen if given a class
-        screen = Screen.create_with_options(screen, true, args)
-
-        # Set parent, title & modal properties
+        screen = self.class.create_with_options(screen, true, args)
         screen.parent_screen = self if screen.respond_to?("parent_screen=")
-        screen.title = args[:title] if args[:title] && screen.respond_to?("title=")
-        screen.modal = args[:modal] if args[:modal] && screen.respond_to?("modal=")
-
-        # Return modified screen instance
         screen
       end
 
       def open_screen_modal(screen, args)
+        screen.modal = true if screen.respond_to?("modal=")
         self.presentModalViewController(screen.main_controller, animated: args[:animated])
       end
 
