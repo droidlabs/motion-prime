@@ -1,3 +1,8 @@
+=== 0.5.7
+* Improve store save.
+* Improve model dirty.
+* Support time attribute for model.
+
 === 0.5.6
 * sending "title" in options is not supported now. use dsl with Proc for that.
 * ability to open root screen with animation.

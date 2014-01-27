@@ -11,8 +11,14 @@ module MotionPrime
       old_attrs = self.info.clone
       result = block.call
       new_attrs = self.info.clone
+      new_bags = self._bags.clone
       new_attrs.each do |key, value|
-        if value != old_attrs[key] && ! @_changed_attributes.has_key?(key.to_s)
+        if value != old_attrs[key] && !@_changed_attributes.has_key?(key.to_s)
+          @_changed_attributes[key.to_s] = old_attrs[key]
+        end
+      end
+      new_bags.each do |key, value|
+        if value.key != old_attrs[key] && !@_changed_attributes.has_key?(key.to_s)
           @_changed_attributes[key.to_s] = old_attrs[key]
         end
       end

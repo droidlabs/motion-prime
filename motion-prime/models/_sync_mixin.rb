@@ -236,22 +236,24 @@ module MotionPrime
       model_class = key.classify.constantize
       self.store.save_interval = data.count
       # Update/Create existing records
-      data.each do |attributes|
-        model = old_collection.detect{ |model| model.id == attributes[:id]}
-        unless model
-          model = model_class.new
-          self.send(:"#{key}_bag") << model
+      track_changed_attributes do
+        data.each do |attributes|
+          model = old_collection.detect{ |model| model.id == attributes[:id]}
+          unless model
+            model = model_class.new
+            self.send(:"#{key}_bag") << model
+          end
+          model.fetch_with_attributes(attributes, save_associations: sync_options[:save])
+          model.save if sync_options[:save] && model.has_changed?
         end
-        model.fetch_with_attributes(attributes, save_associations: sync_options[:save])
-        model.save if sync_options[:save] && model.has_changed?
-      end
-      old_collection.each do |old_model|
-        model = data.detect{ |model| model[:id] == old_model.id}
-        unless model
-          old_model.delete
+        old_collection.each do |old_model|
+          model = data.detect{ |model| model[:id] == old_model.id}
+          unless model
+            old_model.delete
+          end
         end
       end
-      save if sync_options[:save]
+      save if sync_options[:save] && has_changed?
       self.store.save_interval = 1
     end
 
@@ -271,13 +273,16 @@ module MotionPrime
     end
 
     def fetch_has_one_with_attributes(key, data, sync_options = {})
-      model = self.send(key)
-      unless model
-        model = key.classify.constantize.new
-        self.send(:"#{key}_bag") << model
+      track_changed_attributes do
+        model = self.send(key)
+        unless model
+          model = key.classify.constantize.new
+          self.send(:"#{key}_bag") << model
+        end
+        model.fetch_with_attributes(data)
+        model.save if sync_options[:save]
       end
-      model.fetch_with_attributes(data)
-      model.save if sync_options[:save]
+      save if sync_options[:save] && has_changed?
     end
 
     def filtered_updatable_attributes(options = {})

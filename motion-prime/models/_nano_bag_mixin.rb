@@ -100,8 +100,15 @@ module MotionPrime
     alias_method :clear, :delete_all
 
 
-    def store=(store)
-      store.addObject(self, error:nil)
+    def store=(store, retry_count = 0)
+      store.addObject(self, error: nil)
+    rescue Exception => e
+      sleep(0.1)
+      if retry_count == 3
+        raise StoreError, e.description
+      else
+        send (:store=, store, retry_count + 1)
+      end
     end
 
     def save

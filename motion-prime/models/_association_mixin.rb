@@ -15,6 +15,10 @@ module MotionPrime
         bag.save
       end
       super
+    rescue StoreError => e
+      if Prime.env.development?
+        raise StoreError, e.description
+      end
     end
 
     module ClassMethods

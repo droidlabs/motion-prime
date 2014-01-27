@@ -156,14 +156,23 @@ module MotionPrime
         attributes << name
 
         define_method(name) do |*args, &block|
-          self.info[name]
+          value = self.info[name]
+          case options[:type].to_s
+          when 'time'
+            value = Time.short_iso8601(value) if value
+          end
+          value
         end
 
         define_method((name + "=").to_sym) do |*args, &block|
           value = args[0]
           case options[:type].to_s
-          when 'integer' then value = value.to_i
-          when 'float' then value = value.to_f
+          when 'integer' 
+            value = value.to_i
+          when 'float'
+            value = value.to_f
+          when 'time'
+            value = value.to_short_iso8601 unless value.is_a?(String)
           end unless value.nil?
 
           self.info[name] = value
