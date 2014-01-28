@@ -4,201 +4,156 @@
 <head>
   <title>getting_started.rb</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
   <link rel="stylesheet" media="all" href="docco.css" />
 </head>
 <body>
-  <div id="container">
-    <div id="background"></div>
-    
-      <ul id="jump_to">
-        <li>
-          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
-          <a class="small" href="javascript:void(0);">+</a>
-          <div id="jump_wrapper">
-          <div id="jump_page">
-            
-              
-              <a class="source" href="getting_started.html">
-                getting_started.rb
-              </a>
-            
-              
-              <a class="source" href="screens.html">
-                screens.rb
-              </a>
-            
-              
-              <a class="source" href="sections.html">
-                sections.rb
-              </a>
-            
-          </div>
-        </li>
-      </ul>
-    
-    <ul class="sections">
-        
-          <li id="title">
-              <div class="annotation">
-                  <h1>getting_started.rb</h1>
-              </div>
-          </li>
-        
-        
-        
-        <li id="section-1">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-1">&#182;</a>
-              </div>
-              <p><strong>1. Install required tools.</strong></p>
+  <div class="container">
+    <div class="page">
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>---</pre></div></div>
-            
-        </li>
+      <div class="header">
         
+          <h1>getting_started.rb</h1>
         
-        <li id="section-2">
-            <div class="annotation">
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
               
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-2">&#182;</a>
-              </div>
-              <ul>
+                
+                <li>
+                  <a class="source" href="getting_started.html">
+                    getting_started.rb
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="models.html">
+                    models.rb
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="screens.html">
+                    screens.rb
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sections.html">
+                    sections.rb
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>1. Install required tools.</strong></p>
+<ul>
 <li>Ruby 1.9.3 or newer.</li>
 </ul>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="variable">$ </span>rvm install <span class="number">2.0</span>.<span class="number">0</span></pre></div></div>
-            
-        </li>
         
+          <div class='highlight'><pre><span class="variable">$ </span>rvm install <span class="number">2.0</span>.<span class="number">0</span></pre></div>
         
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <ul>
+      
+        
+        <ul>
 <li>RubyMotion.</li>
 </ul>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>Visit http://www.rubymotion.com</pre></div></div>
-            
-        </li>
         
+          <div class='highlight'><pre>Visit http://www.rubymotion.com</pre></div>
         
-        <li id="section-4">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p><strong>2. Create application delegate.</strong></p>
-<p>You should rewrite the <code>on_load</code> method, which will be runned after starting application.</p>
-<p>NOTE: you should always use AppDelegate class name.</p>
+      
+        
+        <p><strong>2. Create MotionPrime project.</strong></p>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">AppDelegate</span> <span class="inheritance">&lt; <span class="parent">Prime::BaseAppDelegate</span></span></span>
+        
+          <div class='highlight'><pre><span class="variable">$ </span>prime new hello</pre></div>
+        
+      
+        
+        <p><strong>3. Create application delegate.</strong></p>
+<p>E.g. <code>hello/app/app_delegate.rb</code></p>
+<p>Inherit <code>AppDelegate</code> class from <code>Prime::BaseAppDelegate</code> and rewrite the <code>on_load</code> method, which will be runned after starting application.</p>
+
+        
+          <div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">AppDelegate</span> <span class="inheritance">&lt; <span class="parent">Prime::BaseAppDelegate</span></span></span>
   <span class="function"><span class="keyword">def</span> <span class="title">on_load</span><span class="params">(app, options)</span></span>
     open_screen <span class="symbol">:main</span>
   <span class="keyword">end</span>
-<span class="keyword">end</span></pre></div></div>
-            
-        </li>
+<span class="keyword">end</span></pre></div>
         
+      
         
-        <li id="section-5">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
-              </div>
-              <p><strong>3. Create the main screen.</strong></p>
-<p>You should rewrite the <code>render</code> method, which will be runned after first opening screen.</p>
-<p>NOTE: it&#39;s recommended to use instance variables for sections, e.g. <code>@main_section</code> instead of <code>main_section</code>.</p>
+        <p><strong>4. Create the main screen.</strong></p>
+<p>E.g. <code>hello/app/screens/home.rb</code></p>
+<p>Inherit screen from <code>Prime::Screen</code> and rewrite the <code>render</code> method, which will be runned after first opening screen.</p>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MainScreen</span> <span class="inheritance">&lt; <span class="parent">Prime::Screen</span></span></span>
+        
+          <div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MainScreen</span> <span class="inheritance">&lt; <span class="parent">Prime::Screen</span></span></span>
   title <span class="string">'Main screen'</span>
 
   <span class="function"><span class="keyword">def</span> <span class="title">render</span></span>
     <span class="variable">@main_section</span> = <span class="constant">MyProfileSection</span>.new(<span class="symbol">screen:</span> <span class="keyword">self</span>, <span class="symbol">model:</span> <span class="constant">User</span>.first)
     <span class="variable">@main_section</span>.render
   <span class="keyword">end</span>
-<span class="keyword">end</span></pre></div></div>
-            
-        </li>
+<span class="keyword">end</span></pre></div>
         
+      
         
-        <li id="section-6">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
-              </div>
-              <p><strong>4. Create your first section.</strong></p>
+        <p><strong>5. Create your first section.</strong></p>
+<p>E.g. <code>hello/app/sections/home/section.rb</code></p>
 <p>&quot;Section&quot; is something like helper, which contains &quot;Elements&quot;.</p>
 <p>Each element will be added to the parent screen when you run <code>section.render</code></p>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MyProfileSection</span> <span class="inheritance">&lt; <span class="parent">Prime::Section</span></span></span>
+        
+          <div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">HomeSection</span> <span class="inheritance">&lt; <span class="parent">Prime::Section</span></span></span>
   element <span class="symbol">:title</span>, <span class="symbol">text:</span> <span class="string">"Hello World"</span>
   element <span class="symbol">:avatar</span>, <span class="symbol">image:</span> <span class="string">"images/avatar.png"</span>, <span class="symbol">type:</span> <span class="symbol">:image</span>
-<span class="keyword">end</span></pre></div></div>
-            
-        </li>
+<span class="keyword">end</span></pre></div>
         
+      
         
-        <li id="section-7">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
-              </div>
-              <p><strong>5. Create your first stylesheet file.</strong></p>
+        <p><strong>6. Create your first stylesheet file.</strong></p>
+<p>E.g. <code>hello/app/styles/home.rb</code></p>
 <p>Styles will be applied to each element in section.
 The simplest rule by default is: <code>:section-name_:element-name</code>.</p>
 <p>E.g. if you have &quot;MyProfileSection&quot; (the name for section by default will be - <code>my_profile</code>)
 and &quot;title&quot; element, then you should use <code>my_profile_title</code> style name.</p>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="constant">Prime::Styles</span>.define <span class="keyword">do</span>
+        
+          <div class='highlight'><pre><span class="constant">Prime::Styles</span>.define <span class="keyword">do</span>
   style <span class="symbol">:my_profile_title</span>, <span class="symbol">width:</span> <span class="number">300</span>, <span class="symbol">height:</span> <span class="number">20</span>
-<span class="keyword">end</span></pre></div></div>
-            
-        </li>
+<span class="keyword">end</span></pre></div>
         
+      
         
-        <li id="section-8">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
-              </div>
-              <p>You can pass namespace to <code>define</code> method.</p>
+        <p>You can pass namespace to <code>define</code> method.</p>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="constant">Prime::Styles</span>.define <span class="symbol">:my_profile</span> <span class="keyword">do</span>
-  style <span class="symbol">:title</span>, <span class="symbol">width:</span> <span class="number">300</span>, <span class="symbol">height:</span> <span class="number">20</span>
-<span class="keyword">end</span></pre></div></div>
-            
-        </li>
         
-    </ul>
+          <div class='highlight'><pre><span class="constant">Prime::Styles</span>.define <span class="symbol">:my_profile</span> <span class="keyword">do</span>
+  style <span class="symbol">:title</span>, <span class="symbol">width:</span> <span class="number">300</span>, <span class="symbol">height:</span> <span class="number">20</span>
+<span class="keyword">end</span></pre></div>
+        
+      
+        
+        <p><strong> Next </strong></p>
+<p><a href="screens.html">Read more about Screens</a></p>
+
+        
+      
+      <div class="fleur">h</div>
+    </div>
   </div>
 </body>
 </html>

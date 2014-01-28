@@ -94,7 +94,7 @@ We are using [Docco](http://jashkenas.github.io/docco/) to generate documentatio
 Please install the tool and run this to update documentation:
 
 ```
-$ cd doc && docco code/*.rb
+$ cd doc && docco code/*.rb --layout linear
 ```
 
 ## Thanks for using MotionPrime!

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>models.rb</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>models.rb</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="getting_started.html">
+                    getting_started.rb
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="models.html">
+                    models.rb
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="screens.html">
+                    screens.rb
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sections.html">
+                    sections.rb
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong> What is a Model? </strong></p>
+<p>&quot;Model&quot; will help you to store any information in database and sync this information with server.</p>
+<p><strong> Create a model. </strong></p>
+<p>Just inherit it from <code>Prime::Model</code>.</p>
+
+        
+          <div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">Event</span> <span class="inheritance">&lt; <span class="parent">Prime::Model</span></span></span>
+<span class="keyword">end</span></pre></div>
+        
+      
+        
+        <p><strong> Add some attributes to model. </strong></p>
+<p>E.g. we want event to have title and description.</p>
+
+        
+          <div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">Event</span> <span class="inheritance">&lt; <span class="parent">Prime::Model</span></span></span>
+  attribute <span class="symbol">:title</span>
+  attribute <span class="symbol">:description</span>
+<span class="keyword">end</span></pre></div>
+        
+      
+        
+        <p><strong> Create some item. </strong></p>
+<p>This event will be saved to database and accessible after restart of application.</p>
+
+        
+          <div class='highlight'><pre>event = <span class="constant">Event</span>.create(
+  <span class="symbol">title:</span> <span class="string">'MotionPrime release.'</span>,
+  <span class="symbol">description:</span> <span class="string">'Check out new features.'</span>
+)</pre></div>
+        
+      
+        
+        <p><strong> Retrieve all events </strong></p>
+
+        
+          <div class='highlight'><pre><span class="constant">Event</span>.all</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

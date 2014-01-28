@@ -8,7 +8,6 @@
 # That way increases application speed (especially on Table elements) by 5-10 times.
 #
 # Let's get started.
----
 
 # ** Create a section. **
 #
@@ -20,7 +19,9 @@ end
 # ** Add some elements to the section. **
 #
 # Each element should have name and type: "image", "label", "button", etc. 
+#
 # When you send `:text` option, type will be "label" by default.
+#
 # When you send `:image` option, type will be "image" by default.
 
 class FooSection < Prime::Section
@@ -29,9 +30,9 @@ class FooSection < Prime::Section
   element :cheer, type: :button
 end
 
-# ** Render Section in Screen **
+# ** Render Section to Screen **
 # 
-# NOTE: You must send "screen" option on section initialization.
+# NOTE: it's recommended to use instance variables for sections, e.g. `@main_section` instead of `main_section`.
 
 class FooScreen < Prime::Screen
   def render
@@ -39,3 +40,26 @@ class FooScreen < Prime::Screen
     @main_section.render
   end
 end
+
+# ** Add some styles for section **
+# 
+# Generally styles are just attributes of UIView elements.
+#
+# Let's style the UILabel element (:welcome label element we added above.)
+#
+# We send :foo parameter to `define`, because we have section named `foo` (FooSection) 
+# and :welcome parameter to `style`, because the name of element is `welcome`.
+#
+Prime::Styles.define :foo do
+  style :welcome,
+    text_color: :black,
+    top: 100,
+    width: 320,
+    left: 20,
+    font: proc { :system.uifont(20) },
+    size_to_fit: true,
+end
+
+# ** Next **
+#
+# [Read more about Models](models.html)

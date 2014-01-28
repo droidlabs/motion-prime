@@ -3,7 +3,6 @@
 # "Screen" is the most common class in MotionPrime, you can create entire application using only "Screens".
 # Generally it's just a "UIViewController" wrapper with some syntax sugar. 
 # For RubyOnRails developers the nearest analogy would be "Controllers".
----
 
 # ** Create a screen. **
 #
@@ -27,7 +26,6 @@ end
 # 
 # Title will be used in screen's navigation controller and will be shown on top of screen.
 #
-# NOTE: screen should be created with enabled navigation (see "Initialize screen" block).
 
 class FooScreen < Prime::Screen
   title 'Foo screen'
@@ -44,12 +42,13 @@ end
 # Available options:
 # * `:navigation`. When this options is true, screen will be created with navigation support: it will allow adding title and left/right buttons.
 # This option is true by default.
-
-def open_foo_screen
-  foo_screen = FooScreen.new(navigation: false)
+class AppDelegate < Prime::BaseAppDelegate
+  def on_load(application, launch_options)
+    foo_screen = FooScreen.new(navigation: false)
+  end
 end
 
-# ** Open screen: using app delegate. **
+# ** Open screen: from app delegate. **
 
 # Opening screen using app delegate is the most basic way, you would use it at least on app load.
 #
@@ -61,27 +60,34 @@ end
 # * `:sidebar`. Send `Prime::Screen` instance to this option if you want to create root screen with sidebar. 
 # Value of this options will be used as sidebar controller. 
 # NOTE: you should install some gem providing sidebar functionality, e.g. 'prime_reside_menu'
-
-def open_foo_screen
-  foo_screen = FooScreen.new
-  sidebar = MySidebar.new(navigation: false)
-  app_delegate.open_screen foo_screen, sidebar: sidebar
+class AppDelegate < Prime::BaseAppDelegate
+  def on_load(application, launch_options)
+    foo_screen = FooScreen.new
+    sidebar = MySidebar.new(navigation: false)
+    app_delegate.open_screen foo_screen, sidebar: sidebar
+  end
 end
 
-# ** Open screen: using parent screen. **
+# ** Open screen: from parent screen. **
 
 # Opening screen using parent screen is usefull if you want to create inherited screen. 
 # Parent screen should have been initialized with navigation support.
-
-def open_second_screen
-  second_screen = SecondScreen.new(navigation: true)
-  foo_screen.open_screen second_screen
+class FooScreen < Prime::Screen
+  def render
+    second_screen = SecondScreen.new(navigation: true)
+    foo_screen.open_screen second_screen
+  end
 end
 
 # ** Open screen: using short version. **
 
 # Opening screen using short syntax available both for opening via app delegate and via parent screen.
+class AppDelegate < Prime::BaseAppDelegate
+  def on_load(application, launch_options)
+    open_screen :foo_bar, sidebar: true
+  end
+end
 
-foo_screen.open_screen :hello_world
-app_delegate.open_screen :foo_bar, sidebar: true
-
+# ** Next **
+#
+# [Read more about Sections](sections.html)
