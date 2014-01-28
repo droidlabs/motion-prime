@@ -77,6 +77,7 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 
 ## Documentation
 
+* [Getting Started](http://prime.droidlabs.pro/)
 * [RubyDoc](http://rubydoc.info/gems/motion-prime/)
 
 ## Contributing
