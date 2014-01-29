@@ -27,7 +27,7 @@ class App
   def self.create(name)
     return puts "Usage: prime new <appname>" unless name.to_s.length > 0
     info "Creating new MotionPrime iOS app: #{name}"
-    sh "motion create --template=git@github.com:droidlabs/motion-prime.git #{name}"
+    sh "motion create #{name} --template=motion-prime"
     info "Command: bundle instal"
     sh "cd ./#{name} & bundle install"
     info "Command: pod setup"

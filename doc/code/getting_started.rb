@@ -1,3 +1,32 @@
+# ** Why MotionPrime? **
+
+# Did you ever notice that table views in your RubyMotion application scrolls not smoothly?
+#
+# Let's see why:
+#
+# ![MotionPrime](https://s3.amazonaws.com/motionprime/prime.png)
+#
+# Each table cell will create 5 UIViews inside and it's very slow operation for mobile device.
+# The main feature of MotionPrime is that it creates abstraction layer for "elements" in screen.
+# If it's possible in current context, MotionPrime will draw elements directly in table cell using CoreGraphics.
+# Just add 'label' element to the section:
+
+class MySection < Prime::Section
+  element :greeting, text: 'Hello World', type: :label
+end 
+
+# It will be rendered 5 times faster in iPhone 4/4s for cells containing 5 elements.
+#
+# You can force it to use UIView instead of CoreGraphics:
+
+class MySection < Prime::Section
+  element :greeting, text: 'Hello World', type: :label, as: :view
+end 
+
+# MotionPrime contains other features to improve application performance, but performance is not the only feature.
+#
+# So let's get started.
+
 # **1. Install required tools.**
 
 # * Ruby 1.9.3 or newer.
@@ -8,6 +37,7 @@ Visit http://www.rubymotion.com
 
 # **2. Create MotionPrime project.**
 
+$ gem install motion-prime
 $ prime new hello
 
 # **3. Create application delegate.**

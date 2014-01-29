@@ -56,7 +56,35 @@
 
       
         
-        <p><strong>1. Install required tools.</strong></p>
+        <p><strong> Why MotionPrime? </strong></p>
+<p>Did you ever notice that table views in your RubyMotion application scrolls not smoothly?</p>
+<p>Let&#39;s see why:</p>
+<p><img src="https://s3.amazonaws.com/motionprime/prime.png" alt="MotionPrime"></p>
+<p>Each table cell will create 5 UIViews inside and it&#39;s very slow operation for mobile device.
+The main feature of MotionPrime is that it creates abstraction layer for &quot;elements&quot; in screen.
+If it&#39;s possible in current context, MotionPrime will draw elements directly in table cell using CoreGraphics.
+Just add &#39;label&#39; element to the section:</p>
+
+        
+          <div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MySection</span> <span class="inheritance">&lt; <span class="parent">Prime::Section</span></span></span>
+  element <span class="symbol">:greeting</span>, <span class="symbol">text:</span> <span class="string">'Hello World'</span>, <span class="symbol">type:</span> <span class="symbol">:label</span>
+<span class="keyword">end</span></pre></div>
+        
+      
+        
+        <p>It will be rendered 5 times faster in iPhone 4/4s for cells containing 5 elements.</p>
+<p>You can force it to use UIView instead of CoreGraphics:</p>
+
+        
+          <div class='highlight'><pre><span class="class"><span class="keyword">class</span> <span class="title">MySection</span> <span class="inheritance">&lt; <span class="parent">Prime::Section</span></span></span>
+  element <span class="symbol">:greeting</span>, <span class="symbol">text:</span> <span class="string">'Hello World'</span>, <span class="symbol">type:</span> <span class="symbol">:label</span>, <span class="symbol">as:</span> <span class="symbol">:view</span>
+<span class="keyword">end</span></pre></div>
+        
+      
+        
+        <p>MotionPrime contains other features to improve application performance, but performance is not the only feature.</p>
+<p>So let&#39;s get started.</p>
+<p><strong>1. Install required tools.</strong></p>
 <ul>
 <li>Ruby 1.9.3 or newer.</li>
 </ul>
@@ -78,7 +106,8 @@
         <p><strong>2. Create MotionPrime project.</strong></p>
 
         
-          <div class='highlight'><pre><span class="variable">$ </span>prime new hello</pre></div>
+          <div class='highlight'><pre><span class="variable">$ </span>gem install motion-prime
+<span class="variable">$ </span>prime new hello</pre></div>
         
       
         
