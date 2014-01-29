@@ -27,13 +27,24 @@ class App
   def self.create(name)
     return puts "Usage: prime new <appname>" unless name.to_s.length > 0
     info "Creating new MotionPrime iOS app: #{name}"
-    sh "motion create #{name} --template=motion-prime"
-    info "Command: bundle instal"
-    sh "cd ./#{name} & bundle install"
-    info "Command: pod setup"
-    sh "cd ./#{name} & pod setup"
-    info "Command: rake pod:install"
-    sh "cd ./#{name} & rake pod:install"
+    result = sh "motion create #{name} --template=git://github.com/droidlabs/motion-prime.git"
+    if result == 0
+      info "Command: bundle instal"
+      sh "cd ./#{name}; bundle install"
+      info "Command: pod setup"
+      sh "cd ./#{name}; pod setup"
+      info "Command: rake pod:install"
+      sh "cd ./#{name}; rake pod:install"
+    else
+      info "-------------------------------------"
+      info "Unable to create RubyMotion template"
+      info "Please create template manually"
+      info "1. git clone git://github.com/droidlabs/motion-prime.git"
+      info "2. cp motion-prime/files #{name}"
+      info "3. cd ./#{name}"
+      info "4. bundle"
+      info "-------------------------------------"
+    end
   end
 
   description "Command line tools for MotionPrime"

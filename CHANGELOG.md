@@ -1,3 +1,7 @@
+=== 0.6.0
+* Fix executable.
+* Stable release.
+
 === 0.5.7
 * Improve store save.
 * Improve model dirty.
