@@ -61,7 +61,7 @@ module MotionPrime
       will_fetch_model = !url.blank?
       will_fetch_associations = !options.has_key?(:associations) || options[:associations]
 
-      fetch_with_url url do |data, status_code|
+      fetch_with_url url, options do |data, status_code|
         save if options[:save]
         block.call(data, status_code, data) if use_callback && !will_fetch_associations
       end if will_fetch_model
@@ -98,10 +98,12 @@ module MotionPrime
     #
     # @param url [String] url to fetch
     # @param block [Proc] block to be executed after fetch
-    def fetch_with_url(url, &block)
+    def fetch_with_url(url, options = {}, &block)
       use_callback = block_given?
       api_client.get(url) do |data, status_code|
-        fetch_with_attributes(data, &block) if data.present?
+        if data.present?
+          fetch_with_attributes(data, save_associations: options[:save], &block)
+        end
         block.call(data, status_code, data) if use_callback
       end
     end
