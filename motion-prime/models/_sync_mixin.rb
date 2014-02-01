@@ -221,9 +221,9 @@ module MotionPrime
       options = associations[key.to_sym]
       return unless options
       if options[:type] == :many
-        fetch_has_many_with_attributes(key, data, sync_options)
+        fetch_has_many_with_attributes(key, data || [], sync_options)
       else
-        fetch_has_one_with_attributes(key, data, sync_options)
+        fetch_has_one_with_attributes(key, data || {}, sync_options)
       end
     end
 
