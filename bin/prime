@@ -27,23 +27,38 @@ class App
   def self.create(name)
     return puts "Usage: prime new <appname>" unless name.to_s.length > 0
     info "Creating new MotionPrime iOS app: #{name}"
-    result = sh "motion create #{name} --template=git://github.com/droidlabs/motion-prime.git"
-    if result == 0
-      info "Command: bundle instal"
-      sh "cd ./#{name}; bundle install"
-      info "Command: pod setup"
-      sh "cd ./#{name}; pod setup"
-      info "Command: rake pod:install"
-      sh "cd ./#{name}; rake pod:install"
+    if false
+      sh "motion create #{name} --template=git://github.com/droidlabs/motion-prime.git"
     else
-      info "-------------------------------------"
-      info "Unable to create RubyMotion template"
-      info "Please create template manually"
-      info "1. git clone git://github.com/droidlabs/motion-prime.git"
-      info "2. cp motion-prime/files #{name}"
-      info "3. cd ./#{name}"
-      info "4. bundle"
-      info "-------------------------------------"
+      clone_template
+      sh "motion create #{name} --template=motion-prime"
+    end
+    info "Command: bundle instal"
+    sh "cd ./#{name}; bundle install"
+    info "Command: pod setup"
+    sh "cd ./#{name}; pod setup"
+    info "Command: rake pod:install"
+    sh "cd ./#{name}; rake pod:install"
+  end
+
+  def self.home_path
+    ENV['HOME'].split('/')[0..2].join('/')
+  end
+
+  def self.repo_url
+    "git://github.com/droidlabs/motion-prime.git"
+  end
+
+  def self.clone_template
+    path = File.expand_path(File.join(home_path, 'Library/RubyMotion/template', 'motion-prime'))
+    git_clone(path)
+  end
+
+  def self.git_clone(path)
+    if File.exist?(path)
+      system("git --work-tree=#{path} --git-dir=#{path}/.git pull origin master")
+    else
+      system("git clone #{repo_url} #{path}")
     end
   end
 
