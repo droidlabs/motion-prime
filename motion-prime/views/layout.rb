@@ -1,5 +1,6 @@
 # TODO: make it part of Sections
 motion_require '../support/mp_cell_with_section'
+motion_require '../support/mp_spinner'
 module MotionPrime
   module Layout
     def add_view(klass, options = {}, &block)
@@ -41,7 +42,7 @@ module MotionPrime
         [::UIActionSheet, ::UIActivityIndicatorView, ::UIButton, ::UIDatePicker, ::UIImageView, ::UILabel,
           ::UIPageControl, ::UIPickerView, ::UIProgressView, ::UIScrollView, ::UISearchBar, ::UISegmentedControl,
           ::UISlider, ::UIStepper, ::UISwitch, ::UITabBar, ::UITableView, ::UITableViewCell, ::UITextField, ::UITextView,
-          ::UIToolbar, ::UIWebView, ::UINavigationBar, ::MPCellWithSection, ::MBProgressHUD].each do |klass|
+          ::UIToolbar, ::UIWebView, ::UINavigationBar, ::MPCellWithSection, ::MBProgressHUD, ::MPSpinner].each do |klass|
 
           shorthand = "#{klass}"[2..-1].underscore.to_sym
 

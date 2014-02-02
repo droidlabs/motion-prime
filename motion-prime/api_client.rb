@@ -3,27 +3,23 @@ class ApiClient
 
   def initialize(options = {})
     self.access_token = options[:access_token]
+    AFMotion::Client.build_shared(config.base) do
+      header "Accept", "application/json"
+      response_serializer AFJSONResponseSerializer.serializerWithReadingOptions(NSJSONReadingMutableContainers)
+    end
   end
 
   def request_params(data)
-    data = data.clone
-    files = data.delete(:files)
-    params = {
-      payload: data,
-      no_redirect: !config.allow_redirect,
-      format: config.request_format
-    }
-    if files.present?
-      params.merge!(files: files)
-    end
+    params = data.clone
+
     if config.http_auth?
       params.merge!(credentials: config.http_auth.to_hash)
     end
     if config.sign_request?
       signature = RmDigest::MD5.hexdigest(
-        config.signature_secret + data.keys.map(&:to_s).sort.join
+        config.signature_secret + params.keys.map(&:to_s).sort.join
       )
-      params[:payload].merge!(sign: signature)
+      params.merge!(sign: signature)
     end
     params
   end
@@ -37,22 +33,13 @@ class ApiClient
       client_secret: config.client_secret
     }
     use_callback = block_given?
-    BW::HTTP.post("#{config.base}#{config.auth_path}", request_params(data)) do |response|
-      body = response.body.to_s
-      auth_data = if body.present?
-        parse_json(body)
-      else
-        false
-      end
+    AFMotion::Client.shared.post(config.auth_path, request_params(data)) do |response|
+      auth_data = response.object
+
       self.access_token = auth_data[:access_token] if auth_data
-      block.call(auth_data, response.status_code) if use_callback
+      block.call(auth_data, response.operation.response.statusCode) if use_callback
     end
     true
-  end
-
-  def api_url(path)
-    return path if path =~ /^http(s)?:\/\//
-    "#{config.base}#{config.api_namespace}#{path}"
   end
 
   def page_url(path)
@@ -67,13 +54,22 @@ class ApiClient
 
   def request(method, path, params = {}, options = {}, &block)
     params.merge!(access_token: access_token)
+    data = request_params(params)
+    files = data.delete(:_files)
     use_callback = block_given?
-    BW::HTTP.send method, api_url(path), request_params(params) do |response|
-      if !response.ok? && options[:allow_queue] && config.allow_queue?
+
+    client_method = files.present? ? :"multipart_#{method}" : method
+    AFMotion::Client.shared.send client_method, "#{config.api_namespace}#{path}", data do |response, form_data, progress|
+      if form_data && files.present?
+        files.each do |file_data|
+          form_data.appendPartWithFileData(file_data[:data], name: file_data[:name], fileName:"avatar.png", mimeType: "image/jpeg")
+        end
+      elsif progress
+        # handle progress
+      elsif !response.success? && options[:allow_queue] && config.allow_queue?
         add_to_queue(method: method, path: path, params: params)
       else
-        json = parse_json(response.body.to_s)
-        block.call(json, response.status_code) if use_callback
+        block.call(prepared_object(response.object), response.operation.response.statusCode) if use_callback
         process_queue
       end
     end
@@ -117,14 +113,17 @@ class ApiClient
       MotionPrime::Config.api_client
     end
 
-    def parse_json(text)
-      Prime::JSON.parse(text)
-    rescue
-      NSLog("Can't parse json: #{text}")
-      false
-    end
-
     def user_defaults
       @user_defaults ||= NSUserDefaults.standardUserDefaults
+    end
+
+    def prepared_object(object)
+      if object.is_a?(Hash)
+        object.with_indifferent_access
+      elsif object.is_a?(Array)
+        object.map(&:with_indifferent_access)
+      else
+        object
+      end
     end
 end

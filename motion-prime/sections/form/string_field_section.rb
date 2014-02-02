@@ -4,7 +4,7 @@ module MotionPrime
       options[:label] || {}
     end
 
-    element :input, type: :text_field do
+    element :input, type: :text_field, delegate: proc { form.table_delegate } do
       options[:input] || {}
     end
 

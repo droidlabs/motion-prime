@@ -49,7 +49,7 @@ module MotionPrime
     end
 
     def wrap_in_navigation?
-      options[:navigation] || options[:navigation].nil?
+      options.fetch(:navigation, true)
     end
 
     def wrap_in_navigation
@@ -63,11 +63,11 @@ module MotionPrime
     end
 
     def navigation_controller
-      @navigation_controller ||= self.navigationController
+      @navigation_controller ||= self.navigationController.try(:weak_ref)
     end
 
     def navigation_controller=(val)
-      @navigation_controller = val
+      @navigation_controller = val.try(:weak_ref)
     end
 
     private

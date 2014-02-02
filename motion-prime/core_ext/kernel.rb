@@ -17,8 +17,9 @@ class Kernel
 
   def clear_instance_variables(options = {})
     ivars = self.instance_variables
+    excluded_ivars = Array.wrap(options[:except]).map(&:to_s)
     clear_block = proc { |ivar|
-      next if Array.wrap(options[:except]).include?(ivar[1..-1])
+      next if excluded_ivars.include?(ivar[1..-1])
       self.instance_variable_set(ivar, nil)
     }.weak!
     ivars.each(&clear_block)

@@ -18,8 +18,6 @@ MotionPrime::Config.configure do |config|
     api.sign_request = false
     api.auth_path = '/oauth/token'
     api.api_namespace = '/api'
-    api.request_format = :form_data
-    api.allow_redirect = false
     api.allow_queue = false
   end
   config.prime.cell_section.mixins = [Prime::CellSectionMixin]

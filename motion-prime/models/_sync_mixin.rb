@@ -9,8 +9,8 @@ module MotionPrime
     end
 
     # Get normalized sync url of this Prime::Model
-    # 
-    # @param method [Symbol] http method 
+    #
+    # @param method [Symbol] http method
     # @return url [String] url to use in model sync
     def sync_url(method = :get, options = {})
       url = self.class.sync_url
@@ -19,7 +19,7 @@ module MotionPrime
     end
 
     # Get normalized sync url of associated Prime::Model
-    # 
+    #
     # @param key [Symbol] association name
     # @return url [String] url to use in model association sync
     def association_sync_url(key, options)
@@ -29,7 +29,7 @@ module MotionPrime
     end
 
     # Destroy model on server and delete on local
-    # 
+    #
     # @param block [Proc] block to be executed after destroy
     # @return self[Prime::Model] deleted model.
     def destroy(&block)
@@ -41,13 +41,13 @@ module MotionPrime
     end
 
     # Fetch model from server and save on local
-    # 
+    #
     def fetch!(options = {}, &block)
       fetch(options.merge(save: true), &block)
     end
 
     # Fetch model from server
-    # 
+    #
     # @param options [Hash] fetch options
     # @option options [Symbol] :method Http method to calculate url, `:get` by default
     # @option options [Boolean] :associations Also fetch associations
@@ -116,12 +116,10 @@ module MotionPrime
       use_callback = block_given?
       filtered_attributes = filtered_updatable_attributes(options)
 
+      attributes = attributes_to_post_data(model_name, filtered_attributes)
+
       post_data = options[:params_root] || {}
-      post_data[:files] = {}
-      filtered_attributes.delete(:files).each do |file_name, file|
-        post_data[:files][[model_name, file_name].join] = file
-      end
-      post_data[model_name] = filtered_attributes
+      post_data.merge!(attributes)
 
       method = options[:method] || (persisted? ? :put : :post)
       api_client.send(method, url, post_data, options) do |data, status_code|
@@ -292,13 +290,11 @@ module MotionPrime
       updatable_attributes = self.class.updatable_attributes
 
       if updatable_attributes.blank?
-        attrs =  slice_attributes ? attributes_hash.slice(*slice_attributes) : attributes_hash
-        return attrs.merge(files: {})
+        return slice_attributes ? attributes_hash.slice(*slice_attributes) : attributes_hash
       end
 
       updatable_attributes = updatable_attributes.slice(*slice_attributes) if slice_attributes
-      updatable_attributes.to_a.inject({files: {}}) do |hash, attribute|
-        key, options = *attribute
+      updatable_attributes.inject({}) do |hash, (key, options)|
         next hash if options[:if] && !send(options[:if])
         value = if block = options[:block]
           block.call(self, hash)
@@ -306,20 +302,27 @@ module MotionPrime
           info[key]
         end
 
-        if key.to_s.starts_with?('file_')
-          value.to_a.each do |file_data|
-            file_name, file = file_data.to_a
-            hash[:files]["[#{key.partition('_').last}]#{file_name}"] = file
-          end
-        else
-          hash.merge!(key => value)
-        end
+        hash[key] = value
         hash
       end
     end
 
     def normalize_sync_url(url)
       normalize_object(url).to_s.gsub(':id', id.to_s)
+    end
+
+    def attributes_to_post_data(root_name, attributes)
+      result = {:_files => [], root_name => attributes}
+
+      result[root_name].each do |name, field_attrs|
+        next unless field_attrs.is_a?(Hash)
+        files = Array.wrap(field_attrs.delete(:_files)).map do |file|
+          file[:name].insert(0, "#{root_name}[#{name}]")
+          file
+        end
+        result[:_files] += files
+      end
+      result
     end
 
     module ClassMethods
@@ -350,7 +353,7 @@ module MotionPrime
       def updatable_attributes(*attrs)
         return self._updatable_attributes if attrs.blank?
         attrs.each do |attribute|
-          updatable_attribute attribute
+          updatable_attribute(attribute)
         end
       end
 

@@ -29,7 +29,7 @@ module MotionPrime
     end
 
     # def dealloc
-    #   pp 'deallocating elemenet', self.name, self.to_s, view_class#, view.try(:to_s)
+    #   pp 'Deallocating elemenet', self.name, self.to_s, view_class#, view.try(:to_s)
     #   super
     # end
 
@@ -45,10 +45,15 @@ module MotionPrime
     end
 
     def render!(&block)
-      screen.add_view class_factory(view_class), computed_options do |view|
+      view = screen.add_view class_factory(view_class), computed_options do |view|
         @view = view
         block.try(:call, view, self)
       end
+
+      if computed_options.has_key?(:delegate) && computed_options[:delegate].respond_to?(:delegated_by)
+        computed_options[:delegate].delegated_by(view)
+      end
+      view
     end
 
     # Lazy-computing options

@@ -17,6 +17,10 @@ module MotionPrime
       UIApplication.sharedApplication.delegate
     end
 
+    def parent_screen=(value)
+      @parent_screen = value.try(:weak_ref)
+    end
+
     # Setup the screen, this method will be called when you run MPViewController.new
     # @param options [hash] Options passed to setup
     # @return [MotionPrime::Screen] Ready to use screen

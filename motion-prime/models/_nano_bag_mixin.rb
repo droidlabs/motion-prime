@@ -107,7 +107,7 @@ module MotionPrime
       if retry_count == 3
         raise StoreError, e.description
       else
-        send (:store=, store, retry_count + 1)
+        send(:store=, store, retry_count + 1)
       end
     end
 

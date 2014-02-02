@@ -19,6 +19,13 @@ module MotionPrime
       []
     end
 
+    def dealloc
+      pp 'Deallocating table', self.to_s, self.table_view.to_s
+      table_delegate.clear_delegated
+      table_view.setDataSource nil
+      super
+    end
+
     def async_data?
       self.class.async_data_options
     end

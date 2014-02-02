@@ -137,7 +137,7 @@ module MotionPrime
           'UIWebView' => Proc.new{|klass, options|
             web_view = klass.alloc.initWithFrame CGRectZero
             if delegate = options.delete(:delegate)
-              web_view.delegate = delegate
+              web_view.setDelegate delegate
             end
             if url = options.delete(:url)
               request = NSURLRequest.requestWithURL url.nsurl

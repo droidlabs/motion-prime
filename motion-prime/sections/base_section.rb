@@ -37,7 +37,7 @@ module MotionPrime
     end
 
     def dealloc
-      # pp 'deallocating section', self.name, self.elements.try(:count), self.to_s, self.object_id
+      # pp 'Deallocating section', self.name, self.to_s, self.object_id
       NSNotificationCenter.defaultCenter.removeObserver self # unbinding events created in bind_keyboard_events
       super
     end
@@ -55,7 +55,7 @@ module MotionPrime
     end
 
     # Get computed container height
-    # 
+    #
     # @example
     #   class MySection < Prime::Section
     #     container height: proc { element(:title).content_outer_height }
@@ -63,42 +63,42 @@ module MotionPrime
     #   end
     #   section = MySection.new
     #   section.container_height # => 46
-    # 
+    #
     # @return height [Float, Integer] computed height
     def container_height
       container_options[:height] || DEFAULT_CONTENT_HEIGHT
     end
 
     # Get section default name, based on class name
-    # 
+    #
     # @example
     #   class ProfileSection < Prime::Section
     #   end
-    # 
+    #
     #   section = ProfileSection.new
     #   section.default_name # => 'profile'
     #   section.name         # => 'profile'
-    # 
+    #
     #   another_section = ProfileSection.new(name: 'another')
     #   another_section.default_name # => 'profile'
     #   another_section.name         # => 'another'
-    # 
+    #
     # @return name [String] section default name
     def default_name
       self.class_name_without_kvo.demodulize.underscore.gsub(/\_section$/, '')
     end
 
     # Get section elements options, where the key is element name.
-    # 
+    #
     # @return options [Hash] elements options
     def elements_options
       self.class.elements_options || {}
     end
 
     # Create elements if they are not created yet.
-    # This will not cause rendering elements, 
+    # This will not cause rendering elements,
     # they will be rendered immediately after that or rendered async later, based on type of section.
-    # 
+    #
     # @return result [Boolean] true if has been loaded by this thread.
     def load_section
       return if @section_loaded
@@ -113,7 +113,7 @@ module MotionPrime
     end
 
     # Force load section
-    # 
+    #
     # @return result [Boolean] true if has been loaded by this thread.
     def load_section!
       @section_loaded = false
@@ -267,7 +267,7 @@ module MotionPrime
       elements = Array.wrap(keyboard_close_bindings_options[:elements])
       views = Array.wrap(keyboard_close_bindings_options[:views])
 
-      elements.each do |el| 
+      elements.each do |el|
         views << el.view if %w[text_field text_view].include?(el.view_name) && el.view
       end
       views.compact.each(&:resignFirstResponder)

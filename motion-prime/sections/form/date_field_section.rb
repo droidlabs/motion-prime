@@ -20,5 +20,10 @@ module MotionPrime
         form.send(options[:action]) if options[:action]
       end
     end
+
+    def dealloc
+      picker.setDelegate nil
+      super
+    end
   end
 end

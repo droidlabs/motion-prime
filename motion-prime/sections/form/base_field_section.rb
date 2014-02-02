@@ -108,7 +108,6 @@ module MotionPrime
         focus
         form.on_input_change(view(:input))
       end
-      view(:input).delegate = self.form.table_delegate
     end
 
     def observing_errors?
@@ -154,6 +153,7 @@ module MotionPrime
         unobserve observing_errors_for.errors, observing_errors_for.errors.unique_key(field)
       }.weak!
       errors_observer_fields.each(&block)
+      # TODO: clear 'on' events
     end
 
     def container_height

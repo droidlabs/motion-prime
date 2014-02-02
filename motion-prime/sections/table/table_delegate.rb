@@ -3,12 +3,22 @@ module MotionPrime
     attr_accessor :table_section
     def initialize(options)
       self.table_section = options[:section].try(:weak_ref)
+      @section_instance = table_section.to_s
     end
 
-    # def dealloc
-    #   pp '@@ dealloc table_delegate'
-    #   super
-    # end
+    def delegated_by(view)
+      @delegated_views ||= []
+      @delegated_views << view
+    end
+
+    def clear_delegated
+      Array.wrap(@delegated_views).each { |view| view.setDelegate(nil) }
+    end
+
+    def dealloc
+      pp 'Deallocating table_delegate for ', @section_instance
+      super
+    end
 
     def init_pull_to_refresh
       return unless block = table_section.class.pull_to_refresh_block

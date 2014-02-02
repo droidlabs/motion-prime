@@ -4,19 +4,25 @@ module MotionPrime
     def add_search_bar(options = {}, &block)
       target = options.delete(:target)
 
-      search_bar = create_search_bar(options)
-      search_bar.delegate = self
+      @_search_bar = create_search_bar(options)
+      @_search_bar.setDelegate self
 
       if target
-        target.addSubview search_bar
+        target.addSubview @_search_bar
       elsif is_a?(TableSection)
-        self.table_view.tableHeaderView = search_bar
+        self.table_view.tableHeaderView = @_search_bar
       end
 
       @search_callback = block
-      search_bar
+      @_search_bar
     rescue
       NSLog("can't add search bar to #{self.class_name_without_kvo}")
+    end
+
+    def dealloc
+      @_search_bar.try(:setDelegate, nil)
+      @_search_bar = nil
+      super
     end
 
     def create_search_bar(options = {})
