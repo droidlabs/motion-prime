@@ -7,7 +7,7 @@ module MotionPrime
 
       screens.each_with_index do |options, index|
         if options.is_a?(Hash)
-          screen = init_screen_with_options(global_options.merge(options), tag: index)
+          screen = init_screen_with_options(global_options.deep_merge(options), tag: index)
         else
           screen = options
           screen.tabBarItem.tag = index
@@ -33,7 +33,7 @@ module MotionPrime
 
     protected
       def self.init_screen_with_options(options, tag: tag)
-        screen, image, title = options.delete(:screen), options.delete(:title)
+        screen, title = options.delete(:screen), options.delete(:title)
         screen = Screen.create_with_options(screen, true, options).try(:weak_ref)
         title ||= screen.title
         image = extract_image_from_options(options, with_key: :image)

@@ -60,6 +60,7 @@ module MotionPrime
 
       will_fetch_model = !url.blank?
       will_fetch_associations = !options.has_key?(:associations) || options[:associations]
+      will_fetch_associations = false unless has_associations_to_fetch?
 
       fetch_with_url url, options do |data, status_code|
         save if options[:save]
@@ -171,12 +172,17 @@ module MotionPrime
       self
     end
 
+    def associations
+      @associations ||= (self.class._associations || {}).clone
+    end
+
+    def associations_to_fetch
+      @associations_to_fetch ||= associations.select { |key, v| fetch_association?(key) }
+    end
+
     def fetch_associations(sync_options = {}, &block)
       use_callback = block_given?
-      associations = self.class._associations || {}
-      association_keys = associations.keys.select { |key| fetch_association?(key) }
-
-      association_keys.each_with_index do |key, index|
+      associations_to_fetch.keys.each_with_index do |key, index|
         if use_callback && associations.count - 1 == index
           fetch_association(key, sync_options, &block)
         else
@@ -185,19 +191,23 @@ module MotionPrime
       end
     end
 
+    def has_associations_to_fetch?
+      associations_to_fetch.present?
+    end
+
     def has_association?(key)
-      !(self.class._associations || {})[key.to_sym].nil?
+      !associations[key.to_sym].nil?
     end
 
     def fetch_association?(key)
-      options = self.class._associations[key]
+      options = associations[key.to_sym]
       return false if options[:if] && !options[:if].to_proc.call(self)
       association_sync_url(key, options).present?
     end
 
     def fetch_association(key, sync_options = {}, &block)
       return unless fetch_association?(key)
-      options = self.class._associations[key]
+      options = associations[key.to_sym]
       if options[:type] == :many
         fetch_has_many(key, options, sync_options, &block)
       else
@@ -206,12 +216,12 @@ module MotionPrime
     end
 
     def fetch_association_with_attributes(key, data, sync_options = {})
-      options = (self.class._associations || {})[key.to_sym]
+      options = associations[key.to_sym]
       return unless options
       if options[:type] == :many
-        fetch_has_many_with_attributes(key, data, sync_options)
+        fetch_has_many_with_attributes(key, data || [], sync_options)
       else
-        fetch_has_one_with_attributes(key, data, sync_options)
+        fetch_has_one_with_attributes(key, data || {}, sync_options)
       end
     end
 
