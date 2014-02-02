@@ -30,3 +30,7 @@ event = Event.create(
 # ** Retrieve all events **
 
 Event.all
+
+# ** Next **
+#
+# [Read more about Tables](tables.html)
