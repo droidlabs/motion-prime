@@ -42,7 +42,7 @@ module MotionPrime
       # Find model by criteria
       #
       # @example:
-      #   User.find(:name, NSFEqualTo, "Bob") # => [<User#1>]
+      #   User.find(1) # => [<User#1>]
       #   User.find(:name => "Bob") # => [<User#1>]
       #   User.find(:name => {NSFEqualTo => "Bob"}) # => [<User#1>]
       #
@@ -56,19 +56,12 @@ module MotionPrime
           else
             sort_options = {}
           end
-        elsif arg[0] && arg[1] && arg[2]
-          # standard way to find
-          options = {arg[0] => {arg[1] => arg[2]}}
-          if arg[4] && arg[4].is_a?(Hash)
-            sort_options = arg[4][:sort] || {}
-          else
-            sort_options = {}
-          end
+        elsif arg[0] && arg[0].is_a?(Integer)
+          return find(id: arg[0])
         elsif arg.empty?
-          options = {}
-          sort_options = {}
+          raise "Please use Model#all to find all records."
         else
-          raise "unexpected parameters #{arg}"
+          raise "Unexpected parameters: #{arg}."
         end
         search = NSFNanoSearch.searchWithStore(self.store)
 

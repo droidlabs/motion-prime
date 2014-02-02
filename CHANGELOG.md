@@ -1,3 +1,6 @@
+=== 0.7.0
+* Added Model.find(1) syntax support where 1 is :id attribute.
+
 === 0.6.0
 * Fix executable.
 * Stable release.
