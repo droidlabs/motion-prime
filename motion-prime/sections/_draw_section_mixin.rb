@@ -78,7 +78,7 @@ module MotionPrime
     end
 
     def strong_references
-      [self, screen].map(&:strong_ref)
+      [self, screen.main_controller].map(&:strong_ref)
     end
 
     private

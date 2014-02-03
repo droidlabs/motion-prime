@@ -32,8 +32,12 @@ module MotionPrime
 
     def set_text(value)
       computed_options[:text] = value
-      # ViewStyler.new(view, CGRectZero, computed_options).set_option(:text, value)
-      pp computed_options.slice(:attributed_text_options, :line_spacing)
+      styler = ViewStyler.new(view, CGRectZero, computed_options)
+      if styler.options[:attributed_text]
+        view.attributedText = styler.options[:attributed_text]
+      else
+        view.text = value
+      end
       @content_height = nil
       size_to_fit
     end

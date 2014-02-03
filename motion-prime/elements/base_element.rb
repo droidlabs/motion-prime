@@ -22,6 +22,7 @@ module MotionPrime
       @options = options
       @screen = options[:screen]
       @section = options[:section]
+
       @view_class = options[:view_class] || 'UIView'
       @name = options[:name]
       @block = options[:block]
@@ -29,7 +30,7 @@ module MotionPrime
     end
 
     # def dealloc
-    #   pp 'Deallocating elemenet', self.name, self.to_s, view_class#, view.try(:to_s)
+    #   pp 'Deallocating elemenet', self.name, self.to_s, computed_options[:text]
     #   super
     # end
 

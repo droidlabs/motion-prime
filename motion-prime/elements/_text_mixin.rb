@@ -32,29 +32,45 @@ module MotionPrime
     end
 
     def attributed_string(options)
-      paragrahStyle = NSMutableParagraphStyle.alloc.init
-
-      if options[:line_height]
-        paragrahStyle.setMinimumLineHeight(options[:line_height])
-      elsif options[:line_spacing]
-        paragrahStyle.setLineSpacing(options[:line_spacing])
-      end
-      paragrahStyle.setAlignment(options[:text_alignment]) if options[:text_alignment]
-      paragrahStyle.setLineBreakMode(options[:line_break_mode]) if options[:line_break_mode]
       attributes = {}
-      attributes[NSParagraphStyleAttributeName] = paragrahStyle
-      attributes[NSForegroundColorAttributeName] = options[:text_color]
-      attributes[NSFontAttributeName] = options[:font]
+      line_height = options[:line_height]
+      line_spacing = options[:line_spacing]
+      text_alignment = options[:text_alignment]
+      line_break_mode = options[:line_break_mode]
+
+      if line_height || line_spacing || text_alignment || line_break_mode
+        paragrah_style = NSMutableParagraphStyle.alloc.init
+        if line_height
+          paragrah_style.setMinimumLineHeight(line_height)
+        elsif line_spacing
+          paragrah_style.setLineSpacing(line_spacing)
+        end
+        if text_alignment
+          text_alignment = text_alignment.uitextalignment if text_alignment.is_a?(Symbol)
+          paragrah_style.setAlignment(text_alignment)
+        end
+        if line_break_mode
+          line_break_mode = line_break_mode.uilinebreakmode if line_break_mode.is_a?(Symbol)
+          paragrah_style.setLineBreakMode(line_break_mode)
+        end
+        attributes[NSParagraphStyleAttributeName] = paragrah_style
+      end
+
+      attributes[NSForegroundColorAttributeName] = options[:text_color].uicolor if options[:text_color]
+      attributes[NSFontAttributeName] = options[:font].uifont if options[:font]
 
       prepared_text = NSMutableAttributedString.alloc.initWithString(options[:text].to_s, attributes: attributes)
-      if underline_range = options[:underline]
-        # FIXME
+      underline_range = options[:underline]
+      fragment_color = options[:fragment_color]
+      if paragrah_style && (underline_range || fragment_color) && options.fetch(:number_of_lines, 1) == 1
+        Prime.logger.debug "If attributed text has paragraph style and underline - you must set number of lines != 1"
+      end
+
+      if underline_range
         underline_range = [0, options[:text].length] if underline_range === true
-        prepared_text = NSMutableAttributedString.alloc.initWithAttributedString(prepared_text)
         prepared_text.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
       end
-      if fragment_color = options[:fragment_color]
-        prepared_text = NSMutableAttributedString.alloc.initWithAttributedString(prepared_text)
+      if fragment_color
         prepared_text.addAttributes({NSForegroundColorAttributeName => fragment_color[:color].uicolor}, range: fragment_color[:range])
       end
       prepared_text

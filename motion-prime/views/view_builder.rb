@@ -31,24 +31,6 @@ module MotionPrime
       def default_views_map
         {
           'UIView' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
-          'UILabel' => Proc.new {|klass, options|
-            # TODO: get rid of this
-            if options.slice(:html, :line_spacing, :line_height, :underline, :fragment_color).any?
-              options[:attributed_text_options] = {
-                text: options.delete(:text),
-                html: options.delete(:html),
-                line_spacing: options.delete(:line_spacing),
-                line_height: options.delete(:line_height),
-                fragment_color: options.delete(:fragment_color),
-                underline: options.delete(:underline)
-              }
-              [:text_alignment].each do |key|# add keys which must follow after attributed text here
-                value = options.delete(key)
-                options[key] = value unless value.nil?
-              end
-            end
-            klass.alloc.initWithFrame CGRectZero
-          },
           'UIControl' => Proc.new {|klass, options| klass.alloc.init },
           'UISwitch' => Proc.new {|klass, options|
             view = klass.alloc.init

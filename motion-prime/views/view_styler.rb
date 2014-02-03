@@ -11,6 +11,7 @@ module MotionPrime
       @options = Styles.extend_and_normalize_options options
       @view = view
       prepare_frame_for(bounds) if @options.delete(:calculate_frame)
+      prepare_options!
     end
 
     def apply
@@ -40,6 +41,29 @@ module MotionPrime
         mask |= UIViewAutoresizingFlexibleHeight if options[:height_to_fit].nil? && (!options[:top].nil? && !options[:bottom].nil?)
         options[:autoresizingMask] = mask
       end
+    end
+
+    def prepare_options!
+      if options.slice(:html, :line_spacing, :line_height, :underline, :fragment_color).any?
+        text_options = extract_attributed_text_options(options)
+
+        html = text_options.delete(:html)
+        text_options[:text] = html if html
+        options[:attributed_text] = html ? html_string(text_options) : attributed_string(text_options)
+
+        # ios 7 bug fix when text is invisible
+        options[:number_of_lines] = 0 if text_options.slice(:line_height, :line_spacing, :text_alignment, :line_break_mode).any? && options.fetch(:number_of_lines, 1) == 1
+      end
+    end
+
+    def extract_attributed_text_options(options)
+      text_attributes = [
+        :text, :html, :line_spacing, :line_height, :underline, :fragment_color,
+        :text_alignment, :font, :line_break_mode, :number_of_lines
+      ]
+      attributed_text_options = options.slice(*text_attributes)
+      options.except!(*text_attributes)
+      attributed_text_options
     end
 
     def set_option(key, value)
@@ -105,23 +129,11 @@ module MotionPrime
         mask_layer.frame = bounds
         mask_layer.path = mask_path.CGPath
         view.mask = mask_layer
-      elsif key == 'attributed_text_options'
-        attributes = {}
-
-        html = value.delete(:html)
-        value.merge!(options.slice(:text_color, :font))
-
-        attributed_text = if html.present?
-          value[:text] = html
-          html_string(value)
-        else
-          attributed_string(value)
-        end
-
+      elsif key == 'attributed_text'
         if view.is_a?(UIButton)
-          view.setAttributedTitle attributed_text, forState: UIControlStateNormal
+          view.setAttributedTitle value, forState: UIControlStateNormal
         else
-          view.attributedText = attributed_text
+          view.attributedText = value
         end
       elsif key == 'gradient'
         gradient = prepare_gradient(value)
