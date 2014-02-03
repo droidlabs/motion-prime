@@ -32,7 +32,8 @@ module MotionPrime
         {
           'UIView' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
           'UILabel' => Proc.new {|klass, options|
-            if options.slice(:line_spacing, :line_height, :underline, :fragment_color).any?
+            # TODO: get rid of this
+            if options.slice(:html, :line_spacing, :line_height, :underline, :fragment_color).any?
               options[:attributed_text_options] = {
                 text: options.delete(:text),
                 html: options.delete(:html),

@@ -30,7 +30,7 @@ module MotionPrime
       when 'info'
         LOGGER_INFO_LEVEL
       when 'debug'
-        LOGGER_DEBUG_LEVE
+        LOGGER_DEBUG_LEVEL
       else
         2
       end

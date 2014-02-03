@@ -1,5 +1,6 @@
 class MPSpinner < MBRoundProgressView
   def init_animation
+    return if @firstTimestamp
     displayLink = CADisplayLink.displayLinkWithTarget(self, selector: :"handleDisplayLink:")
     displayLink.addToRunLoop(NSRunLoop.currentRunLoop, forMode:NSDefaultRunLoopMode)
   end

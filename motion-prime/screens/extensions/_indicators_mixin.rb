@@ -41,5 +41,38 @@ module MotionPrime
       MBHUDView.hudWithBody message,
         type: hud_type, hidesAfter: time, show: true
     end
+
+    def show_spinner(message = nil)
+      if message.present?
+        spinner_message_element.set_text(message)
+        spinner_message_element.show
+      end
+      spinner_element.show
+      spinner_element.view.init_animation
+    end
+
+    def hide_spinner
+      spinner_element.hide
+      spinner_message_element.hide
+    end
+
+    private
+
+      def spinner_element
+        @_spinner_element ||= self.spinner({
+          styles: base_styles_for('spinner'),
+          hidden: true})
+      end
+
+      def spinner_message_element
+        @_spinner_message_element ||= self.label({
+          styles: base_styles_for('spinner_message'),
+          text: '',
+          hidden: true})
+      end
+
+      def base_styles_for(name)
+        ([:base] + default_styles).map { |base| :"#{base}_#{name}" }
+      end
   end
 end

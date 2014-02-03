@@ -1,7 +1,8 @@
 module MotionPrime
   class LabelElement < BaseElement
-    include MotionPrime::ElementContentPaddingMixin
-    include MotionPrime::ElementContentTextMixin
+    include ElementContentPaddingMixin
+    include ElementContentTextMixin
+    include ElementTextMixin
 
     before_render :size_to_fit_if_needed
     after_render :size_to_fit
@@ -27,6 +28,14 @@ module MotionPrime
       if computed_options[:size_to_fit] && computed_options[:width]
         @computed_options[:height_to_fit] = cached_content_outer_height
       end
+    end
+
+    def set_text(value)
+      computed_options[:text] = value
+      # ViewStyler.new(view, CGRectZero, computed_options).set_option(:text, value)
+      pp computed_options.slice(:attributed_text_options, :line_spacing)
+      @content_height = nil
+      size_to_fit
     end
   end
 end

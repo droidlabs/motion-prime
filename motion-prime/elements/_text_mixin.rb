@@ -46,11 +46,16 @@ module MotionPrime
       attributes[NSForegroundColorAttributeName] = options[:text_color]
       attributes[NSFontAttributeName] = options[:font]
 
-      prepared_text = NSMutableAttributedString.alloc.initWithString(options[:text] || '', attributes: attributes)
+      prepared_text = NSMutableAttributedString.alloc.initWithString(options[:text].to_s, attributes: attributes)
       if underline_range = options[:underline]
         # FIXME
-        # prepared_text = NSMutableAttributedString.alloc.initWithAttributedString(prepared_text)
-        # prepared_text.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
+        underline_range = [0, options[:text].length] if underline_range === true
+        prepared_text = NSMutableAttributedString.alloc.initWithAttributedString(prepared_text)
+        prepared_text.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
+      end
+      if fragment_color = options[:fragment_color]
+        prepared_text = NSMutableAttributedString.alloc.initWithAttributedString(prepared_text)
+        prepared_text.addAttributes({NSForegroundColorAttributeName => fragment_color[:color].uicolor}, range: fragment_color[:range])
       end
       prepared_text
     end

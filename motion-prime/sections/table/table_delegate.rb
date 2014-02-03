@@ -15,10 +15,10 @@ module MotionPrime
       Array.wrap(@delegated_views).each { |view| view.setDelegate(nil) }
     end
 
-    def dealloc
-      pp 'Deallocating table_delegate for ', @section_instance
-      super
-    end
+    # def dealloc
+    #   pp 'Deallocating table_delegate for ', @section_instance
+    #   super
+    # end
 
     def init_pull_to_refresh
       return unless block = table_section.class.pull_to_refresh_block

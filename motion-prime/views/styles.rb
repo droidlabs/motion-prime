@@ -13,7 +13,7 @@ module MotionPrime
 
       if options.present?
         parent = options.delete(:parent)
-        if parent_namespace = options.delete(:parent_namespace) || @namespace
+        if parent && (parent_namespace = options.delete(:parent_namespace) || @namespace)
           parent ="#{parent_namespace}_#{parent}".to_sym
         end
         mixins = Array.wrap(options.delete(:mixins)).map { |mixin_name| :"_mixin_#{mixin_name}" }
@@ -21,8 +21,8 @@ module MotionPrime
         names.each do |name|
           name = "#{@namespace}_#{name}".to_sym if @namespace
           @@repo[name] ||= {}
-          @@repo[name].deep_merge!(self.class.for(parent)) if parent
-          @@repo[name].deep_merge!(self.class.for(mixins)) if mixins.present?
+          @@repo[name].deep_merge!(self.class.for(parent, debug_missing: true, type: :parent, name: name)) if parent
+          @@repo[name].deep_merge!(self.class.for(mixins, debug_missing: true, type: :mixin, name: name)) if mixins.present?
           @@repo[name].deep_merge! options
         end
       elsif !block_given?
@@ -57,10 +57,12 @@ module MotionPrime
         end
       end
 
-      def for(style_names)
+      def for(style_names, options = {})
         style_options = {}
         Array.wrap(style_names).each do |name|
-          style_options.deep_merge!(@@repo[name] || {})
+          styles = @@repo[name]
+          Prime.logger.debug "No styles found for `#{name}` (element: `#{options[:name]}`, type: #{options.fetch(:type, 'general')})" if options[:debug_missing] && styles.blank?
+          style_options.deep_merge!(styles || {})
         end
         style_options
       end
