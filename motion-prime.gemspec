@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "motion-support"
   spec.add_dependency 'bubble-wrap'
   spec.add_dependency 'sugarcube'
-  spec.add_dependency("methadone")
-  spec.add_dependency("rm-digest")
+  spec.add_dependency 'afmotion', '~> 2.0.0'
+  spec.add_dependency "methadone"
+  spec.add_dependency "rm-digest" 
 end

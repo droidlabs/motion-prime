@@ -16,7 +16,7 @@ module MotionPrime
         screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
         screen.wrap_in_navigation if screen.respond_to?(:wrap_in_navigation)
         screen.tab_bar = controller if screen.respond_to?(:tab_bar=)
-        view_controllers << screen.main_controller
+        view_controllers << screen.main_controller.strong_ref
       end
 
       controller.viewControllers = view_controllers
