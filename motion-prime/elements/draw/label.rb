@@ -90,7 +90,9 @@ module MotionPrime
     def set_text_position
       if computed_options.slice(:padding_top, :padding_bottom, :padding).values.none?
         computed_options[:width] ||= computed_width
-        @padding_top = (computed_outer_height - cached_content_height)/2
+        content_height = cached_content_height
+        content_height = computed_outer_height if content_height > computed_outer_height
+        @padding_top = (computed_outer_height - content_height)/2
         # @padding_top += 1 unless @padding_top.zero?
       end
     end
