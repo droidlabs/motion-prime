@@ -244,7 +244,7 @@ module MotionPrime
     def fetch_has_many_with_attributes(key, data, sync_options = {})
       old_collection = self.send(key)
       model_class = key.classify.constantize
-      self.store.save_interval = data.count
+      self.store.save_interval = data.present? ? data.count : 1
       # Update/Create existing records
       track_changed_attributes do
         data.each do |attributes|
