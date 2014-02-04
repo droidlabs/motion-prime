@@ -24,8 +24,9 @@ module MotionPrime
       @errors ||= Errors.new(self.weak_ref)
     end
 
-    # def dealloc
-    #   pp 'deall model'
-    # end
+    def dealloc
+      Prime.logger.dealloc_message :model, self
+      super
+    end
   end
 end

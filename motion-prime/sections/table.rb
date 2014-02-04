@@ -20,7 +20,7 @@ module MotionPrime
     end
 
     def dealloc
-      # pp 'Deallocating table', self.to_s, self.table_view.to_s
+      Prime.logger.dealloc_message :table, self, self.table_view.to_s
       table_delegate.clear_delegated
       table_view.setDataSource nil
       super

@@ -31,6 +31,12 @@ module MotionPrime
       controller
     end
 
+    def dealloc
+      Prime.logger.dealloc_message :tab_bar, self
+      clear_instance_variables
+      super
+    end
+
     protected
       def self.init_screen_with_options(options, tag: tag)
         screen, title = options.delete(:screen), options.delete(:title)

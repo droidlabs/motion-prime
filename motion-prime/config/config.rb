@@ -53,6 +53,7 @@ module MotionPrime
         end
         setup_models
         setup_colors
+        setup_logger
       end
 
       def setup_models
@@ -71,6 +72,11 @@ module MotionPrime
           res
         end
         Symbol.css_colors.merge!(colors)
+      end
+
+      def setup_logger
+        Prime::Logger.level = @base_config.logger.level
+        Prime::Logger.dealloc_items =  @base_config.logger.dealloc_items
       end
     end
 

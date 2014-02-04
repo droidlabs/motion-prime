@@ -45,7 +45,7 @@ module MotionPrime
     end
 
     def dealloc
-      pp 'Deallocating Screen', self.object_id, self.to_s
+      Prime.logger.dealloc_message :screen, self
       # FIXME: calling instance_eval in title method (_base_screen_mixin) instance variables need to be cleared manually
       clear_instance_variables(except: [:_search_bar])
       super
