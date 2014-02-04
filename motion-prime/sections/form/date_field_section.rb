@@ -22,6 +22,7 @@ module MotionPrime
     end
 
     def dealloc
+      picker = view(:date_picker)
       picker.setDelegate nil
       super
     end
