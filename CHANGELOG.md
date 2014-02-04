@@ -1,4 +1,4 @@
-=== 0.8.0.beta
+=== 0.7.1
 * fix memory leaks for UITabbarController
 * Improved logger.
 * Better support for attributed text.
