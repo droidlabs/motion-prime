@@ -18,9 +18,5 @@ module MotionPrime
         form.send(options[:action]) if options[:action]
       end
     end
-
-    def events_off
-      view(:button).off :touch_down
-    end
   end
 end
