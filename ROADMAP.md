@@ -1,5 +1,5 @@
 === 0.8.0
-* handle and fix memory leaks for UITabbarController
+* add cell preload for reverse scrolling table.
 * deprecate root level :title option for submit field
 * rename submit element in submit field to button element
 * rename date_picker element in date_picker field to input element

@@ -21,4 +21,6 @@ MotionPrime::Config.configure do |config|
     api.allow_queue = false
   end
   config.prime.cell_section.mixins = [Prime::CellSectionMixin]
+  config.logger.level = :info
+  config.logger.dealloc_items = ['screen', 'tab_bar']
 end

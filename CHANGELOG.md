@@ -1,3 +1,9 @@
+=== 0.7.1
+* fix memory leaks for UITabbarController
+* Improved logger.
+* Better support for attributed text.
+* Fix default vertical align for draw labels.
+
 === 0.7.0
 * Added Model.find(1) syntax support where 1 is :id attribute.
 * Migrate to AFMotion.
