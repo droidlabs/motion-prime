@@ -68,6 +68,8 @@ class ApiClient
         # handle progress
       elsif !response.success? && options[:allow_queue] && config.allow_queue?
         add_to_queue(method: method, path: path, params: params)
+      elsif response.operation.response.nil?
+        block.call if use_callback
       else
         block.call(prepared_object(response.object), response.operation.response.statusCode) if use_callback
         process_queue
