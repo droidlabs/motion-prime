@@ -12,6 +12,8 @@
 * add some extensions/middleware system, at least for networking.
 * create "display_network_error" extension.
 * add different templates. some templates should be more like final app.
+* add size_to_fit support for images.
+* fix bug where size_to_fit works incorrect with relative width.
 
 === 1.0.0
 * add sections/screens/models generator
