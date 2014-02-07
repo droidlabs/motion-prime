@@ -16,7 +16,7 @@ module MotionPrime
     delegate :init_pull_to_refresh, to: :table_delegate
 
     def table_data
-      []
+      @model || []
     end
 
     def dealloc
