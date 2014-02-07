@@ -59,7 +59,8 @@ class ApiClient
     use_callback = block_given?
 
     client_method = files.present? ? :"multipart_#{method}" : method
-    AFMotion::Client.shared.send client_method, "#{config.api_namespace}#{path}", data do |response, form_data, progress|
+    path = "#{config.api_namespace}#{path}" unless path.starts_with?('http')
+    AFMotion::Client.shared.send client_method, path, data do |response, form_data, progress|
       if form_data && files.present?
         files.each do |file_data|
           form_data.appendPartWithFileData(file_data[:data], name: file_data[:name], fileName:"avatar.png", mimeType: "image/jpeg")
