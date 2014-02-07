@@ -42,10 +42,7 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
   class MainScreen < Prime::Screen
     title 'Main screen'
 
-    def render
-      @main_section = MyProfileSection.new(screen: self)
-      @main_section.render
-    end
+    section :my_profile
   end
 
   # app/sections/my_profile.rb

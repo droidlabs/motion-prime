@@ -1,6 +1,7 @@
 motion_require "./_aliases_mixin"
 motion_require "./_orientations_mixin"
 motion_require "./_navigation_mixin"
+motion_require "./_sections_mixin"
 module MotionPrime
   module ScreenBaseMixin
     extend ::MotionSupport::Concern
@@ -9,6 +10,7 @@ module MotionPrime
     include MotionPrime::ScreenAliasesMixin
     include MotionPrime::ScreenOrientationsMixin
     include MotionPrime::ScreenNavigationMixin
+    include MotionPrime::ScreenSectionsMixin
 
     attr_accessor :parent_screen, :modal, :params, :main_section, :options, :tab_bar
     class_attribute :current_screen

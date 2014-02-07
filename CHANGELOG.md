@@ -1,3 +1,7 @@
+=== 0.7.2
+* Added simpler syntax for rendering sections in screen. E.g. section :my_profile.
+* Bug fixes.
+
 === 0.7.1
 * fix memory leaks for UITabbarController
 * Improved logger.

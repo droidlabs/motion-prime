@@ -69,9 +69,8 @@ MotionPrime::Styles.define :base_form do
     right: 0,
     top: 30,
     height: 35,
-    title_color: 0x16759a,
     title_shadow_color: :white,
-    contentHorizontalAlignment: UIControlContentHorizontalAlignmentLeft,
+    content_horizontal_alignment: :left,
     layer: {
       border_color: :gray,
       border_width: 1
