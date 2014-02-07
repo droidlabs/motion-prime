@@ -2,6 +2,7 @@
 module MotionPrime
   module HasSearchBar
     def add_search_bar(options = {}, &block)
+      @_search_timeout = options.delete(:timeout)
       target = options.delete(:target)
 
       @_search_bar = create_search_bar(options)
@@ -35,10 +36,16 @@ module MotionPrime
     end
 
     def searchBar(search_bar, textDidChange: text)
-      @search_callback.call(text)
+      BW::Reactor.cancel_timer(@_search_timer) if @_search_timer
+      if @_search_timeout
+        @_search_timer = BW::Reactor.add_timer(@_search_timeout.to_f/1000) { @search_callback.call(text) }
+      else
+        @search_callback.call(text)
+      end
     end
 
     def searchBarSearchButtonClicked(search_bar)
+      BW::Reactor.cancel_timer(@_search_timer) if @_search_timer
       search_bar.resignFirstResponder
     end
   end

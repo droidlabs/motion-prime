@@ -334,6 +334,12 @@ module MotionPrime
       end
 
     class << self
+      def inherited(subclass)
+        subclass.elements_options = self.elements_options.try(:clone)
+        subclass.container_options = self.container_options.try(:clone)
+        subclass.keyboard_close_bindings = self.keyboard_close_bindings.try(:clone)
+      end
+
       def element(name, options = {}, &block)
         options[:name] ||= name
         options[:type] ||= :label

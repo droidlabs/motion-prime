@@ -13,11 +13,13 @@ module MotionPrime
       builder = ViewBuilder.new(klass, options)
       options = builder.options.merge(calculate_frame: true, bounds: bounds)
       view = builder.view
+      insert_index = options.delete(:at_index)
+
       if render_target = options.delete(:render_target)
         options[:bounds] = render_target.bounds
-        render_target.addSubview(view)
+        insert_index ? render_target.insertSubview(view, atIndex: insert_index) : render_target.addSubview(view)
       elsif view_stack.any?
-        view_stack.last.addSubview(view)
+        insert_index ? view_stack.last.insertSubview(view, atIndex: insert_index) : view_stack.last.addSubview(view)
       end
 
       setup(view, options, &block)

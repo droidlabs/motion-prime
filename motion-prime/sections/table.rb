@@ -58,6 +58,13 @@ module MotionPrime
       @preloader_queue[-1] = :cancelled if @preloader_queue.present?
     end
 
+    def add_cells(cells)
+      prepare_table_cells(cells)
+      @data ||= []
+      @data += cells
+      reload_table_data
+    end
+
     def reload_cell(section)
       section.elements.values.each(&:compute_options!)
       section.cached_draw_image = nil
@@ -397,7 +404,7 @@ module MotionPrime
               break
             end
 
-            if screen.retainCount == 1
+            if screen.main_controller.retainCount == 1
               @strong_refs[queue_id] = nil
               @preloader_queue[queue_id] = :dealloc
               break
@@ -423,6 +430,13 @@ module MotionPrime
       end
 
     class << self
+      def inherited(subclass)
+        super
+        subclass.async_data_options = self.async_data_options.try(:clone)
+        subclass.section_header_options = self.section_header_options.try(:clone)
+        subclass.pull_to_refresh_block = self.pull_to_refresh_block.try(:clone)
+      end
+
       def async_table_data(options = {})
         self.async_data_options = options
       end

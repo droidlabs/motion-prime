@@ -210,6 +210,13 @@ module MotionPrime
     end
 
     class << self
+      def inherited(subclass)
+        super
+        subclass.fields_options = self.fields_options.try(:clone)
+        subclass.text_field_limits = self.text_field_limits.try(:clone)
+        subclass.text_view_limits = self.text_view_limits.try(:clone)
+      end
+
       def field(name, options = {}, &block)
         options[:name] = name
         options[:type] ||= :string

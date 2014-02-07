@@ -73,7 +73,7 @@ module MotionPrime
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|
-            if !image || screen.retainCount == 1 || section.retainCount == 1
+            if !image || screen.main_controller.retainCount == 1 || section.retainCount == 1
               @strong_refs = nil
               return
             end

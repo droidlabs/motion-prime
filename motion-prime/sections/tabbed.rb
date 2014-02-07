@@ -85,6 +85,13 @@ module MotionPrime
     end
 
     class << self
+      def inherited(subclass)
+        super
+        subclass.tabs_options = self.tabs_options.try(:clone)
+        subclass.tabs_default = self.tabs_default.try(:clone)
+        subclass.tabs_indexes = self.tabs_indexes.try(:clone)
+      end
+
       def tab(id, options = {})
         options[:name] ||= id.to_s.titleize
         options[:id] = id
