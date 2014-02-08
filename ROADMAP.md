@@ -1,5 +1,4 @@
-=== 0.8.0
-* deprecate root level :title option for submit field
+=== 0.8.1
 * rename submit element in submit field to button element
 * rename date_picker element in date_picker field to input element
 * Rename model to data in sections.
