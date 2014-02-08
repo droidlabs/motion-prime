@@ -111,53 +111,7 @@ module MotionPrime
 
         @styles = []
         if is_cell_section
-          base_styles = {common: [], specific: []}
-          suffixes = {common: [], specific: []}
-
-          # following example in Prime::TableSection#cell_styles
-          # form element/cell: <base|user>_form_field, <base|user>_form_string_field, user_form_field_email
-          # table element/cell: <base|categories>_table_cell, categories_table_title
-          if section.section_styles
-            section.section_styles.each { |type, values| base_styles[type] += values }
-          end
-          if %w[base table_view_cell].exclude?(@view_name)
-            # form element: _input
-            # table element: _image
-            suffixes[:common] << @view_name.to_sym
-            suffixes[:common] << :"#{@view_name}_with_errors" if has_errors
-          end
-          if name && name.to_s != @view_name
-            # form element: _input
-            # table element: _icon
-            suffixes[:specific] << name.to_sym
-            suffixes[:specific] << :"#{name}_with_errors" if has_errors
-          end
-          # form cell: base_form_field, base_form_string_field
-          # form element: base_form_field_string_field, base_form_string_field_text_field
-          # table cell: base_table_cell
-          # table element: base_table_cell_image
-          common_styles = if suffixes[:common].any?
-            build_styles_chain(base_styles[:common], suffixes[:common])
-          elsif suffixes[:specific].any?
-            build_styles_chain(base_styles[:common], suffixes[:specific])
-          elsif @view_name == 'table_view_cell'
-            base_styles[:common]
-          end
-          @styles += Array.wrap(common_styles)
-
-          # form cell: user_form_field, user_form_string_field, user_form_field_email
-          # form element: user_form_field_text_field, user_form_string_field_text_field, user_form_field_email_text_field
-          # table cell: categories_table_cell, categories_table_title
-          # table element: categories_table_cell_image, categories_table_title_image
-          specific_base_common_suffix_styles = if suffixes[:common].any?
-            build_styles_chain(base_styles[:specific], suffixes[:common])
-          elsif suffixes[:specific].empty? && @view_name == 'table_view_cell'
-            base_styles[:specific]
-          end
-          @styles += Array.wrap(specific_base_common_suffix_styles)
-          # form element: user_form_field_input, user_form_string_field_input, user_form_field_email_input
-          # table element: categories_table_cell_icon, categories_table_title_icon
-          @styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
+          @styles += compute_cell_style_options(style_sources, has_errors)
         end
         # don't use present? here, it's slower, while this method should be very fast
         if section && section.name && section.name != '' && name && name != ''
@@ -168,9 +122,68 @@ module MotionPrime
         custom_styles = style_sources.map do |source|
           normalize_object(source.delete(:styles), section)
         end.flatten
+
+        # styles got from mixins option
+        mixin_styles = style_sources.map do |source|
+          normalize_object(source.delete(:mixins), section)
+        end.flatten.map{ |m| :"_mixin_#{m}" }
+
         @styles += custom_styles
+        @styles += mixin_styles
         # puts @view_class.to_s + @styles.inspect, ''
         @styles
+      end
+
+      def compute_cell_style_options(style_sources, has_errors)
+        base_styles = {common: [], specific: []}
+        suffixes = {common: [], specific: []}
+        all_styles = []
+
+        # following example in Prime::TableSection#cell_styles
+        # form element/cell: <base|user>_form_field, <base|user>_form_string_field, user_form_field_email
+        # table element/cell: <base|categories>_table_cell, categories_table_title
+        if section.section_styles
+          section.section_styles.each { |type, values| base_styles[type] += values }
+        end
+        if @view_name != 'base' && @view_name != 'table_view_cell'
+          # form element: _input
+          # table element: _image
+          suffixes[:common] << @view_name.to_sym
+          suffixes[:common] << :"#{@view_name}_with_errors" if has_errors
+        end
+        if name && name.to_s != @view_name
+          # form element: _input
+          # table element: _icon
+          suffixes[:specific] << name.to_sym
+          suffixes[:specific] << :"#{name}_with_errors" if has_errors
+        end
+        # form cell: base_form_field, base_form_string_field
+        # form element: base_form_field_string_field, base_form_string_field_text_field
+        # table cell: base_table_cell
+        # table element: base_table_cell_image
+        common_styles = if suffixes[:common].any?
+          build_styles_chain(base_styles[:common], suffixes[:common])
+        elsif suffixes[:specific].any?
+          build_styles_chain(base_styles[:common], suffixes[:specific])
+        elsif @view_name == 'table_view_cell'
+          base_styles[:common]
+        end
+        all_styles += Array.wrap(common_styles)
+
+        # form cell: user_form_field, user_form_string_field, user_form_field_email
+        # form element: user_form_field_text_field, user_form_string_field_text_field, user_form_field_email_text_field
+        # table cell: categories_table_cell, categories_table_title
+        # table element: categories_table_cell_image, categories_table_title_image
+        specific_base_common_suffix_styles = if suffixes[:common].any?
+          build_styles_chain(base_styles[:specific], suffixes[:common])
+        elsif suffixes[:specific].empty? && @view_name == 'table_view_cell'
+          base_styles[:specific]
+        end
+        all_styles += Array.wrap(specific_base_common_suffix_styles)
+        # form element: user_form_field_input, user_form_string_field_input, user_form_field_email_input
+        # table element: categories_table_cell_icon, categories_table_title_icon
+        all_styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
+        all_styles
       end
 
     class << self
