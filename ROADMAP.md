@@ -2,6 +2,7 @@
 * rename submit element in submit field to button element
 * rename date_picker element in date_picker field to input element
 * Rename model to data in sections.
+* Move api_client and model sync mixin to prime_api gem.
 
 === 0.9.0
 * bug: if mp label do not have text and was set as hidden, it should unhide after setting text
