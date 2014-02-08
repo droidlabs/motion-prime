@@ -1,4 +1,4 @@
-=== 0.8.0.beta
+=== 0.8.0
 * Simpler syntax for using fonts. See prime_bootstrap.
 * All style things moved from default prime template to bootstrap template.
 * Removed root :title option support for submit field.
