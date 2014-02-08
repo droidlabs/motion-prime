@@ -41,6 +41,8 @@ module MotionPrime
       draw_in_context(UIGraphicsGetCurrentContext())
     end
 
+    # using hack for bug described here: http://stackoverflow.com/questions/19232850/nsattributedstring-drawinrect-disappears-when-the-frame-is-offset
+    # TODO: check it in iOS 7.1 and remove CGContext manuplations (pass innerRect/topLeftCorner) if fixed
     def draw_in_context(context)
       return if computed_options[:hidden]
       size_to_fit_if_needed
@@ -53,11 +55,16 @@ module MotionPrime
       if options[:is_html] || options[:line_spacing] || options[:line_height] || options[:underline]
         prepared_text = options[:is_html] ? html_string(options) : attributed_string(options)
 
+        CGContextSaveGState(context)
         if options[:inner_rect]
-          prepared_text.drawInRect(options[:inner_rect])
+          rect = options[:inner_rect]
+          CGContextTranslateCTM(context, *rect.origin.to_a)
+          prepared_text.drawInRect(CGRectMake(0, 0, *rect.size.to_a))
         else
-          prepared_text.drawAtPoint(options[:top_left_corner])
+          CGContextTranslateCTM(context, *options[:top_left_corner].to_a)
+          prepared_text.drawAtPoint(CGPointMake(0, 0))
         end
+        CGContextRestoreGState(context)
       else
         # regular string
         prepared_text = options[:text]

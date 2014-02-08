@@ -19,6 +19,7 @@ module MotionPrime
     include HasNormalizer
     include HasClassFactory
     include DrawSectionMixin
+    include DelegateMixin
 
     attr_accessor :screen, :model, :name, :options, :elements, :section_styles
     class_attribute :elements_options, :container_options, :keyboard_close_bindings

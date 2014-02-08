@@ -22,10 +22,6 @@ module MotionPrime
         NSDocumentTypeDocumentAttribute => NSHTMLTextDocumentType,
         NSCharacterEncodingDocumentAttribute => NSNumber.numberWithInt(NSUTF8StringEncoding)
       }
-      # DTCoreTextFontDescriptor.setOverrideFontName(Prime::Config.font.light, forFontFamily: 'Calibri', bold: false, italic: false)
-      # DTCoreTextFontDescriptor.setOverrideFontName(Prime::Config.font.bold, forFontFamily: 'Calibri', bold: true, italic: false)
-      # DTCoreTextFontDescriptor.setOverrideFontName(Prime::Config.font.light_italic, forFontFamily: 'Calibri', bold: false, italic: true)
-      # DTCoreTextFontDescriptor.setOverrideFontName(Prime::Config.font.bold_italic, forFontFamily: 'Calibri', bold: true, italic: true)
 
       text = "#{options[:text]}<style>* { #{styles.join} }</style>"
       NSAttributedString.alloc.initWithData(text.dataUsingEncoding(NSUTF8StringEncoding), options: html_options, documentAttributes: nil, error: nil)

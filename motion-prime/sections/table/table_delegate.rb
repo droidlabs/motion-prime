@@ -1,18 +1,10 @@
 module MotionPrime
   class TableDelegate
+    include DelegateMixin
     attr_accessor :table_section
     def initialize(options)
       self.table_section = options[:section].try(:weak_ref)
       @section_instance = table_section.to_s
-    end
-
-    def delegated_by(view)
-      @delegated_views ||= []
-      @delegated_views << view
-    end
-
-    def clear_delegated
-      Array.wrap(@delegated_views).each { |view| view.setDelegate(nil) }
     end
 
     # def dealloc

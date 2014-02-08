@@ -22,7 +22,6 @@ module MotionPrime
       table_section.allow_string_replacement?(text_field, limit, range, string)
     end
 
-
     def textViewDidBeginEditing(text_view)
       table_section.on_input_edit_begin(text_view)
     end

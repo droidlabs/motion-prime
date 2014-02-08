@@ -23,3 +23,5 @@
 * add computed_options.get(), this will allow to make sure that options is computed.
 * add testing framework
 * add DSL for ViewStyles#setValue conditions
+* bug: bind_keyboard_close breaks bind_guesture
+* add clone to models to prevent problems when bag_key is overrided
