@@ -14,6 +14,10 @@ module MotionPrime
       render_sections
     end
 
+    def all_sections
+      @sections.values
+    end
+
     def create_sections
       section_options = self.class._section_options
       return unless section_options
@@ -31,16 +35,16 @@ module MotionPrime
 
     def render_sections
       return unless @sections
-      if @sections.count > 1
-        @main_section = MotionPrime::TableSection.new(model: @sections.values, screen: self)
+      if all_sections.count > 1
+        @main_section = MotionPrime::TableSection.new(model: all_sections, screen: self)
         @main_section.render
       else
-        @sections.values.first.render
+        all_sections.first.render
       end
     end
 
     def main_section
-      @main_section || @sections.first
+      @main_section || all_sections.first
     end
 
     module ClassMethods

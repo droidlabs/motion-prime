@@ -12,7 +12,7 @@ module MotionPrime
     include MotionPrime::ScreenNavigationMixin
     include MotionPrime::ScreenSectionsMixin
 
-    attr_accessor :parent_screen, :modal, :params, :main_section, :options, :tab_bar
+    attr_accessor :parent_screen, :modal, :params, :options, :tab_bar
     class_attribute :current_screen
 
     def app_delegate
