@@ -64,13 +64,13 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 
 ## Extensions
 
-* [ECSlidingViewController 2 integration](https://github.com/droidlabs/prime_sliding_menu) (Sidebar)
-* [RESideMenu integration](https://github.com/droidlabs/prime_reside_menu) (Sidebar)
-* [Sliding actions support](https://github.com/droidlabs/prime_sliding_action)
+* [ECSlidingViewController 2 integration](https://github.com/motionprime/prime_sliding_menu) (Sidebar)
+* [RESideMenu integration](https://github.com/motionprime/prime_reside_menu) (Sidebar)
+* [Sliding actions support](https://github.com/motionprime/prime_sliding_action)
 
 ## Samples
 
-* [Simple to-do app](https://github.com/droidlabs/prime_sample_todo)
+* [Simple to-do app](https://github.com/motionprime/prime_sample_todo)
 
 ## Documentation
 
