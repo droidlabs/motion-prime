@@ -113,6 +113,13 @@ module MotionPrime
         if is_cell_section
           @styles += compute_cell_style_options(style_sources, has_errors)
         end
+
+         # styles got from mixins option
+        mixin_styles = style_sources.map do |source|
+          normalize_object(source.delete(:mixins), section)
+        end.flatten.map{ |m| :"_mixin_#{m}" }
+        @styles += mixin_styles
+
         # don't use present? here, it's slower, while this method should be very fast
         if section && section.name && section.name != '' && name && name != ''
           # using for base sections
@@ -123,13 +130,7 @@ module MotionPrime
           normalize_object(source.delete(:styles), section)
         end.flatten
 
-        # styles got from mixins option
-        mixin_styles = style_sources.map do |source|
-          normalize_object(source.delete(:mixins), section)
-        end.flatten.map{ |m| :"_mixin_#{m}" }
-
         @styles += custom_styles
-        @styles += mixin_styles
         # puts @view_class.to_s + @styles.inspect, ''
         @styles
       end
