@@ -35,7 +35,7 @@ module MotionPrime
         @main_section = MotionPrime::TableSection.new(model: @sections.values, screen: self)
         @main_section.render
       else
-        @sections.first.render
+        @sections.values.first.render
       end
     end
 
