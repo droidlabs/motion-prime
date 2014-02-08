@@ -434,7 +434,6 @@ module MotionPrime
         super
         subclass.async_data_options = self.async_data_options.try(:clone)
         subclass.section_header_options = self.section_header_options.try(:clone)
-        subclass.pull_to_refresh_block = self.pull_to_refresh_block.try(:clone)
       end
 
       def async_table_data(options = {})
