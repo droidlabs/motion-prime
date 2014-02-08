@@ -1,7 +1,7 @@
 module MotionPrime
   class SelectFieldSection < BaseFieldSection
     element :label, type: :label do
-      options[:label] || {}
+      default_label_options
     end
     element :button, type: :button do
       options[:button] || {}

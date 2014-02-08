@@ -1,7 +1,7 @@
 module MotionPrime
   class StringFieldSection < BaseFieldSection
     element :label, type: :label do
-      options[:label] || {}
+      default_label_options
     end
 
     element :input, type: :text_field, delegate: proc { form.table_delegate } do

@@ -103,6 +103,15 @@ module MotionPrime
       NSLog("can't blur on element #{self.class_name_without_kvo}")
     end
 
+    def default_label_options
+      label_options = options[:label]
+      if label_options.has_key?(:text)
+        label_options
+      else
+        {text: options[:name].to_s.titleize}.merge(label_options)
+      end
+    end
+
     def bind_text_input
       view(:input).on :change do |view|
         focus

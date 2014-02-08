@@ -1,7 +1,8 @@
 === 0.8.0.beta
 * Simpler syntax for using fonts. See prime_bootstrap.
 * All style things moved from default prime template to bootstrap template.
-* Removed root level :title option support for submit field.
+* Removed root :title option support for submit field.
+* Use field name as label text by default.
 * Bug fixes.
 
 === 0.7.2

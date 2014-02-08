@@ -2,7 +2,7 @@ module MotionPrime
   class DateFieldSection < BaseFieldSection
     container height: 190
     element :label, type: :label do
-      options[:label] || {}
+      default_label_options
     end
     element :date_picker, type: :date_picker do
       options[:input] || {}

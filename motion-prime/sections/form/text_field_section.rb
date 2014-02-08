@@ -1,7 +1,7 @@
 module MotionPrime
   class TextFieldSection < BaseFieldSection
     element :label, type: :label do
-      options[:label] || {}
+      default_label_options
     end
     element :input, type: :text_view, delegate: proc { form.table_delegate } do
       {editable: true}.merge(options[:input] || {})
