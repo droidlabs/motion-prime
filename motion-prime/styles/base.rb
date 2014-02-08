@@ -60,6 +60,6 @@ MotionPrime::Styles.define :base do
 
   style :spinner_message, mixins: [:multiline],
     top: proc { screen.view.center.y + 38 }, left: 50, width: 220, text_alignment: :center,
-    font: proc { MotionPrime::Config.font.name.uifont(18) },
+    font: proc { :app_base.uifont(18) },
     line_spacing: 6
 end

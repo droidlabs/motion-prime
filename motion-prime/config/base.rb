@@ -5,7 +5,11 @@ MotionPrime::Config.configure do |config|
   else
     config.model.store_type = :file
   end
-  config.font.name = "Ubuntu"
+  
+  config.fonts do |fonts|
+    fonts.base = :system
+  end
+
   config.colors do |colors|
     colors.base = 0x424242
     colors.error = 0xef471f

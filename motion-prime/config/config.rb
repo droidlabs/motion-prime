@@ -53,6 +53,7 @@ module MotionPrime
         end
         setup_models
         setup_colors
+        setup_fonts
         setup_logger
       end
 
@@ -72,6 +73,23 @@ module MotionPrime
           res
         end
         Symbol.css_colors.merge!(colors)
+      end
+
+      def setup_fonts
+        return unless @base_config
+        colors = @base_config.fonts.to_hash.inject({}) do |res, (font, value)|
+          if [:system, :bold, :italic, :monospace].include?(value)
+            value = Symbol.uifont[value]
+          end
+          unless font == :prefix
+            unless @base_config.fonts.prefix.nil?
+              res[:"#{@base_config.fonts.prefix}_#{font}"] = value
+            end
+            res[:"app_#{font}"] = value
+          end
+          res
+        end
+        Symbol.uifont.merge!(colors)
       end
 
       def setup_logger

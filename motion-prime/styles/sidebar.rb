@@ -18,6 +18,6 @@ Prime::Styles.define :sidebar do
     left: 20,
     top: 10,
     width: 320,
-    font: proc { :system.uifont(20) },
+    font: proc { :app_base.uifont(20) },
     size_to_fit: true
 end

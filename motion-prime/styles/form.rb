@@ -31,7 +31,7 @@ MotionPrime::Styles.define :base_form do
     height: 16,
     left: 0,
     right: 0,
-    font: proc { MotionPrime::Config.font.name.uifont(12) },
+    font: proc { :app_base.uifont(12) },
     size_to_fit: true
 
   style :field_error_message,
@@ -43,7 +43,7 @@ MotionPrime::Styles.define :base_form do
     number_of_lines: 0,
     size_to_fit: true,
     text_color: :app_error,
-    font: proc { MotionPrime::Config.font.name.uifont(12) }
+    font: proc { :app_base.uifont(12) }
 
   # available options for input:
   # @layer: @border_width: FLOAT
@@ -55,8 +55,8 @@ MotionPrime::Styles.define :base_form do
       border_width: 1,
       border_color: :gray
     },
-    font: proc { MotionPrime::Config.font.name.uifont(16) },
-    placeholder_font: proc { MotionPrime::Config.font.name.uifont(16) },
+    font: proc { :app_base.uifont(16) },
+    placeholder_font: proc { :app_base.uifont(16) },
     background_color: :white,
     left: 0,
     right: 0,
@@ -77,7 +77,7 @@ MotionPrime::Styles.define :base_form do
     },
     title_color: :gray,
     title_label: {
-      font: proc { MotionPrime::Config.font.name.uifont(16) }
+      font: proc {:app_base.uifont(16) }
     }
 
   style :select_field_image,
@@ -121,9 +121,9 @@ MotionPrime::Styles.define :base_form do
 
   style :switch_field_label,
     top: 10,
-    font: proc { MotionPrime::Config.font.name.uifont(16) }
+    font: proc { :app_base.uifont(16) }
 
   style :switch_field_hint,
     top: 40,
-    font: proc { MotionPrime::Config.font.name.uifont(12) }
+    font: proc { :app_base.uifont(12) }
 end

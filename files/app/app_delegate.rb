@@ -9,7 +9,7 @@ class AppDelegate < Prime::BaseAppDelegate
     bar_appearance.barTintColor = :app_dark.uicolor
 
     settings = {
-      UITextAttributeFont =>  Prime::Config.font.name.uifont(17),
+      UITextAttributeFont =>  :app_base.uifont(17),
       UITextAttributeTextColor =>  :white.uicolor
     }
     bar_appearance.setTitleTextAttributes(settings)
