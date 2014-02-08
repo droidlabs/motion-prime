@@ -22,5 +22,5 @@ MotionPrime::Config.configure do |config|
   end
   config.prime.cell_section.mixins = [Prime::CellSectionMixin]
   config.logger.level = :info
-  config.logger.dealloc_items = ['screen', 'tab_bar']
+  config.logger.dealloc_items = ['screen']
 end

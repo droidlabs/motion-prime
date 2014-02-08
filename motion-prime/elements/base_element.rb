@@ -29,10 +29,10 @@ module MotionPrime
       @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
     end
 
-    # def dealloc
-    #   pp 'Deallocating elemenet', self.name, self.to_s, computed_options[:text]
-    #   super
-    # end
+    def dealloc
+      Prime.logger.dealloc_message :element, self, self.name
+      super
+    end
 
     def add_target(target = nil, action = 'on_click:', event = :touch)
       return false unless self.view

@@ -21,6 +21,7 @@ module MotionPrime
     end
 
     def dealloc
+      BW::Reactor.cancel_timer(@_search_timer) if @_search_timer
       @_search_bar.try(:setDelegate, nil)
       @_search_bar = nil
       super
@@ -38,7 +39,7 @@ module MotionPrime
     def searchBar(search_bar, textDidChange: text)
       BW::Reactor.cancel_timer(@_search_timer) if @_search_timer
       if @_search_timeout
-        @_search_timer = BW::Reactor.add_timer(@_search_timeout.to_f/1000) { @search_callback.call(text) }
+        @_search_timer = BW::Reactor.add_timer(@_search_timeout.to_f/1000, proc{ @search_callback.call(text) }.weak!)
       else
         @search_callback.call(text)
       end
@@ -46,6 +47,7 @@ module MotionPrime
 
     def searchBarSearchButtonClicked(search_bar)
       BW::Reactor.cancel_timer(@_search_timer) if @_search_timer
+      @search_callback.call(search_bar.text)
       search_bar.resignFirstResponder
     end
   end

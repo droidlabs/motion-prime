@@ -394,16 +394,16 @@ module MotionPrime
         @preloader_queue ||= []
         @strong_refs ||= []
 
-        # TODO: do not release parent_objcets unless finished
-        BW::Reactor.schedule(@preloader_queue.count) do |queue_id|
-          @preloader_queue[queue_id] = :in_progress
-          @strong_refs[queue_id] = screen.main_controller.strong_ref
+        # TODO: we do we need to keep screen ref too?
+        queue_id = @preloader_queue.count
+        @strong_refs[queue_id] = [screen.strong_ref, screen.main_controller.strong_ref]
+        @preloader_queue[queue_id] = :in_progress
+        BW::Reactor.schedule(queue_id) do |queue_id|
           result = load_count.times do |offset|
             if @preloader_queue[queue_id] == :cancelled
               @strong_refs[queue_id] = nil
               break
             end
-
             if screen.main_controller.retainCount == 1
               @strong_refs[queue_id] = nil
               @preloader_queue[queue_id] = :dealloc
