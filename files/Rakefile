@@ -14,5 +14,4 @@ Motion::Project::App.setup do |app|
 
   app.version = '0.0.1'
   app.icons = %w{Icon.png}
-  app.fonts = ['fonts/ubuntu.ttf']
 end

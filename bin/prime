@@ -11,7 +11,8 @@ class App
   
   main do |command, opt|
     case command.to_sym
-    when :new then create(opt)
+    when :new then create_base(opt)
+    when :bootstrap then create_bootstrap(opt)
     else help
     end
     0
@@ -24,14 +25,22 @@ class App
     info "    Creates a new MotionPrime app from a template."
   end
 
-  def self.create(name)
+  def self.create_base(name)
+    create(name, "motion-prime", "git://github.com/droidlabs/motion-prime.git")
+  end
+
+  def self.create_bootstrap(name)
+    create(name, "prime_bootstrap", "git://github.com/motionprime/prime_bootstrap.git")
+  end
+
+  def self.create(name, template_name, repo)
     return puts "Usage: prime new <appname>" unless name.to_s.length > 0
     info "Creating new MotionPrime iOS app: #{name}"
     if false
-      sh "motion create #{name} --template=git://github.com/droidlabs/motion-prime.git"
+      sh "motion create #{name} --template=#{repo}"
     else
-      clone_template
-      sh "motion create #{name} --template=motion-prime"
+      clone_template(template_name, repo)
+      sh "motion create #{name} --template=#{template_name}"
     end
     info "Command: bundle instal"
     sh "cd ./#{name}; bundle install"
@@ -45,20 +54,16 @@ class App
     ENV['HOME'].split('/')[0..2].join('/')
   end
 
-  def self.repo_url
-    "git://github.com/droidlabs/motion-prime.git"
+  def self.clone_template(name, repo)
+    path = File.expand_path(File.join(home_path, 'Library/RubyMotion/template', name))
+    git_clone(path, repo)
   end
 
-  def self.clone_template
-    path = File.expand_path(File.join(home_path, 'Library/RubyMotion/template', 'motion-prime'))
-    git_clone(path)
-  end
-
-  def self.git_clone(path)
+  def self.git_clone(path, repo)
     if File.exist?(path)
       system("git --work-tree=#{path} --git-dir=#{path}/.git pull origin master")
     else
-      system("git clone #{repo_url} #{path}")
+      system("git clone #{repo} #{path}")
     end
   end
 

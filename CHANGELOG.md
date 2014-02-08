@@ -1,3 +1,8 @@
+=== 0.8.0.beta
+* Simpler syntax for using fonts. See prime_bootstrap.
+* All style things moved from default prime template to bootstrap template.
+* Bug fixes.
+
 === 0.7.2
 * Added simpler syntax for rendering sections in screen. E.g. section :my_profile.
 * Bug fixes.

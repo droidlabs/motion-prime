@@ -1,6 +1,6 @@
 # MotionPrime [![Build Status](https://travis-ci.org/droidlabs/motion-prime.png)](https://travis-ci.org/droidlabs/motion-prime) [![Code Climate](https://codeclimate.com/github/droidlabs/motion-prime.png)](https://codeclimate.com/github/droidlabs/motion-prime) [![Roadchange](https://roadchange.com/droidlabs/motion-prime/badge.png)](https://roadchange.com/droidlabs/motion-prime) 
 
-![Prime](https://s3-us-west-2.amazonaws.com/webmate/assets/prime.jpg)
+![Prime](https://s3.amazonaws.com/motionprime/logo-1.png)
 
 MotionPrime is yet another framework written on RubyMotion for creating really fast iOS applications.
 
