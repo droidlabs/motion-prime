@@ -11,19 +11,19 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 
 ## Getting Started
 
-### 1. Install MotionPrime:
+#### 1. Install MotionPrime:
 
     $ gem install motion-prime
 
-### 2. Create empty MotionPrime project:
-
-    $ prime new myapp
-
-### 3. Or create bootstrap MotionPrime project:
+#### 2a. Create [bootstrap](https://github.com/motionprime/prime_bootstrap) project:
   
     $ prime bootstrap myapp
 
-### 4. Run application
+#### 2b. OR create empty project:
+
+    $ prime new myapp
+
+#### 3. Run application
 
     $ rake
 
