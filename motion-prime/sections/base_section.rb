@@ -146,13 +146,6 @@ module MotionPrime
       self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
     end
 
-    def load_elements
-      self.elements.values.each do |element|
-        element.size_to_fit_if_needed if element.is_a?(LabelDrawElement)
-        element.compute_options! if element.respond_to?(:computed_options) && !element.computed_options
-      end
-    end
-
     def add_element(key, options = {})
       return unless render_element?(key)
       opts = options.clone

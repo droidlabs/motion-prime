@@ -3,11 +3,14 @@ module MotionPrime
   module CellSectionMixin
     extend ::MotionSupport::Concern
 
+    include SectionWithContainerMixin
+
     attr_writer :table
     attr_reader :pending_display
 
     included do
       class_attribute :custom_cell_name
+      container_element type: :table_view_cell
     end
 
     def table
@@ -42,27 +45,10 @@ module MotionPrime
     end
 
     def init_container_element(options = {})
-      @container_element ||= begin
-        options.merge!({
-          screen: screen,
-          section: self.weak_ref,
-          has_drawn_content: true
-        })
-        options[:styles] ||= []
-        options[:styles] = [:"#{table.name}_first_cell"] if table.data.first == self
-        options[:styles] = [:"#{table.name}_last_cell"] if table.data.last == self
-        MotionPrime::BaseElement.factory(:table_view_cell, options)
-      end
-    end
-
-    # FIXME: Why this duplicates functionality from other parts, e.g. draw_in?
-    def load_container_element(options = {})
-      init_container_element(options)
-      load_elements
-      @container_element.compute_options! unless @container_element.computed_options
-      if respond_to?(:prerender_elements_for_state) && prerender_enabled?
-        prerender_elements_for_state(:normal)
-      end
+      options[:styles] ||= []
+      options[:styles] = [:"#{table.name}_first_cell"] if table.data.first == self
+      options[:styles] = [:"#{table.name}_last_cell"] if table.data.last == self
+      super(options)
     end
 
     def pending_display!

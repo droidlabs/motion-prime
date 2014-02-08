@@ -314,7 +314,7 @@ module MotionPrime
       def load_cell_by_index(index, options = {})
         section = rows_for_section(index.section)[index.row]
         if section.load_section && options[:preload] && !section.container_element && async_data? # perform only if just loaded
-          section.load_container_element(container_element_options_for(index))
+          section.load_container_with_elements(container: container_element_options_for(index))
         end
         section
       end

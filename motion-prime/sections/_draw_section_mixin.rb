@@ -4,30 +4,13 @@ module MotionPrime
 
     include HasStyles
     include FrameCalculatorMixin
+    include SectionWithContainerMixin
+
     attr_accessor :container_element, :container_gesture_recognizers, :cached_draw_image
+
     included do
       class_attribute :prerender_enabled
-    end
-
-    def container_view
-      container_element.try(:view)
-    end
-
-    def init_container_element(options = {})
-      @container_element ||= begin
-        options.merge!({
-          screen: screen,
-          section: self.weak_ref,
-          has_drawn_content: true
-        })
-        options[:styles] ||= []
-        MotionPrime::BaseElement.factory(:view_with_section, options)
-      end
-    end
-
-    def load_container_element(options = {})
-      init_container_element(options)
-      @container_element.compute_options! unless @container_element.computed_options
+      container_element type: :view_with_section
     end
 
     def draw_in(rect, state = :normal)
