@@ -63,6 +63,11 @@ MotionPrime::Styles.define :base_form do
     top: 30,
     bottom: 0
 
+  style :date_field_input,
+    width: 300,
+    height: 150,
+    top: 30, left: 0
+
   style :select_field_button,
     background_color: :white,
     left: 0,

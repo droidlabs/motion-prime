@@ -9,7 +9,7 @@ module MotionPrime
     # == Basic Sample
     # class MyLoginForm < MotionPrime::FormSection
     #   field :email, label: { text: 'E-mail' },  input: { placeholder: 'Your E-mail' }
-    #   field :submit, title: 'Login', type: :submit
+    #   field :submit, button: { title: 'Login' }, type: :submit, action: :on_submit
     #
     #   def on_submit
     #     email = view("email:input").text

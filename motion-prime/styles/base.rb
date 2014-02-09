@@ -46,11 +46,6 @@ MotionPrime::Styles.define :base do
   style :google_map,
     top: 0, left: 0, right: 0, bottom: 0
 
-  style :date_picker, :form_field_date_picker,
-    width: 300,
-    height: 150,
-    top: 30, left: 0
-
   style :spinner,
     annular: true,
     center: proc { screen.view.center }, width: 37, height: 37,
