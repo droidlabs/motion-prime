@@ -23,14 +23,15 @@ module MotionPrime
       return unless section_options
       @sections = {}
       section_options.map do |name, options|
-        @sections[name] = create_section(options.clone)
+        section = create_section(options.clone)
+        @sections[name] = section if section
       end
     end
 
     def create_section(options)
       section_class = class_factory("#{options.delete(:name)}_section")
       options = normalize_options(options).merge(screen: self)
-      section_class.new(options)
+      !options.has_key?(:if) || options[:if] ? section_class.new(options) : nil
     end
 
     def render_sections
