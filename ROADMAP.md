@@ -1,7 +1,6 @@
 === 0.8.1
 * rename submit element in submit field to button element
 * rename date_picker element in date_picker field to input element
-* Rename model to data in sections.
 * Move api_client and model sync mixin to prime_api gem.
 
 === 0.9.0
@@ -23,3 +22,4 @@
 * add computed_options.get(), this will allow to make sure that options is computed.
 * add testing framework
 * add DSL for ViewStyles#setValue conditions
+* add embed/regular has many types. embedded by default.

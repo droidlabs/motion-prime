@@ -3,7 +3,7 @@ describe "Prime::Model Finder" do
     MotionPrime::Store.connect
     @store = MotionPrime::Store.shared_store
 
-    user = stub_user("Bob", 10, Time.now)
+    user = stub_user("Bob", 10, Time.now, 15)
     user.save
 
     user2 = stub_user("Amy", 11, Time.now)
@@ -18,8 +18,8 @@ describe "Prime::Model Finder" do
   end
 
   describe "::find" do
-    it "search object traditional way: supply key, operator and value" do
-      users = User.find(:name, NSFEqualTo, "Bob")
+    it "search object traditional way using id" do
+      users = User.find(15)
       users.should.not.be.nil
       users.is_a?(Array).should.be.true
 
@@ -100,30 +100,15 @@ describe "Prime::Model Finder" do
       user.age.should.be == 59
     end
 
-    it "find object" do
-      users = User.find(:name, NSFEqualTo, "Bob")
-      users.size.should == 1
-
-      user = users.first
-      user.name.should == "Bob"
-      user.class.should == User
-    end
-
     it "find object with quote" do
       stub_user("Bob'd", 49, Time.now).save
 
-      users = User.find(:name, NSFEqualTo, "Bob'd")
+      users = User.find(:name => { NSFEqualTo => "Bob'd"})
       users.size.should == 1
 
       user = users.first
       user.name.should == "Bob'd"
       user.class.should == User
-    end
-
-    it "only return objects of the class" do
-      car = Car.create(:name => "Honda")
-      Car.find.size.should == 1
-      Car.find.first.key.should == car.key
     end
   end
 
@@ -173,7 +158,9 @@ describe "Prime::Model Finder" do
       Car.all.size.should == 1
       Car.all.first.key.should == car.key
     end
+  end
 
+  describe "::find_keys" do
     it "only return objects of the class" do
       car = Car.create(:name => "Honda")
       Car.find_keys.size.should == 1

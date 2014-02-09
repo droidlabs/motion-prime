@@ -33,6 +33,15 @@ class Autobot < MotionPrime::Model
   attribute :name
 end
 
+class Organization < MotionPrime::Model
+  attribute :name
+  has_many :projects
+end
+
+class Project < MotionPrime::Model
+  attribute :title
+end
+
 module CustomModule; end
 class CustomModule::Car < MotionPrime::Model
   attribute :name
@@ -40,8 +49,9 @@ class CustomModule::Car < MotionPrime::Model
 end
 Car = CustomModule::Car
 
-def stub_user(name, age, created_at)
+def stub_user(name, age, created_at, id = nil)
   user = User.new
+  user.id = id || 1
   user.name = name
   user.age  = age
   user.created_at = created_at

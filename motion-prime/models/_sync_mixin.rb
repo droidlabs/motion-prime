@@ -22,9 +22,9 @@ module MotionPrime
     #
     # @param key [Symbol] association name
     # @return url [String] url to use in model association sync
-    def association_sync_url(key, options)
+    def association_sync_url(key, options, sync_options = {})
       url = options[:sync_url]
-      url = url.call(self) if url.is_a?(Proc)
+      url = url.call(self, sync_options) if url.is_a?(Proc)
       normalize_sync_url(url)
     end
 
@@ -228,7 +228,7 @@ module MotionPrime
     def fetch_has_many(key, options = {}, sync_options = {}, &block)
       use_callback = block_given?
       NSLog("SYNC: started sync for #{key} in #{self.class_name_without_kvo}")
-      api_client.get association_sync_url(key, options) do |response, status_code|
+      api_client.get association_sync_url(key, options, sync_options) do |response, status_code|
         data = options[:sync_key] && response ? response[options[:sync_key]] : response
         if data
           fetch_has_many_with_attributes(key, data, sync_options)
@@ -251,7 +251,7 @@ module MotionPrime
           model = old_collection.detect{ |model| model.id == attributes[:id]}
           unless model
             model = model_class.new
-            self.send(:"#{key}_bag") << model
+            self.send(key).add(model)
           end
           model.fetch_with_attributes(attributes, save_associations: sync_options[:save])
           model.save if sync_options[:save] && model.has_changed?
@@ -267,10 +267,10 @@ module MotionPrime
       self.store.save_interval = 1
     end
 
-    def fetch_has_one(key, options = {}, &block)
+    def fetch_has_one(key, options = {}, sync_options = {}, &block)
       use_callback = block_given?
       NSLog("SYNC: started sync for #{key} in #{self.class_name_without_kvo}")
-      api_client.get association_sync_url(key, options) do |response, status_code|
+      api_client.get association_sync_url(key, options, sync_options) do |response, status_code|
         data = options.has_key?(:sync_key) ? response[options[:sync_key]] : response
         if data.present?
           fetch_has_one_with_attributes(key, data, save_associations: sync_options[:save])

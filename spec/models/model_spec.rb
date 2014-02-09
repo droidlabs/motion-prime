@@ -102,22 +102,22 @@ describe MotionPrime::Model do
     end
 
     it "update existing objects" do
-      user = stub_user("Bob", 10, Time.now)
+      user = stub_user("Bob", 10, Time.now, 15)
       user.save
 
-      user1 = User.find(:name, NSFEqualTo, "Bob").first
+      user1 = User.find(15).first
       user1.name = "Dom"
       user1.save
 
-      user2 = User.find(:name, NSFEqualTo, "Dom").first
+      user2 = User.find(15).first
       user2.key.should == user.key
     end
 
     it "create with nil field" do
-      user = stub_user("Bob", 10, nil)
+      user = stub_user("Bob", 10, nil, 15)
       user.save
 
-      user1 = User.find(:name, NSFEqualTo, "Bob").first
+      user1 = User.find(15).first
       user1.name.should == "Bob"
       user1.created_at.should.be.nil
     end
@@ -125,10 +125,10 @@ describe MotionPrime::Model do
     it "create model in file store" do
       MotionPrime::Store.connect(:file)
 
-      user = stub_user("Bob", 10, nil)
+      user = stub_user("Bob", 10, nil, 15)
       user.save
 
-      user1 = User.find(:name, NSFEqualTo, "Bob").first
+      user1 = User.find(15).first
       user1.name.should == "Bob"
       user1.created_at.should.be.nil
 
@@ -142,6 +142,9 @@ describe MotionPrime::Model do
     end
 
     describe "without id" do
+      before do
+        @user.id = nil
+      end
       it "should not be persisted" do
         @user.persisted?.should == false
       end
@@ -167,15 +170,15 @@ describe MotionPrime::Model do
 
   describe "#delete" do
     it "delete object" do
-      user = stub_user("Bob", 10, Time.now)
+      user = stub_user("Bob", 10, Time.now, 15)
       user.save
 
-      users = User.find(:name, NSFEqualTo, "Bob")
+      users = User.find(15)
       users.should.not.be.nil
       users.count.should == 1
 
       user.delete
-      users = User.find(:name, NSFEqualTo, "Bob")
+      users = User.find(15)
       users.should.not.be.nil
       users.count.should == 0
       User.count.should == 0
