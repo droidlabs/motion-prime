@@ -1,3 +1,9 @@
+=== 0.8.1
+* renamed submit element in submit field to button element.
+* renamed date_picker element in date_picker field to input element.
+* improved model associations.
+* bug fixes.
+
 === 0.8.0
 * Simpler syntax for using fonts. See prime_bootstrap.
 * All style things moved from default prime template to bootstrap template.

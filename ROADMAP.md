@@ -1,6 +1,4 @@
-=== 0.8.1
-* rename submit element in submit field to button element
-* rename date_picker element in date_picker field to input element
+=== 0.8.2
 * Move api_client and model sync mixin to prime_api gem.
 
 === 0.9.0
