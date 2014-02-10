@@ -33,7 +33,7 @@ module MotionPrime
       super || self.class.store
     end
 
-    # Assigns attributes to model 
+    # Assigns attributes to model
     #
     # @params attributes [Hash] attributes to be assigned
     # @params options [Hash] options
@@ -53,7 +53,7 @@ module MotionPrime
       end
     end
 
-    # Assigns attribute to model 
+    # Assigns attribute to model
     #
     # @params name [String, Symbol] attribute name
     # @params value [Object] attribute value
@@ -103,6 +103,13 @@ module MotionPrime
     # @return [String] model representation
     def inspect
       "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + MotionPrime::JSON.generate(info)
+    end
+
+    # Returns a clone of the record with empty bags
+    #
+    # @return new [Prime::Model] model
+    def clone
+      self.class.new(self.info.select { |key, value| !key.to_s.ends_with?('_bag') })
     end
 
     module ClassMethods
@@ -167,7 +174,7 @@ module MotionPrime
         define_method((name + "=").to_sym) do |*args, &block|
           value = args[0]
           case options[:type].to_s
-          when 'integer' 
+          when 'integer'
             value = value.to_i
           when 'float'
             value = value.to_f

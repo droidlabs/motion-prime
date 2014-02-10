@@ -5,8 +5,10 @@ module MotionPrime
   module Layout
     def add_view(klass, options = {}, &block)
       options = options.clone
+      parent_view = options.delete(:parent_view)
+
       bounds = if view_stack.empty?
-        options.delete(:parent_view).try(:bounds) || CGRectZero
+        parent_view.try(:bounds) || CGRectZero
       else
         view_stack.last.bounds
       end
