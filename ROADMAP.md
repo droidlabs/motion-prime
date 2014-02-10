@@ -1,10 +1,12 @@
 === 0.8.2
 * Move api_client and model sync mixin to prime_api gem.
+* Move bind keyboard events to forms.
 
 === 0.9.0
 * bug: if mp label do not have text and was set as hidden, it should unhide after setting text
 * bug: size_to_fit works incorrect with relative width.
 * bug: bind_keyboard_close breaks bind_guesture
+* bug: dealloc of Prime::Section will not be called for cell created in table_data using #map.
 * add clone to models to prevent problems when bag_key is overrided
 * add dsl for push notifications
 * add some extensions/middleware system, at least for networking.

@@ -34,9 +34,16 @@ module MotionPrime
       @data || set_table_data
     end
 
+    # IMPORTANT: when you use #map in table_data, 
+    # then #dealloc of Prime::Section will not be called to section created on that #map.
+    # We did not find yet why this happening, for now just using hack.
+    def fixed_table_data
+      table_data.to_enum.to_a
+    end
+
     def reload_data
       reset_data
-      @async_loaded_data = table_data if async_data?
+      @async_loaded_data = fixed_table_data if async_data?
       reload_table_data
     end
 
@@ -274,7 +281,7 @@ module MotionPrime
       end
 
       def set_table_data
-        cells = async_data? ? load_sections_async : table_data
+        cells = async_data? ? load_sections_async : fixed_table_data
         prepare_table_cells(cells)
         @data = cells
         reset_data_stamps
@@ -285,7 +292,7 @@ module MotionPrime
       def load_sections_async
         @async_loaded_data || begin
           BW::Reactor.schedule_on_main do
-            @async_loaded_data = table_data
+            @async_loaded_data = fixed_table_data
             @data = nil
             reload_table_data
             on_async_data_loaded
