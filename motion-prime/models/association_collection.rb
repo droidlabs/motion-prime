@@ -3,8 +3,6 @@ module MotionPrime
     attr_reader :bag, :association_name
     attr_reader :inverse_relation_name, :inverse_relation_key, :model_inverse_relation_name
 
-    delegate :<<, to: :bag
-
     def initialize(bag, options, *args)
       @bag = bag
       @association_name = options[:association_name]
@@ -28,9 +26,7 @@ module MotionPrime
     # @params attributes [Hash] attributes beeing assigned to model
     # @return MotionPrime::Model unsaved model
     def new(attributes = {})
-      record = model_class.new(attributes).tap do |model|
-        set_inverse_relation_for(model)
-      end
+      record = model_class.new(attributes)
       add(record)
     end
 
@@ -42,20 +38,34 @@ module MotionPrime
     # @params record [Prime::Model] model which will be added to collection.
     # @return MotionPrime::Model model
     def add(record)
+      set_inverse_relation_for(record)
       self.bag << record
       record
     end
+    alias_method :<<, :add
 
     # Return all association records.
     #
     # @example:
     #   project.users.all
-    #   project.users.all(age: 10)
+    #
+    # @return Array<MotionPrime::Model> association records
+    def all
+      data = bag.to_a
+      set_inverse_relation_for(data)
+      data
+    end
+    alias_method :to_a, :all
+
+    # Find association records.
+    #
+    # @example:
+    #   project.users.find(age: 10)
     #
     # @params find_options [Hash] finder options.
     # @params sort_options [Hash] sorting options.
     # @return Array<MotionPrime::Model> association records
-    def all(find_options = nil, sort_options = nil)
+    def find(find_options = {}, sort_options = nil)
       find_options = build_find_options(find_options)
       sort_options = build_sort_options(sort_options)
 

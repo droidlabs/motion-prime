@@ -37,21 +37,28 @@ describe "Prime::AssociationCollection" do
   describe "#all" do
     before do
       @organization = Organization.new
-      puts "count 1: #{@organization.projects.count}"
       project = Project.new(title: 'test 1')
       @organization.projects.add(project)
-      puts "count 2: #{@organization.projects.count}"
       project = Project.new(title: 'test 2')
       @organization.projects.add(project)
-      puts "count 3: #{@organization.projects.count}"
     end
 
-    it "should return all records by default" do
+    it "should return all records" do
       @organization.projects.all.count.should == 2
+    end
+  end
+
+  describe "#find" do
+    before do
+      @organization = Organization.new
+      project = Project.new(title: 'test 1')
+      @organization.projects.add(project)
+      project = Project.new(title: 'test 2')
+      @organization.projects.add(project)
     end
 
     it "should return filter records by first hash" do
-      @organization.projects.all(title: 'test 1').count.should == 1
+      @organization.projects.find(title: 'test 1').count.should == 1
     end
   end
 end
