@@ -29,10 +29,9 @@ module MotionPrime
       end
     end
 
-    def reload_cell(section)
+    def reload_cell_section(section)
       field = section.name.to_sym
-      index = field_indexes[field].split('_').map(&:to_i)
-      path = NSIndexPath.indexPathForRow(index.last, inSection: index.first)
+      path = field_indexes[field]
       section.cell.try(:removeFromSuperview)
 
       fields[field] = load_field(self.class.fields_options[field])
@@ -43,15 +42,11 @@ module MotionPrime
         @data[path.section][path.row] = fields[field]
       end
 
-      set_data_stamp(field_indexes[field])
+      set_data_stamp(field.object_id)
 
       # table_view.beginUpdates
       table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
       # table_view.endUpdates
-    end
-
-    def reset_data_stamps
-      set_data_stamp(self.field_indexes.values)
     end
 
     # Returns element based on field name and element name
@@ -180,7 +175,7 @@ module MotionPrime
     end
 
     def has_many_sections?
-      section_header_options.present? || grouped_data.count > 1
+      group_header_options.present? || grouped_data.count > 1
     end
 
     def render_table
@@ -191,7 +186,7 @@ module MotionPrime
     def reload_table_data
       return super unless async_data?
       sections = NSMutableIndexSet.new
-      number_of_sections.times do |section_id|
+      number_of_groups.times do |section_id|
         sections.addIndex(section_id)
       end
       table_view.reloadSections sections, withRowAnimation: UITableViewRowAnimationFade
@@ -200,7 +195,7 @@ module MotionPrime
     # Table View Delegate
     # ---------------------
 
-    def number_of_sections(table = nil)
+    def number_of_groups(table = nil)
       has_many_sections? ? grouped_data.compact.count : 1
     end
 
@@ -254,7 +249,7 @@ module MotionPrime
 
           section = load_field(field)
           self.fields[key] = section
-          self.field_indexes[key] = "#{section_id}_#{section_indexes[section_id]}"
+          self.field_indexes[key] = NSIndexPath.indexPathForRow(section_indexes[section_id], inSection: section_id)
           grouped_data[section_id][section_indexes[section_id]] = section
 
           section_indexes[section_id] += 1
@@ -264,8 +259,8 @@ module MotionPrime
       end
 
       def init_form_headers
-        options = Array.wrap(self.class.section_header_options).clone
-        self.section_header_options = options.delete_if.each_with_index { |opts, id| grouped_data[id].nil? }
+        options = Array.wrap(self.class.group_header_options).clone
+        self.group_header_options = options.delete_if.each_with_index { |opts, id| grouped_data[id].nil? }
       end
   end
 end

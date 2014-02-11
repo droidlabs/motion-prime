@@ -74,7 +74,14 @@ module MotionPrime
 
       def on_container_tap_gesture(recognizer)
         target = Array.wrap(container_gesture_recognizers).detect do |gesture_data|
-          CGRectContainsPoint(gesture_data[:element].computed_frame, recognizer.locationInView(container_view))
+          point = recognizer.locationInView(container_view)
+          element = gesture_data[:element]
+          section = element.section
+          if section.has_container_bounds?
+            point.x -= section.container_bounds.origin.x
+            point.y -= section.container_bounds.origin.y
+          end
+          CGRectContainsPoint(element.computed_frame, point)
         end
         (target[:receiver] || self).send(target[:action], recognizer, target[:element]) if target
       end

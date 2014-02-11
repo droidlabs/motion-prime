@@ -20,25 +20,25 @@ module MotionPrime
     end
 
     def numberOfSectionsInTableView(table)
-      table_section.number_of_sections(table)
+      table_section.number_of_groups(table)
     end
 
     def tableView(table, cellForRowAtIndexPath: index)
-      curCallTime = Time.now.to_f
-      curCallOffset = table.contentOffset.y
-      if @prevCallTime
-        timeDelta = curCallTime - @prevCallTime
-        offsetDelta = curCallOffset - @prevCallOffset
-        @deceleration_speed = offsetDelta/timeDelta
+      cur_call_time = Time.now.to_f
+      cur_call_offset = table.contentOffset.y
+      if @prev_call_time
+        time_delta = cur_call_time - @prev_call_time
+        offset_delta = cur_call_offset - @prev_call_offset
+        @deceleration_speed = offset_delta/time_delta
       end
-      @prevCallTime = curCallTime
-      @prevCallOffset = curCallOffset
+      @prev_call_time = cur_call_time
+      @prev_call_offset = cur_call_offset
 
       table_section.cell_for_index(table, index)
     end
 
-    def tableView(table, numberOfRowsInSection: section)
-      table_section.rows_for_section(section).try(:count).to_i
+    def tableView(table, numberOfRowsInSection: group)
+      table_section.cell_sections_for_group(group).try(:count).to_i
     end
 
     def tableView(table, heightForRowAtIndexPath: index)
@@ -49,12 +49,12 @@ module MotionPrime
       table_section.on_click(table, index)
     end
 
-    def tableView(table, viewForHeaderInSection: section)
-      table_section.view_for_header_in_section(table, section)
+    def tableView(table, viewForHeaderInSection: group)
+      table_section.header_cell_in_group(table, group)
     end
 
-    def tableView(table, heightForHeaderInSection: section)
-      table_section.height_for_header_in_section(table, section)
+    def tableView(table, heightForHeaderInSection: group)
+      table_section.height_for_header_in_group(table, group)
     end
 
     def scrollViewDidScroll(scroll)

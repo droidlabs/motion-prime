@@ -47,6 +47,10 @@ module MotionPrime
       options[:container_bounds] or raise "You must pass `container bounds` option to prerender base section"
     end
 
+    def has_container_bounds?
+      options[:container_bounds].present?
+    end
+
     # Get computed container options
     #
     # @return options [Hash] computed options
@@ -191,8 +195,8 @@ module MotionPrime
     end
 
     def render_container(options = {}, &block)
-      if should_render_container?
-        element = self.container_element || self.init_container_element(options)
+      if should_render_container? && !self.container_element
+        element = self.init_container_element(options)
         element.render do
           block.call
         end
@@ -272,7 +276,7 @@ module MotionPrime
     end
 
     def elements_to_render
-      self.elements.select { |key, element| element.is_a?(BaseElement) }
+      self.elements.except(*elements_to_draw.keys)
     end
 
     protected

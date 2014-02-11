@@ -72,7 +72,7 @@ module MotionPrime
       data = if bag.store.present?
         bag.find(find_options, sort_options)
       else
-        bag.to_a.select do |entity| 
+        bag.to_a.select do |entity|
           find_options.all? { |field, value| entity.info[field] == value }
         end
       end

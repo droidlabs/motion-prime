@@ -60,8 +60,9 @@ module MotionPrime
     def computed_right; computed_left + computed_width end
     def computed_inner_right; computed_right - content_padding_right end
 
-    def bind_gesture(action, receiver = nil)
-      section.bind_gesture_on_container_for(self, action, receiver)
+    def bind_gesture(action, receiver = nil, target = nil)
+      target ||= section
+      target.bind_gesture_on_container_for(self, action, receiver)
     end
 
     def hide
@@ -78,10 +79,15 @@ module MotionPrime
       view.setNeedsDisplay
     end
 
-    def update_with_options(new_options = {})
-      options.merge!(new_options)
+    def reload!
+      reset_computed_values
       compute_options!
       section.cached_draw_image = nil
+    end
+
+    def update_with_options(new_options = {})
+      options.merge!(new_options)
+      reload!
       view.setNeedsDisplay
     end
 

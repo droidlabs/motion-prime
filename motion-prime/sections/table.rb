@@ -7,9 +7,9 @@ module MotionPrime
     include HasStyleChainBuilder
     include HasSearchBar
 
-    class_attribute :async_data_options, :section_header_options, :pull_to_refresh_block
+    class_attribute :async_data_options, :group_header_options, :pull_to_refresh_block
 
-    attr_accessor :table_element, :did_appear, :section_headers, :section_header_options
+    attr_accessor :table_element, :did_appear, :group_header_sections, :group_header_options
     attr_reader :decelerating
     before_render :render_table
     after_render :init_pull_to_refresh
@@ -72,7 +72,15 @@ module MotionPrime
       reload_table_data
     end
 
-    def reload_cell(section)
+    def delete_cell_for_cell_section(section)
+      path = NSIndexPath.indexPathForRow(@data.index(section), inSection: 0)
+      @data.delete(section)
+      table_view.beginUpdates
+      table_view.deleteRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationFade)
+      table_view.endUpdates
+    end
+
+    def reload_cell_section(section)
       section.elements.values.each(&:compute_options!)
       section.cached_draw_image = nil
       # TODO: reset date stamps, reload row
@@ -88,7 +96,7 @@ module MotionPrime
       {common: base_styles, specific: item_styles}
     end
 
-    def cell_styles(cell)
+    def cell_section_styles(section)
       # type = [`cell`, `header`, `field`]
 
       # UserFormSection example: field :email, type: :string
@@ -101,28 +109,28 @@ module MotionPrime
       # table_name = `categories`
       # type = `cell` (always true)
       # table_cell_name = `title`
-      type = cell.respond_to?(:cell_type) ? cell.cell_type : 'cell'
+      type = section.respond_to?(:cell_type) ? section.cell_type : 'cell'
       suffixes = [type]
-      if cell.is_a?(BaseFieldSection)
-        suffixes << cell.default_name
+      if section.is_a?(BaseFieldSection)
+        suffixes << section.default_name
       end
 
       styles = {}
       # table: base_table_<type>
       # form: base_form_<type>, base_form_<field_type>
       styles[:common] = build_styles_chain(table_styles[:common], suffixes)
-      if cell.is_a?(BaseFieldSection)
+      if section.is_a?(BaseFieldSection)
         # form cell: _<type>_<field_name> = `_field_email`
-        suffixes << :"#{type}_#{cell.name}" if cell.name
-      elsif cell.respond_to?(:cell_name) # cell section came from table
+        suffixes << :"#{type}_#{cell.name}" if section.name
+      elsif section.respond_to?(:cell_name) # cell section came from table
         # table cell: _<table_cell_name> = `_title`
-        suffixes << cell.cell_name
+        suffixes << section.cell_name
       end
       # table: <table_name>_table_<type>, <table_name>_table_<table_cell_name> = `categories_table_cell`, `categories_table_title`
       # form: <form_name>_form_<type>, <form_name>_form_<field_type>, user_form_<type>_email = `user_form_field`, `user_form_string_field`, `user_form_field_email`
       styles[:specific] = build_styles_chain(table_styles[:specific], suffixes)
 
-      container_options_styles = cell.container_options[:styles]
+      container_options_styles = section.container_options[:styles]
       if container_options_styles.present?
         styles[:specific] += Array.wrap(container_options_styles)
       end
@@ -141,8 +149,8 @@ module MotionPrime
         data_source: table_delegate,
         style: (UITableViewStyleGrouped unless flat_data?)
       }
-      if async_data? && self.class.async_data_options.has_key?(:estimated_row_height)
-        options[:estimated_row_height] = self.class.async_data_options[:estimated_row_height]
+      if async_data? && self.class.async_data_options.has_key?(:estimated_cell_height)
+        options[:estimated_cell_height] = self.class.async_data_options[:estimated_cell_height]
       end
       self.table_element = screen.table_view(options)
     end
@@ -160,64 +168,59 @@ module MotionPrime
     end
 
     def render_cell(index, table)
-      section = rows_for_section(index.section)[index.row]
+      section = cell_sections_for_group(index.section)[index.row]
       element = section.container_element || section.init_container_element(container_element_options_for(index))
 
       view = element.render do
         section.render
       end
-      on_row_render(view, index)
+      on_cell_render(view, index)
       preload_sections_after(index)
       view
     end
 
     def render_header(section)
-      return unless options = self.section_header_options.try(:[], section)
-      self.section_headers[section] ||= BaseHeaderSection.new(options.merge(screen: screen, table: self.weak_ref))
+      return unless options = self.group_header_options.try(:[], section)
+      self.group_header_sections[section] ||= BaseHeaderSection.new(options.merge(screen: screen, table: self.weak_ref))
     end
 
-    def header_for_section(section)
-      self.section_headers ||= []
-      self.section_headers[section] || render_header(section)
+    def header_section_for_group(section)
+      self.group_header_sections ||= []
+      self.group_header_sections[section] || render_header(section)
     end
 
-    def on_row_render(cell, index); end
+    def on_cell_render(cell, index); end
     def on_appear; end
     def on_click(table, index); end
 
     def has_many_sections?
-      section_header_options.present? || data.try(:first).is_a?(Array)
+      group_header_options.present? || data.try(:first).is_a?(Array)
     end
 
     def flat_data?
       !has_many_sections?
     end
 
-    def rows_for_section(section)
+    def cell_sections_for_group(section)
       flat_data? ? data : data[section]
     end
 
-    def row_by_index(index)
-      rows_for_section(index.section)[index.row]
+    def cell_section_by_index(index)
+      cell_sections_for_group(index.section)[index.row]
     end
 
     def on_async_data_loaded; end
     def on_async_data_preloaded(loaded_index); end
 
     def cell_name(table, index)
-      record = row_by_index(index)
-      if record && record.model &&
-         record.model.respond_to?(:id) && record.model.id.present?
-        "cell_#{record.model.id}_#{data_stamp_for("#{index.section}_#{index.row}")}"
-      else
-        "cell_#{index.section}_#{index.row}_#{data_stamp_for("#{index.section}_#{index.row}")}"
-      end
+      record = cell_section_by_index(index)
+      "cell_#{record.object_id}_#{@data_stamp[record.object_id]}"
     end
 
     # Table View Delegate
     # ---------------------
 
-    def number_of_sections(table = nil)
+    def number_of_groups(table = nil)
       has_many_sections? ? data.count : 1
     end
 
@@ -225,7 +228,7 @@ module MotionPrime
       cell = cached_cell(index, table) || render_cell(index, table)
 
       # run table view is appeared callback if needed
-      if !@did_appear && index.row == rows_for_section(index.section).size - 1
+      if !@did_appear && index.row == cell_sections_for_group(index.section).size - 1
         on_appear
       end
       cell.is_a?(UIView) ? cell : cell.view
@@ -236,14 +239,14 @@ module MotionPrime
       section.container_height
     end
 
-    def view_for_header_in_section(table, section)
-      return unless header = header_for_section(section)
+    def header_cell_in_group(table, group)
+      return unless header = header_section_for_group(group)
 
-      reuse_identifier = "header_#{section}"
+      reuse_identifier = "header_#{group}"
       cached = table.dequeueReusableHeaderFooterViewWithIdentifier(reuse_identifier)
       return cached if cached.present?
 
-      styles = cell_styles(header).values.flatten
+      styles = cell_section_styles(header).values.flatten
       wrapper = MotionPrime::BaseElement.factory(:table_view_header_footer_view, screen: screen, styles: styles, parent_view: table_view, reuse_identifier: reuse_identifier)
       wrapper.render do |container_view, container_element|
         header.container_element = container_element
@@ -251,8 +254,8 @@ module MotionPrime
       end
     end
 
-    def height_for_header_in_section(table, section)
-      header_for_section(section).try(:container_height) || 0
+    def height_for_header_in_group(table, group)
+      header_section_for_group(group).try(:container_height) || 0
     end
 
     def scroll_view_will_begin_dragging(scroll)
@@ -319,7 +322,7 @@ module MotionPrime
       end
 
       def load_cell_by_index(index, options = {})
-        section = rows_for_section(index.section)[index.row]
+        section = cell_sections_for_group(index.section)[index.row]
         if section.load_section && options[:preload] && !section.container_element && async_data? # perform only if just loaded
           section.load_container_with_elements(container: container_element_options_for(index))
         end
@@ -333,27 +336,14 @@ module MotionPrime
         }
       end
 
-      def data_stamp_for(id)
-        @data_stamp[id]
-      end
-
       def set_data_stamp(cell_ids)
         @data_stamp ||= {}
         [*cell_ids].each { |id| @data_stamp[id] = Time.now.to_f }
       end
 
       def reset_data_stamps
-        keys = @data.each_with_index.map do |row, id|
-          if row.is_a?(Array)
-            section = id
-            rows = (0...row.count)
-          else
-            section = 0
-            rows = [id]
-          end
-          rows.map { |row| "#{section}_#{row}" }
-        end
-        set_data_stamp(keys.flatten)
+        keys = @data.flatten.map(&:object_id)
+        set_data_stamp(keys)
       end
 
       def load_sections
@@ -375,7 +365,7 @@ module MotionPrime
         return if !async_data? || @preloader_next_starts_from == false
         service = preloader_index_service
 
-        load_limit = self.class.async_data_options.try(:[], :preload_rows_count)
+        load_limit = self.class.async_data_options.try(:[], :preload_cells_count)
         @preloader_next_starts_from ||= index
         index_to_start_preloading = service.sum_index(@preloader_next_starts_from, load_limit ? -load_limit/2 : 0)
         if service.compare_indexes(index, index_to_start_preloading) >= 0
@@ -395,7 +385,7 @@ module MotionPrime
       def preload_sections_schedule_next(index, limit)
         service = preloader_index_service
 
-        left_to_load = rows_for_section(index.section).count - index.row
+        left_to_load = cell_sections_for_group(index.section).count - index.row
         load_count = [left_to_load, limit].compact.min
         @preloader_cancelled = false
         @preloader_queue ||= []
@@ -440,7 +430,7 @@ module MotionPrime
       def inherited(subclass)
         super
         subclass.async_data_options = self.async_data_options.try(:clone)
-        subclass.section_header_options = self.section_header_options.try(:clone)
+        subclass.group_header_options = self.group_header_options.try(:clone)
       end
 
       def async_table_data(options = {})
@@ -449,9 +439,9 @@ module MotionPrime
 
       def group_header(name, options)
         options[:name] = name
-        self.section_header_options ||= []
+        self.group_header_options ||= []
         section = options.delete(:id)
-        self.section_header_options[section] = options
+        self.group_header_options[section] = options
       end
 
       def pull_to_refresh(&block)

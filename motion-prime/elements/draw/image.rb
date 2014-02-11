@@ -49,18 +49,19 @@ module MotionPrime
 
     def draw_with_layer
       options = draw_options
+      @layer.removeFromSuperlayer if @layer
       return unless image = options[:image]
       rect = options[:rect]
       radius = options[:corner_radius].to_f if options[:corner_radius] && options[:masks_to_bounds]
 
-      layer = CALayer.layer
-      layer.contents = image.CGImage
-      layer.frame = rect
-      layer.bounds = rect
+      @layer = CALayer.layer
+      @layer.contents = image.CGImage
+      @layer.frame = rect
+      @layer.bounds = rect
 
-      layer.masksToBounds = options[:masks_to_bounds]
-      layer.cornerRadius = radius if radius
-      view.layer.addSublayer(layer)
+      @layer.masksToBounds = options[:masks_to_bounds]
+      @layer.cornerRadius = radius if radius
+      view.layer.addSublayer(@layer)
     end
 
     def load_image

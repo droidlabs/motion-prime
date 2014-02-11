@@ -152,7 +152,7 @@ module MotionPrime
 
     def reload_section
       clear_observers
-      form.reload_cell(self)
+      form.reload_cell_section(self)
     end
 
     def clear_observers

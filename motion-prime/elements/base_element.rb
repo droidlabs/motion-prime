@@ -46,6 +46,7 @@ module MotionPrime
     end
 
     def render!(&block)
+      view.try(:removeFromSuperview)
       view = screen.add_view class_factory(view_class), computed_options do |view|
         @view = view
         block.try(:call, view, self)
@@ -72,11 +73,13 @@ module MotionPrime
       normalize_options(@computed_options, section, %w[text placeholder font title_label padding padding_left padding_right min_width min_outer_width max_width max_outer_width width left right])
     end
 
+    def reload!
+      compute_options!
+    end
+
     def update_with_options(new_options = {})
       options.merge!(new_options)
-      compute_options!
-      view.try(:removeFromSuperview)
-      @view = nil
+      reload!
       render
     end
 
@@ -140,7 +143,7 @@ module MotionPrime
         suffixes = {common: [], specific: []}
         all_styles = []
 
-        # following example in Prime::TableSection#cell_styles
+        # following example in Prime::TableSection#cell_section_styles
         # form element/cell: <base|user>_form_field, <base|user>_form_string_field, user_form_field_email
         # table element/cell: <base|categories>_table_cell, categories_table_title
         if section.section_styles
