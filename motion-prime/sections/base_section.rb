@@ -195,7 +195,7 @@ module MotionPrime
     end
 
     def render_container(options = {}, &block)
-      if should_render_container? && !self.container_element
+      if should_render_container? && !self.container_element.try(:view)
         element = self.init_container_element(options)
         element.render do
           block.call
