@@ -15,7 +15,12 @@ module MotionPrime
         options[:class_name] == inverse_relation.class_name_without_kvo
       end.try(:first)
 
-      super all(*args)
+      result = if args.present? || has_default_sort?
+        find(*args)
+      else
+        all
+      end
+      super result
     end
 
     # Initialize a new object and add to collection.
@@ -106,7 +111,13 @@ module MotionPrime
       end
 
       def build_sort_options(options)
-        options || {sort: model_class.default_sort_options}
+        options || begin
+          {sort: model_class.default_sort_options} if has_default_sort?
+        end
+      end
+
+      def has_default_sort?
+        model_class.default_sort_options.present?
       end
 
       def set_inverse_relation_for(models)

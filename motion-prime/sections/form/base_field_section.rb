@@ -104,7 +104,7 @@ module MotionPrime
     end
 
     def default_label_options
-      label_options = options[:label]
+      label_options = options[:label] || {}
       if label_options.has_key?(:text)
         label_options
       else
