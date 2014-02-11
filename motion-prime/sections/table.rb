@@ -34,7 +34,7 @@ module MotionPrime
       @data || set_table_data
     end
 
-    # IMPORTANT: when you use #map in table_data, 
+    # IMPORTANT: when you use #map in table_data,
     # then #dealloc of Prime::Section will not be called to section created on that #map.
     # We did not find yet why this happening, for now just using hack.
     def fixed_table_data
@@ -108,7 +108,7 @@ module MotionPrime
       # CategoriesTableSection example: table is a `CategoryTableSection`, cell is a `CategoryTitleSection`, element :icon, type: :image
       # table_name = `categories`
       # type = `cell` (always true)
-      # table_cell_name = `title`
+      # table_cell_section_name = `title`
       type = section.respond_to?(:cell_type) ? section.cell_type : 'cell'
       suffixes = [type]
       if section.is_a?(BaseFieldSection)
@@ -121,12 +121,12 @@ module MotionPrime
       styles[:common] = build_styles_chain(table_styles[:common], suffixes)
       if section.is_a?(BaseFieldSection)
         # form cell: _<type>_<field_name> = `_field_email`
-        suffixes << :"#{type}_#{cell.name}" if section.name
-      elsif section.respond_to?(:cell_name) # cell section came from table
-        # table cell: _<table_cell_name> = `_title`
-        suffixes << section.cell_name
+        suffixes << :"#{type}_#{section.name}" if section.name
+      elsif section.respond_to?(:cell_section_name) # cell section came from table
+        # table cell: _<table_cell_section_name> = `_title`
+        suffixes << section.cell_section_name
       end
-      # table: <table_name>_table_<type>, <table_name>_table_<table_cell_name> = `categories_table_cell`, `categories_table_title`
+      # table: <table_name>_table_<type>, <table_name>_table_<table_cell_section_name> = `categories_table_cell`, `categories_table_title`
       # form: <form_name>_form_<type>, <form_name>_form_<field_type>, user_form_<type>_email = `user_form_field`, `user_form_string_field`, `user_form_field_email`
       styles[:specific] = build_styles_chain(table_styles[:specific], suffixes)
 
@@ -342,7 +342,7 @@ module MotionPrime
       end
 
       def reset_data_stamps
-        keys = @data.flatten.map(&:object_id)
+        keys = data.flatten.map(&:object_id)
         set_data_stamp(keys)
       end
 

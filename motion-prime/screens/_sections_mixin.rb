@@ -15,7 +15,7 @@ module MotionPrime
     end
 
     def all_sections
-      @sections.values
+      Array.wrap(@sections.try(:values))
     end
 
     def create_sections

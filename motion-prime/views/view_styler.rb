@@ -140,6 +140,8 @@ module MotionPrime
         view.layer.insertSublayer(gradient, atIndex: 0)
       elsif key == 'selection_style' && view.is_a?(UITableViewCell) && value.is_a?(Symbol)
         view.setSelectionStyle value.uitablecellselectionstyle
+      elsif key == 'estimated_cell_height' && view.is_a?(UITableView)
+        view.setEstimatedRowHeight value
       elsif key == 'separator_inset' && (view.is_a?(UITableViewCell) || view.is_a?(UITableView))
         if value.to_s == 'none'
           view.separatorInset = UIEdgeInsetsMake(0, 320, 0, 0)

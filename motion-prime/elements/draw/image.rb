@@ -82,7 +82,7 @@ module MotionPrime
             self.image_data = image
 
             section.cached_draw_image = nil
-            if section.respond_to?(:cell_name)
+            if section.respond_to?(:cell_section_name)
               section.pending_display!
             else
               self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false

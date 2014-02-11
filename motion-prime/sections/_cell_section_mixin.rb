@@ -9,7 +9,7 @@ module MotionPrime
     attr_reader :pending_display
 
     included do
-      class_attribute :custom_cell_name
+      class_attribute :custom_cell_section_name
       container_element type: :table_view_cell
     end
 
@@ -27,8 +27,8 @@ module MotionPrime
       end
     end
 
-    def cell_name
-      self.class.custom_cell_name || begin
+    def cell_section_name
+      self.class.custom_cell_section_name || begin
         return name unless table
         table_name = table.name.gsub('_table', '')
         name.gsub("#{table_name}_", '')
@@ -68,8 +68,8 @@ module MotionPrime
     end
 
     module ClassMethods
-      def set_cell_name(value)
-        self.custom_cell_name = value
+      def set_cell_section_name(value)
+        self.custom_cell_section_name = value
       end
     end
   end
