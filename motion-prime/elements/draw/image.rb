@@ -60,7 +60,6 @@ module MotionPrime
 
       layer.masksToBounds = options[:masks_to_bounds]
       layer.cornerRadius = radius if radius
-
       view.layer.addSublayer(layer)
     end
 

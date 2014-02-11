@@ -1,6 +1,7 @@
 === 0.8.2
 * Move api_client and model sync mixin to prime_api gem.
 * Move bind keyboard events to forms.
+* bug: images does not render after reload table.
 
 === 0.9.0
 * bug: if mp label do not have text and was set as hidden, it should unhide after setting text
