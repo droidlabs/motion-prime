@@ -15,12 +15,8 @@ module MotionPrime
         options[:class_name] == inverse_relation.class_name_without_kvo
       end.try(:first)
 
-      result = if args.present? || has_default_sort?
-        find(*args)
-      else
-        all
-      end
-      super result
+      data = bag.store.present? ? find(*args) : filter(*args)
+      super data
     end
 
     # Initialize a new object and add to collection.
@@ -71,16 +67,43 @@ module MotionPrime
     # @params sort_options [Hash] sorting options.
     # @return Array<MotionPrime::Model> association records
     def find(find_options = {}, sort_options = nil)
+      raise "Use `filter` method when bag has not been saved yet" unless bag.store.present?
+
       find_options = build_find_options(find_options)
       sort_options = build_sort_options(sort_options)
 
-      data = if bag.store.present?
-        bag.find(find_options, sort_options)
-      else
-        bag.to_a.select do |entity|
-          find_options.all? { |field, value| entity.info[field] == value }
+      data = bag.find(find_options, sort_options)
+      set_inverse_relation_for(data)
+      data
+    end
+
+    def filter(find_options = {}, sort_options = nil)
+      find_options = build_find_options(find_options)
+      sort_options = build_sort_options(sort_options)
+
+      data = bag.to_a
+      data = data.select do |entity|
+        find_options.all? { |field, value| entity.info[field] == value }
+      end if find_options.present?
+
+      data.sort! do |a, b|
+        left_part = []
+        right_part = []
+
+        sort_options[:sort].each do |(k,v)|
+          left = a.send(k)
+          right = b.send(k)
+          if left.class != right.class
+            left = left.to_s
+            right = right.to_s
+          end
+          left, right = right, left if v.to_s == 'desc'
+          left_part << left
+          right_part << right
         end
-      end
+        left_part <=> right_part
+      end if sort_options.try(:[], :sort).present?
+
       set_inverse_relation_for(data)
       data
     end

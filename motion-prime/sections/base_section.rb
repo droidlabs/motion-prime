@@ -35,9 +35,19 @@ module MotionPrime
         @name = options[:name] ||= default_name
         @options_block = options[:block]
       end
+
+      if Prime.env.development?
+        @_section_info = "#{@name} #{screen.try(:class)}"
+        @@_allocated_sections ||= []
+        @@_allocated_sections << @_section_info
+      end
     end
 
     def dealloc
+      if Prime.env.development?
+        index = @@_allocated_sections.index(@_section_info)
+        @@_allocated_sections.delete_at(index)
+      end
       Prime.logger.dealloc_message :section, self, self.name
       NSNotificationCenter.defaultCenter.removeObserver self # unbinding events created in bind_keyboard_events
       super
@@ -163,12 +173,13 @@ module MotionPrime
       else
         self.elements[key] = element
       end
+      element
     end
 
     def build_element(options = {})
       type = options.delete(:type)
       render_as = options.delete(:as).to_s
-      if self.is_a?(BaseFieldSection) || self.is_a?(BaseHeaderSection) || render_as == 'view'
+      if render_as != 'draw' && (render_as == 'view' || self.is_a?(BaseFieldSection) || self.is_a?(BaseHeaderSection))
         BaseElement.factory(type, options)
       else
         DrawElement.factory(type, options) || BaseElement.factory(type, options)

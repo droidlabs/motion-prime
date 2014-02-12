@@ -35,6 +35,11 @@ module MotionPrime
       self.container_gesture_recognizers << {element: element, action: action, receiver: receiver}
     end
 
+    def clear_gesture_for_receiver(receiver)
+      return unless self.container_gesture_recognizers
+      self.container_gesture_recognizers.delete_if { |recognizer| recognizer[:receiver] == receiver }
+    end
+
     def prerender_elements_for_state(state = :normal)
       scale = UIScreen.mainScreen.scale
       space = CGColorSpaceCreateDeviceRGB()

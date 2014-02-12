@@ -27,9 +27,19 @@ module MotionPrime
       @name = options[:name]
       @block = options[:block]
       @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
+
+      if Prime.env.development?
+        @_element_info = "#{@name} #{view_name} #{section.try(:name)} #{screen.class}"
+        @@_allocated_elements ||= []
+        @@_allocated_elements << @_element_info
+      end
     end
 
     def dealloc
+      if Prime.env.development?
+        index = @@_allocated_elements.index(@_element_info)
+        @@_allocated_elements.delete_at(index) if index
+      end
       Prime.logger.dealloc_message :element, self, self.name
       super
     end
@@ -46,7 +56,7 @@ module MotionPrime
     end
 
     def render!(&block)
-      view.try(:removeFromSuperview)
+      # view.try(:removeFromSuperview)
       view = screen.add_view class_factory(view_class), computed_options do |view|
         @view = view
         block.try(:call, view, self)
@@ -80,6 +90,7 @@ module MotionPrime
     def update_with_options(new_options = {})
       options.merge!(new_options)
       reload!
+      view.try(:removeFromSuperview)
       render
     end
 
@@ -187,6 +198,7 @@ module MotionPrime
         # form element: user_form_field_input, user_form_string_field_input, user_form_field_email_input
         # table element: categories_table_cell_icon, categories_table_title_icon
         all_styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
+        # puts @view_class.to_s + all_styles.inspect, ''
         all_styles
       end
 

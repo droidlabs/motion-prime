@@ -46,14 +46,14 @@ module MotionPrime
     end
 
     # Returns true if table section have enabled async data. False by defaul.
-    # 
+    #
     # @return [Boolean] is async data enabled.
     def async_data?
       self.class.async_data_options
     end
 
     # Reset all table data and reload table view
-    # 
+    #
     # @return [Boolean] true
     def reload_data
       reset_data
@@ -62,7 +62,7 @@ module MotionPrime
     end
 
     # Reload table view
-    # 
+    #
     # @return [Boolean] true
     def reload_table_data
       table_view.reloadData
@@ -70,14 +70,14 @@ module MotionPrime
     end
 
     # Reload table view if data was empty before.
-    # 
+    #
     # @return [Boolean] true if reload was happened
     def refresh_if_needed
       @data.nil? ? reload_table_data : false
     end
 
     # Reset all table data.
-    # 
+    #
     # @return [Boolean] true
     def reset_data
       @did_appear = false
@@ -91,7 +91,7 @@ module MotionPrime
     end
 
     # Add cells to table view and reload table view.
-    # 
+    #
     # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be added to table view.
     # @return [Boolean] true
     def add_cell_sections(cells)
@@ -102,19 +102,26 @@ module MotionPrime
     end
 
     # Delete cells from table data and remove them from table view with animation.
-    # 
+    #
     # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be removed from table view.
     # @return [Array<NSIndexPath>] index paths of removed cells.
     def delete_cell_sections(sections)
       paths = []
-      Array.wrap(sections).each do |section| 
+      Array.wrap(sections).each do |section|
         paths << NSIndexPath.indexPathForRow(@data.index(section), inSection: 0)
-        @data.delete(section)
+        delete_from_data(section)
       end
       table_view.beginUpdates
       table_view.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationFade)
       table_view.endUpdates
       paths
+    end
+
+    def delete_from_data(section)
+      # section will not deallocate if you'll just write @data.delete(section)
+      index = @data.index(section)
+      @data[index] = nil
+      @data.delete_at(index)
     end
 
     def reload_cell_section(section)
