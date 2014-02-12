@@ -37,10 +37,8 @@ module MotionPrime
     # @return [MotionPrime::BaseFieldSection]
     def update_height(height)
       container_options[:height] = height
-      field_index = form.field_indexes[name]
-      index = field_index.split('_').map(&:to_i)
-      path = NSIndexPath.indexPathForRow(index.last, inSection: index.first)
-      form.table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationFade)
+      index = form.field_indexes[name]
+      form.table_view.reloadRowsAtIndexPaths([index], withRowAnimation: UITableViewRowAnimationFade)
       self
     end
 
