@@ -36,8 +36,10 @@ module MotionPrime
     # @param height [Integet] new height of field
     # @return [MotionPrime::BaseFieldSection]
     def update_height(height)
+      return if container_options[:height] == height
       container_options[:height] = height
       index = form.field_indexes[name]
+      form.send :set_data_stamp, self.object_id
       form.table_view.reloadRowsAtIndexPaths([index], withRowAnimation: UITableViewRowAnimationFade)
       self
     end
