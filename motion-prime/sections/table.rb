@@ -15,21 +15,18 @@ module MotionPrime
     after_render :init_pull_to_refresh
     delegate :init_pull_to_refresh, to: :table_delegate
 
+
+    # Return sections which will be used to render as table cells.
+    #
+    # This method should be redefined in your table section and should return array.
+    # @return [Array<Prime::Section>] array of sections
     def table_data
       @model || []
     end
 
-    def dealloc
-      Prime.logger.dealloc_message :table, self, self.table_element.try(:view).to_s
-      table_delegate.clear_delegated
-      table_view.setDataSource nil
-      super
-    end
-
-    def async_data?
-      self.class.async_data_options
-    end
-
+    # Returns cached version of table data
+    #
+    # @return [Array<Prime::Section>] cached array of sections
     def data
       @data || set_table_data
     end
@@ -41,20 +38,47 @@ module MotionPrime
       table_data.to_enum.to_a
     end
 
+    def dealloc
+      Prime.logger.dealloc_message :table, self, self.table_element.try(:view).to_s
+      table_delegate.clear_delegated
+      table_view.setDataSource nil
+      super
+    end
+
+    # Returns true if table section have enabled async data. False by defaul.
+    # 
+    # @return [Boolean] is async data enabled.
+    def async_data?
+      self.class.async_data_options
+    end
+
+    # Reset all table data and reload table view
+    # 
+    # @return [Boolean] true
     def reload_data
       reset_data
       @async_loaded_data = fixed_table_data if async_data?
       reload_table_data
     end
 
+    # Reload table view
+    # 
+    # @return [Boolean] true
     def reload_table_data
       table_view.reloadData
+      true
     end
 
+    # Reload table view if data was empty before.
+    # 
+    # @return [Boolean] true if reload was happened
     def refresh_if_needed
-      reload_table_data if @data.nil?
+      @data.nil? ? reload_table_data : false
     end
 
+    # Reset all table data.
+    # 
+    # @return [Boolean] true
     def reset_data
       @did_appear = false
       @data = nil
@@ -63,21 +87,34 @@ module MotionPrime
       @preloader_cancelled = false
       @data_stamp = nil
       @preloader_queue[-1] = :cancelled if @preloader_queue.present?
+      true
     end
 
-    def add_cells(cells)
-      prepare_table_cells(cells)
+    # Add cells to table view and reload table view.
+    # 
+    # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be added to table view.
+    # @return [Boolean] true
+    def add_cell_sections(cells)
+      cells = prepare_table_cells(cells)
       @data ||= []
       @data += cells
       reload_table_data
     end
 
-    def delete_cell_for_cell_section(section)
-      path = NSIndexPath.indexPathForRow(@data.index(section), inSection: 0)
-      @data.delete(section)
+    # Delete cells from table data and remove them from table view with animation.
+    # 
+    # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be removed from table view.
+    # @return [Array<NSIndexPath>] index paths of removed cells.
+    def delete_cell_sections(sections)
+      paths = []
+      Array.wrap(sections).each do |section| 
+        paths << NSIndexPath.indexPathForRow(@data.index(section), inSection: 0)
+        @data.delete(section)
+      end
       table_view.beginUpdates
-      table_view.deleteRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationFade)
+      table_view.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationFade)
       table_view.endUpdates
+      paths
     end
 
     def reload_cell_section(section)
@@ -309,10 +346,8 @@ module MotionPrime
         table.dequeueReusableCellWithIdentifier(cell_name(table, index))
       end
 
-      def prepare_table_cells(cell)
-        if cell.is_a?(Array)
-          cell.each { |c| prepare_table_cells(c) }
-        else
+      def prepare_table_cells(cells)
+        Array.wrap(cells).each do |cell|
           Prime::Config.prime.cell_section.mixins.each do |mixin|
             cell.class.send(:include, mixin)
           end
