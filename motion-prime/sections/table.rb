@@ -354,12 +354,12 @@ module MotionPrime
       end
 
       def prepare_table_cells(cells)
-        Array.wrap(cells).each do |cell|
+        Array.wrap(cells.flatten).each do |cell|
           Prime::Config.prime.cell_section.mixins.each do |mixin|
             cell.class.send(:include, mixin)
           end
           cell.screen ||= screen
-          cell.table ||= WeakRef.new(self) if cell.respond_to?(:table=)
+          cell.table ||= self.weak_ref if cell.respond_to?(:table=)
         end
       end
 
