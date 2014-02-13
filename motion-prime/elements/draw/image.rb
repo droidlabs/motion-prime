@@ -65,16 +65,19 @@ module MotionPrime
     end
 
     def load_image
-      return if image_data || !computed_options[:url]
-      # TODO: why so many references?
-      @strong_refs = section.strong_references + [screen.main_controller.strong_ref]
+      return if @loading || image_data || !computed_options[:url]
+
+      @loading = true
+
+      @strong_refs = [section.strong_ref]
       BW::Reactor.schedule do
         manager = SDWebImageManager.sharedManager
         manager.downloadWithURL(computed_options[:url],
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|
-            if !image || screen.main_controller.retainCount == 1 || section.retainCount == 1
+            if !image || @strong_refs.any? { |ref| ref.retainCount == 1 }
+              @loading = false
               @strong_refs = nil
               return
             end
@@ -87,6 +90,7 @@ module MotionPrime
             else
               self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
             end
+            @loading = false
             @strong_refs = nil
           }
         )

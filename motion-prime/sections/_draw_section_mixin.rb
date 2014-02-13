@@ -65,10 +65,6 @@ module MotionPrime
       @cached_draw_image ||= MotionSupport::HashWithIndifferentAccess.new
     end
 
-    def strong_references
-      [self, screen.main_controller].map(&:strong_ref)
-    end
-
     private
       def set_container_gesture_recognizer
         single_tap = UITapGestureRecognizer.alloc.initWithTarget(self, action: 'on_container_tap_gesture:')

@@ -127,14 +127,6 @@ module MotionPrime
       return @section_loaded = true
     end
 
-    # Force load section
-    #
-    # @return result [Boolean] true if has been loaded by this thread.
-    def load_section!
-      @section_loaded = false
-      load_section
-    end
-
     # Force reload section, will also re-render elements.
     # For table view cells will also reload it's table data.
     def reload_section
@@ -152,14 +144,6 @@ module MotionPrime
       end
     end
 
-    def create_elements
-      self.elements = {}
-      elements_options.each do |key, opts|
-        add_element(key, opts)
-      end
-      self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
-    end
-
     def add_element(key, options = {})
       return unless render_element?(key)
       opts = options.clone
@@ -174,16 +158,6 @@ module MotionPrime
         self.elements[key] = element
       end
       element
-    end
-
-    def build_element(options = {})
-      type = options.delete(:type)
-      render_as = options.delete(:as).to_s
-      if render_as != 'draw' && (render_as == 'view' || self.is_a?(BaseFieldSection) || self.is_a?(BaseHeaderSection))
-        BaseElement.factory(type, options)
-      else
-        DrawElement.factory(type, options) || BaseElement.factory(type, options)
-      end
     end
 
     def render_element?(element_name)
@@ -324,6 +298,32 @@ module MotionPrime
       def has_drawn_content?
         self.elements.values.any? do |element|
           element.is_a?(DrawElement)
+        end
+      end
+
+      # Force load section
+      #
+      # @return result [Boolean] true if has been loaded by this thread.
+      def load_section!
+        @section_loaded = false
+        load_section
+      end
+
+      def create_elements
+        self.elements = {}
+        elements_options.each do |key, opts|
+          add_element(key, opts)
+        end
+        self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
+      end
+
+      def build_element(options = {})
+        type = options.delete(:type)
+        render_as = options.delete(:as).to_s
+        if render_as != 'draw' && (render_as == 'view' || self.is_a?(BaseFieldSection) || self.is_a?(BaseHeaderSection))
+          BaseElement.factory(type, options)
+        else
+          DrawElement.factory(type, options) || BaseElement.factory(type, options)
         end
       end
 
