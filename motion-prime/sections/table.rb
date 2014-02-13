@@ -112,7 +112,7 @@ module MotionPrime
         delete_from_data(section)
       end
       table_view.beginUpdates
-      table_view.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationFade)
+      table_view.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationLeft)
       table_view.endUpdates
       paths
     end
