@@ -11,7 +11,7 @@ MotionPrime::Styles.define :base do
     left: 0,
     width: 320,
     bottom: 0,
-    separatorInset: 0
+    separator_inset: 0
 
   style :table_cell,
     background_color: :clear

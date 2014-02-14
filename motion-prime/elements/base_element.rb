@@ -128,22 +128,26 @@ module MotionPrime
           @styles += compute_cell_style_options(style_sources, has_errors)
         end
 
-         # styles got from mixins option
-        mixin_styles = style_sources.map do |source|
-          normalize_object(source.delete(:mixins), section)
-        end.flatten.map{ |m| :"_mixin_#{m}" }
-        @styles += mixin_styles
+        mixins = []
+        custom_styles = []
+        style_sources.each do |source|
+          if source_mixins = source.delete(:mixins)
+            mixins += Array.wrap(normalize_object(source_mixins, section))
+          end
+          if source_styles = source.delete(:styles)
+            custom_styles += Array.wrap(normalize_object(source_styles, section))
+          end
+        end
+        # styles got from mixins option
+        @styles += mixins.map{ |m| :"_mixin_#{m}" }
 
         # don't use present? here, it's slower, while this method should be very fast
         if section && section.name && section.name != '' && name && name != ''
           # using for base sections
           @styles << [section.name, name].join('_').to_sym
         end
-        # custom style (from options or block options), using for TableViews as well
-        custom_styles = style_sources.map do |source|
-          normalize_object(source.delete(:styles), section)
-        end.flatten
 
+        # custom style (from options or block options), using for TableViews as well
         @styles += custom_styles
         # puts @view_class.to_s + @styles.inspect, ''
         @styles
@@ -198,7 +202,6 @@ module MotionPrime
         # form element: user_form_field_input, user_form_string_field_input, user_form_field_email_input
         # table element: categories_table_cell_icon, categories_table_title_icon
         all_styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
-        # puts @view_class.to_s + all_styles.inspect, ''
         all_styles
       end
 

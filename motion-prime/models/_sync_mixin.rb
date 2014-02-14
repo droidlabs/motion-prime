@@ -50,7 +50,7 @@ module MotionPrime
     #
     # @param options [Hash] fetch options
     # @option options [Symbol] :method Http method to calculate url, `:get` by default
-    # @option options [Boolean] :associations Also fetch associations
+    # @option options [Boolean or Array] :associations Also fetch associations
     # @option options [Boolean] :save Save model after fetch
     # @param block [Proc] block to be executed after fetch
     def fetch(options = {}, &block)
@@ -59,8 +59,8 @@ module MotionPrime
       url = sync_url(method, options)
 
       will_fetch_model = !url.blank?
-      will_fetch_associations = !options.has_key?(:associations) || options[:associations]
-      will_fetch_associations = false unless has_associations_to_fetch?
+      will_fetch_associations = options.fetch(:associations, true)
+      will_fetch_associations = false unless has_associations_to_fetch?(options)
 
       fetch_with_url url, options do |data, status_code|
         save if options[:save]
@@ -176,13 +176,13 @@ module MotionPrime
       @associations ||= (self.class._associations || {}).clone
     end
 
-    def associations_to_fetch
-      @associations_to_fetch ||= associations.select { |key, v| fetch_association?(key) }
+    def associations_to_fetch(options = {})
+      associations.select { |key, v| fetch_association?(key, options) }
     end
 
     def fetch_associations(sync_options = {}, &block)
       use_callback = block_given?
-      associations_to_fetch.keys.each_with_index do |key, index|
+      associations_to_fetch(sync_options).keys.each_with_index do |key, index|
         if use_callback && associations.count - 1 == index
           fetch_association(key, sync_options, &block)
         else
@@ -191,22 +191,25 @@ module MotionPrime
       end
     end
 
-    def has_associations_to_fetch?
-      associations_to_fetch.present?
+    def has_associations_to_fetch?(options = {})
+      associations_to_fetch(options).present?
     end
 
     def has_association?(key)
       !associations[key.to_sym].nil?
     end
 
-    def fetch_association?(key)
+    def fetch_association?(key, options = {})
+      allowed_associations = options[:associations].map(&:to_sym) if options[:associations].is_a?(Array)
+      return false if allowed_associations.try(:exclude?, key.to_sym)
+
       options = associations[key.to_sym]
       return false if options[:if] && !options[:if].to_proc.call(self)
       association_sync_url(key, options).present?
     end
 
     def fetch_association(key, sync_options = {}, &block)
-      return unless fetch_association?(key)
+      return unless fetch_association?(key, sync_options)
       options = associations[key.to_sym]
       if options[:type] == :many
         fetch_has_many(key, options, sync_options, &block)

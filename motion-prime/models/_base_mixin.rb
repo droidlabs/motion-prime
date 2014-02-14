@@ -185,6 +185,20 @@ module MotionPrime
           self.info[name] = value
         end
 
+        define_method(name.to_sym) do
+          value = self.info[name]
+          case options[:type].to_s
+          when 'integer'
+            value.to_i
+          when 'float'
+            value.to_f
+          when 'time' && !value.is_a?(String)
+            value.to_short_iso8601
+          else
+            value
+          end
+        end if options[:convert]
+
         if options[:type].to_s == 'boolean'
           define_method("#{name}?") do
             !!self.info[name]

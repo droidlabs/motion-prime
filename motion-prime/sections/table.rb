@@ -56,6 +56,11 @@ module MotionPrime
     #
     # @return [Boolean] true
     def reload_data
+      if Array.wrap(@preloader_queue).any? { |state| state == :in_progress }
+        pp 'sleeping', self.to_s
+        sleep 0.1
+        reload_data
+      end
       reset_data
       @async_loaded_data = fixed_table_data if async_data?
       reload_table_data
@@ -188,6 +193,7 @@ module MotionPrime
 
     def render_table
       options = {
+        section: self.weak_ref,
         styles: table_styles.values.flatten,
         delegate: table_delegate,
         data_source: table_delegate,
