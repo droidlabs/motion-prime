@@ -37,7 +37,7 @@ class ApiClient
       auth_data = response.object
 
       self.access_token = auth_data[:access_token] if auth_data
-      block.call(auth_data, response.operation.response.statusCode) if use_callback
+      block.call(auth_data, response.operation.response.try(:statusCode)) if use_callback
     end
     true
   end
