@@ -13,7 +13,7 @@ MotionPrime::Styles.define :base_form do
     top: nil,
     width: 320
 
-  style :field,
+  style :field, :cell,
     selection_style: :none,
     background_color: :clear
 

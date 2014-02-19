@@ -14,6 +14,14 @@ class TableDataIndexes
     a.section > b.section || a.row > b.row ? 1 : -1
   end
 
+  def greater_than(a, b)
+    compare_indexes(a, b) > 0
+  end
+
+  def less_than(a, b)
+    compare_indexes(a, b) < 0
+  end
+
   def sum_index(a, rows, crop_to_edges = true)
     row = a.row + rows
     section = a.section
@@ -25,8 +33,10 @@ class TableDataIndexes
       section = a.section + direction
       edge_row = [[0, row].max, max_row].min
 
-      if section < 0 || section >= sections_count
-        return crop_to_edges ? NSIndexPath.indexPathForRow(edge_row, inSection: a.section) : false
+      max_section = sections_count - 1
+      if section < 0 || section > max_section
+        edge_section = [[section, 0].max, max_section].min
+        return crop_to_edges ? NSIndexPath.indexPathForRow(edge_row, inSection: edge_section) : false
       end
 
       start_row = edge_row.zero? ? count_in_section(section) - 1 : 0

@@ -164,14 +164,9 @@ module MotionPrime
 
     def reload_data
       @groups_count = nil
+      init_form_fields # must be before resetting to reflect changes on @data
       reset_data
-      init_form_fields
       reload_table_data
-    end
-
-    def reset_data
-      super
-      self.fields.values.each(&:clear_observers)
     end
 
     def has_many_sections?
@@ -183,25 +178,11 @@ module MotionPrime
       super
     end
 
-    def reload_table_data
-      return super unless async_data?
-      sections = NSMutableIndexSet.new
-      number_of_groups.times do |section_id|
-        sections.addIndex(section_id)
-      end
-      table_view.reloadSections sections, withRowAnimation: UITableViewRowAnimationFade
-    end
-
     # Table View Delegate
     # ---------------------
 
     def number_of_groups(table = nil)
       has_many_sections? ? grouped_data.compact.count : 1
-    end
-
-    def height_for_index(table, index)
-      section = load_cell_by_index(index, preload: false)
-      section.container_height
     end
 
     class << self
@@ -210,6 +191,11 @@ module MotionPrime
         subclass.fields_options = self.fields_options.try(:clone)
         subclass.text_field_limits = self.text_field_limits.try(:clone)
         subclass.text_view_limits = self.text_view_limits.try(:clone)
+      end
+
+      def async_table_data(options = {})
+        super
+        self.send :include, Prime::AsyncFormMixin
       end
 
       def field(name, options = {}, &block)
@@ -235,6 +221,8 @@ module MotionPrime
       def load_sections; end
 
       def init_form_fields
+        self.fields.values.each(&:clear_observers) if fields.present?
+
         self.fields = {}
         self.field_indexes = {}
         self.grouped_data = []

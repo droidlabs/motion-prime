@@ -7,7 +7,7 @@ module MotionPrime
     include HasStyleChainBuilder
     include HasSearchBar
 
-    class_attribute :async_data_options, :group_header_options, :pull_to_refresh_block
+    class_attribute :group_header_options, :pull_to_refresh_block
 
     attr_accessor :table_element, :did_appear, :group_header_sections, :group_header_options
     attr_reader :decelerating
@@ -18,7 +18,7 @@ module MotionPrime
 
     # Return sections which will be used to render as table cells.
     #
-    # This method should be redefined in your table section and should return array.
+    # This method should be redefined in your table section and must return array.
     # @return [Array<Prime::Section>] array of sections
     def table_data
       @model || []
@@ -45,19 +45,11 @@ module MotionPrime
       super
     end
 
-    # Returns true if table section have enabled async data. False by defaul.
-    #
-    # @return [Boolean] is async data enabled.
-    def async_data?
-      self.class.async_data_options
-    end
-
     # Reset all table data and reload table view
     #
     # @return [Boolean] true
     def reload_data
       reset_data
-      @async_loaded_data = fixed_table_data if async_data?
       reload_table_data
     end
 
@@ -82,15 +74,11 @@ module MotionPrime
     def reset_data
       @did_appear = false
       @data = nil
-      @async_loaded_data = nil
-      @preloader_next_starts_from = nil
-      @preloader_cancelled = false
       @data_stamp = nil
       @reusable_cells.each do |object_id, cell|
         cell.reuseIdentifier = nil
       end if @reusable_cells
       @reusable_cells = nil
-      @preloader_queue[-1] = :cancelled if @preloader_queue.present?
       true
     end
 
@@ -190,18 +178,18 @@ module MotionPrime
       @table_delegate ||= TableDelegate.new(section: self)
     end
 
-    def render_table
-      options = {
+    def table_element_options
+      {
         section: self.weak_ref,
         styles: table_styles.values.flatten,
         delegate: table_delegate,
         data_source: table_delegate,
         style: (UITableViewStyleGrouped unless flat_data?)
       }
-      if async_data? && self.class.async_data_options.has_key?(:estimated_cell_height)
-        options[:estimated_cell_height] = self.class.async_data_options[:estimated_cell_height]
-      end
-      self.table_element = screen.table_view(options)
+    end
+
+    def render_table
+      self.table_element = screen.table_view(table_element_options)
     end
 
     def table_view
@@ -216,17 +204,18 @@ module MotionPrime
       table_view.try(:show)
     end
 
-    def render_cell(index, table)
+    def render_cell(index, table = nil)
+      table ||= table_view
       section = cell_sections_for_group(index.section)[index.row]
       element = section.container_element || section.init_container_element(container_element_options_for(index))
 
       view = element.render do
         section.render
       end
+
       @reusable_cells ||= {}
       @reusable_cells[section.object_id] = view
       on_cell_render(view, index)
-      preload_sections_after(index)
       view
     end
 
@@ -260,9 +249,6 @@ module MotionPrime
       cell_sections_for_group(index.section)[index.row]
     end
 
-    def on_async_data_loaded; end
-    def on_async_data_preloaded(loaded_index); end
-
     def cell_name(table, index)
       record = cell_section_by_index(index)
       "cell_#{record.object_id}_#{@data_stamp[record.object_id]}"
@@ -277,7 +263,6 @@ module MotionPrime
 
     def cell_for_index(table, index)
       cell = cached_cell(index, table) || render_cell(index, table)
-
       # run table view is appeared callback if needed
       if !@did_appear && index.row == cell_sections_for_group(index.section).size - 1
         on_appear
@@ -286,7 +271,7 @@ module MotionPrime
     end
 
     def height_for_index(table, index)
-      section = load_cell_by_index(index, preload: true)
+      section = cell_section_by_index(index)
       section.container_height
     end
 
@@ -335,24 +320,12 @@ module MotionPrime
       end
 
       def set_table_data
-        cells = async_data? ? load_sections_async : fixed_table_data
-        prepare_table_cell_sections(cells)
-        @data = cells
+        sections = fixed_table_data
+        prepare_table_cell_sections(sections)
+        @data = sections
         reset_data_stamps
-        load_sections unless async_data?
+        load_sections
         @data
-      end
-
-      def load_sections_async
-        @async_loaded_data || begin
-          BW::Reactor.schedule_on_main do
-            @async_loaded_data = fixed_table_data
-            @data = nil
-            reload_table_data
-            on_async_data_loaded
-          end
-          []
-        end
       end
 
       def cached_cell(index, table = nil)
@@ -368,14 +341,6 @@ module MotionPrime
           cell.screen ||= screen
           cell.table ||= self.weak_ref if cell.respond_to?(:table=)
         end
-      end
-
-      def load_cell_by_index(index, options = {})
-        section = cell_sections_for_group(index.section)[index.row]
-        if section.load_section && options[:preload] && !section.container_element && async_data? # perform only if just loaded
-          section.load_container_with_elements(container: container_element_options_for(index))
-        end
-        section
       end
 
       def container_element_options_for(index)
@@ -398,7 +363,6 @@ module MotionPrime
       end
 
       def load_sections
-        return if async_data?
         if flat_data?
           data.each(&:load_section)
         else
@@ -406,86 +370,15 @@ module MotionPrime
         end
       end
 
-
-      # Preloads sections after rendering cell in current sheduled index or given index.
-      # TODO: probably should be in separate class.
-      #
-      # @param index [NSIndexPath] Value of first index to load if current sheduled index not exists.
-      # @return [NSIndexPath, Boolean] Index of next sheduled index.
-      def preload_sections_after(index)
-        return if !async_data? || @preloader_next_starts_from == false
-        service = preloader_index_service
-
-        load_limit = self.class.async_data_options.try(:[], :preload_cells_count)
-        @preloader_next_starts_from ||= index
-        index_to_start_preloading = service.sum_index(@preloader_next_starts_from, load_limit ? -load_limit/2 : 0)
-        if service.compare_indexes(index, index_to_start_preloading) >= 0
-          load_count = preload_sections_schedule_next(@preloader_next_starts_from, load_limit)
-          @preloader_next_starts_from = service.sum_index(@preloader_next_starts_from, load_count, false)
-        else
-          false
-        end
-      end
-
-      # Schedules preloading sections starting with given index with given limit.
-      # TODO: probably should be in separate class.
-      #
-      # @param index [NSIndexPath] Value of first index to load.
-      # @param limit [Integer] Limit of sections to load.
-      # @return [Integer] Count of sections scheduled to load.
-      def preload_sections_schedule_next(index, limit)
-        service = preloader_index_service
-
-        left_to_load = cell_sections_for_group(index.section).count - index.row
-        load_count = [left_to_load, limit].compact.min
-        @preloader_cancelled = false
-        @preloader_queue ||= []
-        @strong_refs ||= []
-
-        # TODO: we do we need to keep screen ref too?
-        queue_id = @preloader_queue.count
-        @strong_refs[queue_id] = [screen.strong_ref, screen.main_controller.strong_ref]
-        @preloader_queue[queue_id] = :in_progress
-        BW::Reactor.schedule(queue_id) do |queue_id|
-          result = load_count.times do |offset|
-            if @preloader_queue[queue_id] == :cancelled
-              @strong_refs[queue_id] = nil
-              break
-            end
-            if screen.main_controller.retainCount == 1
-              @strong_refs[queue_id] = nil
-              @preloader_queue[queue_id] = :dealloc
-              break
-            end
-
-            load_cell_by_index(index, preload: true)
-            unless offset == load_count - 1
-              index = service.sum_index(index, 1)
-            end
-          end
-
-          if result
-            on_async_data_preloaded(index)
-            @preloader_queue[queue_id] = :completed
-          end
-          @strong_refs[queue_id] = nil
-        end
-        load_count
-      end
-
-      def preloader_index_service
-        TableDataIndexes.new(@data)
-      end
-
     class << self
       def inherited(subclass)
         super
-        subclass.async_data_options = self.async_data_options.try(:clone)
         subclass.group_header_options = self.group_header_options.try(:clone)
       end
 
       def async_table_data(options = {})
-        self.async_data_options = options
+        self.send :include, Prime::AsyncTableMixin
+        self.set_async_data_options options
       end
 
       def group_header(name, options)
