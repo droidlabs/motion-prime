@@ -1,7 +1,7 @@
 motion_require '../views/styles.rb'
 MotionPrime::Styles.define :base_form do
   style :header, container: {height: 25}
-  style :header_label,
+  style :header_label, mixins: [:multiline],
     left: 0,
     bottom: 5,
     top: nil,
@@ -95,10 +95,10 @@ MotionPrime::Styles.define :base_form do
   style :with_sections_field_switch,
     right: 20
 
-  style :with_sections_field_text_field, 
-    :with_sections_field_text_view, 
-    :with_sections_field_password_field, 
-    :with_sections_field_label, 
+  style :with_sections_field_text_field,
+    :with_sections_field_text_view,
+    :with_sections_field_password_field,
+    :with_sections_field_label,
     :with_sections_field_button,
     left: 20,
     right: 20

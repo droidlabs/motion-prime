@@ -1,41 +1,35 @@
 module MotionPrime
   class Errors
-    attr_accessor :_unique_keys
+    attr_accessor :info
+    attr_reader :changes
 
     def initialize(model)
-      @_unique_keys = []
+      @info = MotionSupport::HashWithIndifferentAccess.new
+      @changes = MotionSupport::HashWithIndifferentAccess.new
       @model = model
       model.class.attributes.map(&:to_sym).each do |key|
         initialize_for_key key
       end
     end
 
-    def unique_key(key)
-      [key, @model.object_id].join('_').to_sym
-    end
-
-    def initialize_for_key(key)
-      unique_key = unique_key(key)
-
-      return if @_unique_keys.include?(unique_key)
-      @_unique_keys << unique_key
-      instance_variable_set("@#{unique_key}", [])
-      self.class.send :attr_accessor, unique_key
-    end
-
     def get(key)
       initialize_for_key(key)
-      send(unique_key(key))
+      @info[key]
     end
 
-    def set(key, errors)
+    def set(key, errors, options = {})
       initialize_for_key(key)
-      send :"#{unique_key(key)}=", Array.wrap(errors)
+
+      track_changed options do
+        @info[key] = Array.wrap(errors)
+      end
     end
 
-    def add(key, error)
+    def add(key, error, options = {})
       initialize_for_key(key)
-      send(unique_key(key)) << error
+      track_changed do
+        @info[key] << error
+      end
     end
 
     def [](key)
@@ -46,22 +40,26 @@ module MotionPrime
       set(key, errors)
     end
 
-    def reset_for(key)
-      send :"#{unique_key(key)}=", []
+    def reset_for(key, options = {})
+      track_changed options do
+        @info[key] = []
+      end
     end
 
     def reset
-      @_unique_keys.each do |unique_key|
-        send :"#{unique_key}=", []
+      track_changed do
+        @info.keys.each do |key|
+          reset_for(key, silent: true)
+        end
       end
     end
 
     def messages
-      @_unique_keys.map{ |uniq_k| send(uniq_k) }.compact.flatten
+      @info.values.flatten
     end
 
     def blank?
-      messages.blank?
+      @info.values.none?
     end
 
     def present?
@@ -71,5 +69,25 @@ module MotionPrime
     def to_s
       messages.join(';')
     end
+
+    def track_changed(options = {})
+      return yield if options[:silent]
+      @changes = MotionSupport::HashWithIndifferentAccess.new
+      saved_info = @info.clone
+      willChangeValueForKey(:info)
+      yield
+      @info.each do |key, value|
+        @changes[key] = [value, saved_info[key]] unless value == saved_info[key]
+      end
+      didChangeValueForKey(:info)
+    end
+
+    private
+      def initialize_for_key(key)
+        key = key.to_sym
+        return if @info.has_key?(key)
+
+        @info[key] ||= []
+      end
   end
 end

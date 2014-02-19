@@ -56,11 +56,6 @@ module MotionPrime
     #
     # @return [Boolean] true
     def reload_data
-      if Array.wrap(@preloader_queue).any? { |state| state == :in_progress }
-        pp 'sleeping', self.to_s
-        sleep 0.1
-        reload_data
-      end
       reset_data
       @async_loaded_data = fixed_table_data if async_data?
       reload_table_data
@@ -91,6 +86,10 @@ module MotionPrime
       @preloader_next_starts_from = nil
       @preloader_cancelled = false
       @data_stamp = nil
+      @reusable_cells.each do |object_id, cell|
+        cell.reuseIdentifier = nil
+      end if @reusable_cells
+      @reusable_cells = nil
       @preloader_queue[-1] = :cancelled if @preloader_queue.present?
       true
     end
@@ -99,10 +98,10 @@ module MotionPrime
     #
     # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be added to table view.
     # @return [Boolean] true
-    def add_cell_sections(cells)
-      cells = prepare_table_cells(cells)
+    def add_cell_sections(sections)
+      prepare_table_cell_sections(sections)
       @data ||= []
-      @data += cells
+      @data += sections
       reload_table_data
     end
 
@@ -224,6 +223,8 @@ module MotionPrime
       view = element.render do
         section.render
       end
+      @reusable_cells ||= {}
+      @reusable_cells[section.object_id] = view
       on_cell_render(view, index)
       preload_sections_after(index)
       view
@@ -335,7 +336,7 @@ module MotionPrime
 
       def set_table_data
         cells = async_data? ? load_sections_async : fixed_table_data
-        prepare_table_cells(cells)
+        prepare_table_cell_sections(cells)
         @data = cells
         reset_data_stamps
         load_sections unless async_data?
@@ -359,7 +360,7 @@ module MotionPrime
         table.dequeueReusableCellWithIdentifier(cell_name(table, index))
       end
 
-      def prepare_table_cells(cells)
+      def prepare_table_cell_sections(cells)
         Array.wrap(cells.flatten).each do |cell|
           Prime::Config.prime.cell_section.mixins.each do |mixin|
             cell.class.send(:include, mixin)
@@ -384,9 +385,11 @@ module MotionPrime
         }
       end
 
-      def set_data_stamp(cell_ids)
+      def set_data_stamp(section_ids)
         @data_stamp ||= {}
-        [*cell_ids].each { |id| @data_stamp[id] = Time.now.to_f }
+        [*section_ids].each do |id|
+          @data_stamp[id] = Time.now.to_f
+        end
       end
 
       def reset_data_stamps

@@ -58,8 +58,8 @@ module MotionPrime
         face = UIButton.buttonWithType UIButtonTypeCustom
         face.setImage(image, forState: UIControlStateNormal)
         face.setTitle(title, forState: UIControlStateNormal)
-        face.bounds = CGRectMake(0, 0, 100, 60)
         face.setContentHorizontalAlignment UIControlContentHorizontalAlignmentLeft
+        face.sizeToFit
         face.on :touch do
           args[:action].to_proc.call(self)
         end

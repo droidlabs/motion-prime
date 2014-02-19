@@ -42,7 +42,7 @@ module MotionPrime
         @data[path.section][path.row] = fields[field]
       end
 
-      set_data_stamp(field.object_id)
+      set_data_stamp(fields[field].object_id)
 
       # table_view.beginUpdates
       table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)

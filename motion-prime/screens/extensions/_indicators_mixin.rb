@@ -38,8 +38,10 @@ module MotionPrime
       when 'alert' then MBAlertViewHUDTypeExclamationMark
       else MBAlertViewHUDTypeCheckmark
       end
-      MBHUDView.hudWithBody message,
-        type: hud_type, hidesAfter: time, show: true
+
+      unless time === false
+        MBHUDView.hudWithBody(message, type: hud_type, hidesAfter: time, show: true)
+      end
     end
 
     def show_spinner(message = nil)

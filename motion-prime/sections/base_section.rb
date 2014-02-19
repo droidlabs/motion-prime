@@ -199,7 +199,8 @@ module MotionPrime
     end
 
     def element(name)
-      elements[name.to_sym]
+      self.elements ||= {}
+      self.elements[name.to_sym]
     end
 
     def view(name)

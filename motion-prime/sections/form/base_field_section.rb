@@ -52,18 +52,19 @@ module MotionPrime
     def observe_model_errors
       return unless observing_errors?
       on_error_change = proc { |old_value, new_value|
-        next if old_value == new_value
-        if @status_for_updated == :rendered
-          reload_section
-        else
-          load_section!
-          form.reload_table_data
+        changes = observing_errors_for.errors.changes
+        errors_observer_fields.each do |field|
+          next unless changes.has_key?(field)
+          if @status_for_updated == :rendered
+            reload_section
+          else
+            load_section!
+            form.reload_table_data
+          end
         end
       }.weak!
 
-      errors_observer_fields.each do |field|
-        observe observing_errors_for.errors, observing_errors_for.errors.unique_key(field), &on_error_change
-      end
+      observe observing_errors_for.errors, :info, &on_error_change
     end
 
     def dealloc
@@ -125,9 +126,7 @@ module MotionPrime
 
     def has_errors?
       return false unless observing_errors?
-      errors_observer_fields.any? do |field|
-        observing_errors_for.errors[field].present?
-      end
+      observing_errors_for.errors.info.slice(*errors_observer_fields).values.any?(&:present?)
     end
 
     def errors_observer_fields
@@ -145,9 +144,7 @@ module MotionPrime
     def all_errors
       return [] unless observing_errors?
 
-      errors_observer_fields.map do |field|
-        observing_errors_for.errors[field]
-      end
+      observing_errors_for.errors.info.slice(*errors_observer_fields).values.flatten
     end
 
     def reload_section
@@ -158,10 +155,7 @@ module MotionPrime
     def clear_observers
       return unless observing_errors?
       # unobserve_all cause double dealloc, following code is a replacement
-      block = proc { |field|
-        unobserve observing_errors_for.errors, observing_errors_for.errors.unique_key(field)
-      }.weak!
-      errors_observer_fields.each(&block)
+      unobserve observing_errors_for.errors, :info
       # TODO: clear 'on' events
     end
 
