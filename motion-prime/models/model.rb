@@ -24,6 +24,14 @@ module MotionPrime
       @errors ||= Errors.new(self.weak_ref)
     end
 
+    def set_errors(data)
+      errors.track_changed do
+        data.symbolize_keys.each do |key, error_messages|
+          errors.set(key, error_messages, silent: true) if error_messages.present?
+        end
+      end
+    end
+
     def dealloc
       Prime.logger.dealloc_message :model, self
       super

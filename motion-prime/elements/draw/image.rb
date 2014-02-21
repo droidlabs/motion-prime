@@ -64,21 +64,25 @@ module MotionPrime
       view.layer.addSublayer(@layer)
     end
 
+    def strong_references
+      section
+    end
+
     def load_image
       return if @loading || image_data || !computed_options[:url]
 
       @loading = true
 
-      @strong_ref = section.strong_ref
+      ref_key = allocate_strong_references
       BW::Reactor.schedule do
         manager = SDWebImageManager.sharedManager
         manager.downloadWithURL(computed_options[:url],
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|
-            if !image || @strong_ref.retainCount == 1
+            if !image || allocated_references_released?
               @loading = false
-              @strong_ref = nil
+              release_strong_references(ref_key)
               return
             end
 
@@ -91,7 +95,7 @@ module MotionPrime
               self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
             end
             @loading = false
-            @strong_ref = nil
+            release_strong_references(ref_key)
           }
         )
       end

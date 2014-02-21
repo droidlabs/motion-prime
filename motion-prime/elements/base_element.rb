@@ -51,13 +51,12 @@ module MotionPrime
 
     def render(options = {}, &block)
       run_callbacks :render do
-        render!(&block)
+        render!(options, &block)
       end
     end
 
-    def render!(&block)
-      # view.try(:removeFromSuperview)
-      view = screen.add_view class_factory(view_class), computed_options do |view|
+    def render!(options = {}, &block)
+      view = screen.add_view class_factory(view_class), computed_options.merge(options) do |view|
         @view = view
         block.try(:call, view, self)
       end

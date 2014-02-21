@@ -76,18 +76,32 @@ module MotionPrime
       form.name
     end
 
-    def focus(begin_editing = true)
-      # scroll to cell
-      path = form.table_view.indexPathForCell(cell)
-      form.table_view.scrollToRowAtIndexPath path,
-        atScrollPosition: UITableViewScrollPositionTop, animated: true
+    def focus(begin_editing = false)
       # focus on text field
-      return unless begin_editing
-      elements.values.each do |element|
+      elements.values.detect do |element|
         if element.view.is_a?(UITextField) || element.view.is_a?(UITextView)
-          element.view.becomeFirstResponder and return
+          element.view.becomeFirstResponder
         end
+      end if begin_editing
+
+      # scroll to cell
+      # path = form.table_view.indexPathForCell(cell)
+      # form.table_view.scrollToRowAtIndexPath path,
+      #   atScrollPosition: UITableViewScrollPositionTop, animated: true
+      return self unless input_view = element(:input).try(:view)
+      origin = input_view.frame.origin
+      point = container_view.convertPoint(origin, toView: form.table_view)
+
+      nav_bar_height = screen.navigationController ? screen.navigationController.navigationBar.frame.size.height : 0
+      nav_bar_height += 20 # status bar height
+
+      offset = form.table_view.contentOffset
+      new_top_offset = point.y - nav_bar_height
+      unless new_top_offset == offset.y
+        offset.y = new_top_offset
+        form.table_view.setContentOffset(offset, animated: true)
       end
+
       self
     rescue
       NSLog("can't focus on element #{self.class_name_without_kvo}")
@@ -115,7 +129,7 @@ module MotionPrime
 
     def bind_text_input
       view(:input).on :change do |view|
-        focus
+        focus if options[:auto_focus]
         form.on_input_change(view(:input))
       end
     end

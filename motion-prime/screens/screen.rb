@@ -53,6 +53,10 @@ module MotionPrime
       super
     end
 
+    def strong_references
+      self.main_controller
+    end
+
     def visible?
       @visible
     end

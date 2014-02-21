@@ -98,11 +98,11 @@ module Prime
       service = preloader_index_service
 
       @preloader_queue ||= []
-      @strong_refs ||= []
 
       # TODO: we do we need to keep screen ref too?
       queue_id = @preloader_queue.count
-      @strong_refs[queue_id] = [screen.strong_ref, screen.main_controller.strong_ref]
+
+      allocate_strong_references(queue_id)
 
       @preloader_queue[queue_id] = {
         state: :in_progress,
@@ -113,12 +113,12 @@ module Prime
       BW::Reactor.schedule(queue_id) do |queue_id|
         result = load_count.times do |offset|
           if @preloader_queue[queue_id][:state] == :cancelled
-            @strong_refs[queue_id] = nil
+            release_strong_references(queue_id)
             break
           end
-          if @strong_refs[queue_id].any? { |ref| ref.retainCount == @strong_refs.reject(&:nil?).count }
+          if allocated_references_released?
             @preloader_queue[queue_id][:state] = :dealloc
-            @strong_refs[queue_id] = nil
+            release_strong_references(queue_id)
             break
           end
 
@@ -137,7 +137,7 @@ module Prime
           @preloader_queue[queue_id][:state] = :completed
           on_queue_preloaded(queue_id, index)
         end
-        @strong_refs[queue_id] = nil
+        release_strong_references(queue_id)
       end
       queue_id
     end
@@ -157,14 +157,13 @@ module Prime
 
       def load_sections_async
         @async_loaded_data || begin
-          @strong_refs_on_main ||= []
-          @strong_refs_on_main << [screen.strong_ref, screen.main_controller.strong_ref]
+          ref_key = allocate_strong_references
           BW::Reactor.schedule_on_main do
             @async_loaded_data = fixed_table_data
             @data = nil
             reload_table_data
             on_async_data_loaded
-            @strong_refs_on_main.pop
+            release_strong_references(ref_key)
           end
           []
         end

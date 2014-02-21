@@ -53,6 +53,10 @@ module MotionPrime
       super
     end
 
+    def strong_references
+      [screen, screen.main_controller]
+    end
+
     def container_bounds
       options[:container_bounds] or raise "You must pass `container bounds` option to prerender base section"
     end
@@ -263,6 +267,10 @@ module MotionPrime
 
     def elements_to_render
       self.elements.except(*elements_to_draw.keys)
+    end
+
+    def current_input_view_height
+      App.shared.windows.last.subviews.first.try(:height) || KEYBOARD_HEIGHT_PORTRAIT
     end
 
     protected

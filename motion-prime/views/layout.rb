@@ -5,7 +5,8 @@ module MotionPrime
   module Layout
     def add_view(klass, options = {}, &block)
       options = options.clone
-      parent_view = options.delete(:parent_view)
+      render_target = options.delete(:render_target)
+      parent_view = options.delete(:parent_view) || render_target
 
       bounds = if view_stack.empty?
         parent_view.try(:bounds) || CGRectZero
@@ -17,7 +18,7 @@ module MotionPrime
       view = builder.view
       insert_index = options.delete(:at_index)
 
-      if render_target = options.delete(:render_target)
+      if render_target
         options[:bounds] = render_target.bounds
         insert_index ? render_target.insertSubview(view, atIndex: insert_index) : render_target.addSubview(view)
       elsif view_stack.any?
