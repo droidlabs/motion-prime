@@ -58,7 +58,7 @@ module MotionPrime
           if @status_for_updated == :rendered
             reload_section
           else
-            load_section!
+            create_elements!
             form.reload_table_data
           end
         end

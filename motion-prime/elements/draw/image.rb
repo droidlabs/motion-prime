@@ -14,7 +14,6 @@ module MotionPrime
 
     def draw_in(rect)
       return if computed_options[:hidden]
-
       draw_background_in_context(UIGraphicsGetCurrentContext())
       computed_options[:draw_in_rect] ? draw_in_context(UIGraphicsGetCurrentContext()) : draw_with_layer
       load_image
@@ -65,12 +64,11 @@ module MotionPrime
     end
 
     def strong_references
-      section
+      [section, (section.table if section.respond_to?(:cell_section_name))].compact
     end
 
     def load_image
       return if @loading || image_data || !computed_options[:url]
-
       @loading = true
 
       ref_key = allocate_strong_references
@@ -99,6 +97,11 @@ module MotionPrime
           }
         )
       end
+    end
+
+    def update_with_options(new_options = {})
+      super
+      self.image_data = nil if new_options.has_key?(:url)
     end
   end
 end

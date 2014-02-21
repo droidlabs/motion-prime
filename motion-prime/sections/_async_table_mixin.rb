@@ -171,13 +171,13 @@ module Prime
 
       def preload_section_by_index(index)
         section = cell_section_by_index(index)
-        if section.load_section && !section.container_element && async_data? # perform only if just loaded
+        if section.create_elements && !section.container_element && async_data? # perform only if just loaded
           section.load_container_with_elements(container: container_element_options_for(index))
           section
         end
       end
 
-      def load_sections; end
+      def create_section_elements; end
 
     module ClassMethods
       def inherited(subclass)

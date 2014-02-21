@@ -272,6 +272,7 @@ module MotionPrime
 
     def height_for_index(table, index)
       section = cell_section_by_index(index)
+      section.create_elements
       section.container_height
     end
 
@@ -324,7 +325,7 @@ module MotionPrime
         prepare_table_cell_sections(sections)
         @data = sections
         reset_data_stamps
-        load_sections
+        create_section_elements
         @data
       end
 
@@ -362,11 +363,11 @@ module MotionPrime
         set_data_stamp(keys)
       end
 
-      def load_sections
+      def create_section_elements
         if flat_data?
-          data.each(&:load_section)
+          data.each(&:create_elements)
         else
-          data.each { |section_data| section_data.each(&:load_section) }
+          data.each { |group_sections| group_sections.each(&:create_elements) }
         end
       end
 

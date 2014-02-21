@@ -119,14 +119,20 @@ module MotionPrime
     # they will be rendered immediately after that or rendered async later, based on type of section.
     #
     # @return result [Boolean] true if has been loaded by this thread.
-    def load_section
+    def create_elements
       return if @section_loaded
       if @section_loading
         sleep 0.1
-        return @section_loaded ? false : load_section
+        return @section_loaded ? false : create_elements
       end
       @section_loading = true
-      create_elements
+
+      self.elements = {}
+      elements_options.each do |key, opts|
+        add_element(key, opts)
+      end
+      self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
+
       @section_loading = false
       return @section_loaded = true
     end
@@ -137,7 +143,7 @@ module MotionPrime
       self.elements_to_render.values.map(&:view).flatten.each do |view|
         view.removeFromSuperview if view
       end
-      load_section!
+      create_elements!
       run_callbacks :render do
         render!
       end
@@ -176,7 +182,7 @@ module MotionPrime
     end
 
     def render(container_options = {})
-      load_section
+      create_elements
       self.container_options.merge!(container_options)
       run_callbacks :render do
         render!
@@ -317,17 +323,9 @@ module MotionPrime
       # Force load section
       #
       # @return result [Boolean] true if has been loaded by this thread.
-      def load_section!
+      def create_elements!
         @section_loaded = false
-        load_section
-      end
-
-      def create_elements
-        self.elements = {}
-        elements_options.each do |key, opts|
-          add_element(key, opts)
-        end
-        self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
+        create_elements
       end
 
       def build_element(options = {})

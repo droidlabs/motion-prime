@@ -35,7 +35,7 @@ module MotionPrime
       section.cell.try(:removeFromSuperview)
 
       fields[field] = load_field(self.class.fields_options[field])
-      fields[field].load_section
+      fields[field].create_elements
       if flat_data?
         @data[path.row] = fields[field]
       else
@@ -218,7 +218,7 @@ module MotionPrime
     end
 
     private
-      def load_sections; end
+      def create_section_elements; end
 
       def init_form_fields
         self.fields.values.each(&:clear_observers) if fields.present?
