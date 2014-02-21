@@ -273,6 +273,10 @@ module MotionPrime
       App.shared.windows.last.subviews.first.try(:height) || KEYBOARD_HEIGHT_PORTRAIT
     end
 
+    def screen?
+      screen && screen.weakref_alive?
+    end
+
     protected
       def bind_keyboard_close
         bindings = self.class.keyboard_close_bindings
