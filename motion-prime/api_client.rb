@@ -17,7 +17,7 @@ class ApiClient
     end
     if config.sign_request?
       signature = RmDigest::MD5.hexdigest(
-        config.signature_secret + params.keys.map(&:to_s).sort.join
+        config.signature_secret + filter_sign_params(params).keys.map(&:to_s).sort.join
       )
       params.merge!(sign: signature)
     end
@@ -111,6 +111,9 @@ class ApiClient
   end
 
   private
+    def filter_sign_params(params)
+      params.except(:_files)
+    end
 
     def config
       MotionPrime::Config.api_client
