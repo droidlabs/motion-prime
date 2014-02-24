@@ -33,6 +33,10 @@ module Prime
 
     def height_for_index(table, index)
       section = cell_section_by_index(index)
+      unless section
+        Prime.logger.debug "could not find section with index #{index} for #{self.to_s}"
+        return 0
+      end
       preload_section_by_index(index)
       section.container_height
     end
@@ -171,6 +175,7 @@ module Prime
 
       def preload_section_by_index(index)
         section = cell_section_by_index(index)
+
         if section.create_elements && !section.container_element && async_data? # perform only if just loaded
           section.load_container_with_elements(container: container_element_options_for(index))
           section

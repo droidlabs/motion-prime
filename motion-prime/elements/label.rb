@@ -26,7 +26,7 @@ module MotionPrime
 
     def size_to_fit_if_needed
       if computed_options[:size_to_fit] && computed_options[:width]
-        @computed_options[:height_to_fit] = cached_content_outer_height
+        @computed_options[:height_to_fit] = content_outer_height
       end
     end
 

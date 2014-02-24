@@ -34,14 +34,11 @@ MotionPrime::Styles.define :base_form do
     font: proc { :app_base.uifont(12) },
     size_to_fit: true
 
-  style :field_error_message,
+  style :field_error_message, mixins: [:multiline],
     top: nil,
     bottom: 0,
     width: 280,
     left: 0,
-    line_break_mode: :word_wrap,
-    number_of_lines: 0,
-    size_to_fit: true,
     text_color: :app_error,
     font: proc { :app_base.uifont(12) }
 

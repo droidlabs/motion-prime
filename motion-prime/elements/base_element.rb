@@ -29,7 +29,12 @@ module MotionPrime
       @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
 
       if Prime.env.development?
-        @_element_info = "#{@name} #{view_name} #{section.try(:name)} #{screen.class}"
+        info = []
+        info << @name
+        info << view_name
+        info << section.try(:name)
+        info << screen.class
+        @_element_info = info.join(' ')
         @@_allocated_elements ||= []
         @@_allocated_elements << @_element_info
       end

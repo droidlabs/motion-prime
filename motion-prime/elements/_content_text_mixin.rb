@@ -83,7 +83,9 @@ module MotionPrime
         if is_a?(TextViewElement)
           options |= NSStringDrawingUsesFontLeading | NSStringDrawingTruncatesLastVisibleLine
         end
-        text.boundingRectWithSize([width, Float::MAX], options: options, context:nil)
+        rect = text.boundingRectWithSize([width, Float::MAX], options: options, context:nil)
+        rect.size.height += 1 # {font_size: 13, line_spacing: 2, number_of_lines: 2} computed height = 28, but we need 29 to fit the text
+        rect
       end
 
       def button_content_text

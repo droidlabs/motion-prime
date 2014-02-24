@@ -101,7 +101,7 @@ module MotionPrime
 
     def update_with_options(new_options = {})
       super
-      self.image_data = nil if new_options.has_key?(:url)
+      self.image_data = nil if new_options.slice(:url, :image).any?
     end
   end
 end

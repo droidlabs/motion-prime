@@ -12,15 +12,15 @@ module MotionPrime
     end
 
     def error(*args)
-      pp(*args) if LOGGER_ERROR_LEVEL <= current_level
+      pp("PRIME_ERROR", *args) if LOGGER_ERROR_LEVEL <= current_level
     end
 
     def info(*args)
-      pp(*args) if LOGGER_INFO_LEVEL <= current_level
+      pp("PRIME_INFO", *args) if LOGGER_INFO_LEVEL <= current_level
     end
 
     def debug(*args)
-      pp(*args) if LOGGER_DEBUG_LEVEL <= current_level
+      pp("PRIME_DEBUG", *args) if LOGGER_DEBUG_LEVEL <= current_level
     end
 
     def dealloc_message(type, object, *args)

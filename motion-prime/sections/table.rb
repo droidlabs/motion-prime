@@ -100,18 +100,24 @@ module MotionPrime
     def delete_cell_sections(sections)
       paths = []
       Array.wrap(sections).each do |section|
-        paths << NSIndexPath.indexPathForRow(@data.index(section), inSection: 0)
+        index = @data.try(:index, section)
+        next Prime.logger.debug("Delete cell section: `#{section.name}` is not in the list") unless index
+        paths << NSIndexPath.indexPathForRow(index, inSection: 0)
         delete_from_data(section)
       end
-      table_view.beginUpdates
-      table_view.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationLeft)
-      table_view.endUpdates
+      if paths.any?
+        table_view.beginUpdates
+        table_view.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationLeft)
+        table_view.endUpdates
+      end
       paths
     end
 
     def delete_from_data(section)
       # section will not deallocate if you'll just write @data.delete(section)
-      index = @data.index(section)
+      unless index = @data.try(:index, section)
+        Prime.logger.debug("Delete cell section from @data: `#{section.name}` is not in the list") and return
+      end
       @data[index] = nil
       @data.delete_at(index)
     end

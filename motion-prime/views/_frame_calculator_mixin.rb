@@ -51,7 +51,7 @@ module MotionPrime
 
       if !left.nil? && !right.nil?
         frame.origin.x = left
-        width = max_width - left - right
+        width = max_width - left - right if options[:height_to_fit].nil?
       elsif !right.nil?
         frame.origin.x = max_width - width - right
       elsif !left.nil?
@@ -72,8 +72,10 @@ module MotionPrime
         frame.origin.y = max_height / 2 - height / 2
       end
       frame.size.height = height
-
       frame
+    rescue => e
+      Prime.logger.error "can't calculate frame in #{self.class.name}. #{e}"
+      CGRectMake(0,0,0,0)
     end
   end
 end
