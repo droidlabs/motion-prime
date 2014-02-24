@@ -51,14 +51,29 @@ describe "Prime::AssociationCollection" do
   describe "#find" do
     before do
       @organization = Organization.new
+      project = Project.create(title: 'test 1')
+      @organization.projects.add(project)
+      project = Project.create(title: 'test 2')
+      @organization.projects.add(project)
+      @organization.save
+    end
+
+    it "should return saved records by first hash" do
+      @organization.projects.find(title: 'test 1').count.should == 1
+    end
+  end
+
+  describe "#filter" do
+    before do
+      @organization = Organization.new
       project = Project.new(title: 'test 1')
       @organization.projects.add(project)
       project = Project.new(title: 'test 2')
       @organization.projects.add(project)
     end
 
-    it "should return filter records by first hash" do
-      @organization.projects.find(title: 'test 1').count.should == 1
+    it "should return saved records by first hash" do
+      @organization.projects.filter(title: 'test 1').count.should == 1
     end
   end
 end

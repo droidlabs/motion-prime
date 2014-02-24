@@ -12,23 +12,27 @@ module MotionPrime
       end
     end
 
+    def to_hash
+      @info
+    end
+
     def get(key)
       initialize_for_key(key)
-      @info[key]
+      to_hash[key]
     end
 
     def set(key, errors, options = {})
       initialize_for_key(key)
 
       track_changed options do
-        @info[key] = Array.wrap(errors)
+        to_hash[key] = Array.wrap(errors)
       end
     end
 
     def add(key, error, options = {})
       initialize_for_key(key)
       track_changed do
-        @info[key] << error
+        to_hash[key] << error
       end
     end
 
@@ -42,24 +46,24 @@ module MotionPrime
 
     def reset_for(key, options = {})
       track_changed options do
-        @info[key] = []
+        to_hash[key] = []
       end
     end
 
     def reset
       track_changed do
-        @info.keys.each do |key|
+        to_hash.keys.each do |key|
           reset_for(key, silent: true)
         end
       end
     end
 
     def messages
-      @info.values.flatten
+      to_hash.values.flatten
     end
 
     def blank?
-      @info.values.none?
+      messages.none?
     end
 
     def present?
@@ -73,10 +77,10 @@ module MotionPrime
     def track_changed(options = {})
       return yield if options[:silent]
       @changes = MotionSupport::HashWithIndifferentAccess.new
-      saved_info = @info.clone
+      saved_info = to_hash.clone
       willChangeValueForKey(:info)
       yield
-      @info.each do |key, value|
+      to_hash.each do |key, value|
         @changes[key] = [value, saved_info[key]] unless value == saved_info[key]
       end
       didChangeValueForKey(:info)
@@ -87,7 +91,7 @@ module MotionPrime
         key = key.to_sym
         return if @info.has_key?(key)
 
-        @info[key] ||= []
+        to_hash[key] ||= []
       end
   end
 end

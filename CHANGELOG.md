@@ -1,3 +1,9 @@
+=== 0.8.2
+* bug fixes.
+* added #clone method for Model.
+* added #filter method for association collection.
+* memory leak fixes.
+
 === 0.8.1
 * renamed submit element in submit field to button element.
 * renamed date_picker element in date_picker field to input element.
