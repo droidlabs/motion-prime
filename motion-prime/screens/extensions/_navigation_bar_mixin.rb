@@ -13,6 +13,7 @@ module MotionPrime
     end
 
     def set_navigation_right_button(title, args = {})
+      puts title.inspect
       navigationItem.rightBarButtonItem = create_navigation_button(title, args)
     end
 
@@ -44,30 +45,44 @@ module MotionPrime
       args[:style]  ||= UIBarButtonItemStylePlain
       args[:action] ||= nil
       # TODO: Find better place for this code, may be just create custom control
-      if args[:image]
-        image = args[:image].uiimage
-        face = UIButton.buttonWithType UIButtonTypeCustom
-        face.bounds = CGRectMake(0, 0, image.size.width, image.size.height)
-        face.setImage image, forState: UIControlStateNormal
-        face.on :touch do
+      if title.is_a?(UIButton)
+        title.on :touch do
           args[:action].to_proc.call(self)
-        end
-        UIBarButtonItem.alloc.initWithCustomView(face)
+        end if args[:action]
+        title.sizeToFit
+        UIBarButtonItem.alloc.initWithCustomView(title)
+      elsif args[:image]
+        create_navigation_button_with_icon(title, args)
       elsif args[:icon]
-        image = args[:icon].uiimage
-        face = UIButton.buttonWithType UIButtonTypeCustom
-        face.setImage(image, forState: UIControlStateNormal)
-        face.setTitle(title, forState: UIControlStateNormal)
-        face.setContentHorizontalAlignment UIControlContentHorizontalAlignmentLeft
-        face.sizeToFit
-        face.on :touch do
-          args[:action].to_proc.call(self)
-        end
-        UIBarButtonItem.alloc.initWithCustomView(face)
+        create_navigation_button_with_icon(title, args)
       else
         UIBarButtonItem.alloc.initWithTitle(title,
           style: args[:style], target: args[:target] || self, action: args[:action])
       end
+    end
+
+    def create_navigation_button_with_image(title, args)
+      image = args[:icon].uiimage
+      face = UIButton.buttonWithType UIButtonTypeCustom
+      face.setImage(image, forState: UIControlStateNormal)
+      face.setTitle(title, forState: UIControlStateNormal)
+      face.setContentHorizontalAlignment UIControlContentHorizontalAlignmentLeft
+      face.sizeToFit
+      face.on :touch do
+        args[:action].to_proc.call(self)
+      end if args[:action]
+      UIBarButtonItem.alloc.initWithCustomView(face)
+    end
+
+    def create_navigation_button_with_icon(title, args)
+      image = args[:image].uiimage
+      face = UIButton.buttonWithType UIButtonTypeCustom
+      face.bounds = CGRectMake(0, 0, image.size.width, image.size.height)
+      face.setImage image, forState: UIControlStateNormal
+      face.on :touch do
+        args[:action].to_proc.call(self)
+      end if args[:action]
+      UIBarButtonItem.alloc.initWithCustomView(face)
     end
   end
 end
