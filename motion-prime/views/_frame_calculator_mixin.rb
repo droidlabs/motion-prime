@@ -7,6 +7,7 @@ module MotionPrime
       right   = options[:right]
       bottom  = options[:bottom]
       left    = options[:left]
+
       value_type = options[:value_type].to_s # absolute/relative
 
       if options[:height_to_fit].present? && height.nil? && (top.nil? || bottom.nil?)
@@ -72,6 +73,7 @@ module MotionPrime
         frame.origin.y = max_height / 2 - height / 2
       end
       frame.size.height = height
+
       frame
     rescue => e
       Prime.logger.error "can't calculate frame in #{self.class.name}. #{e}"

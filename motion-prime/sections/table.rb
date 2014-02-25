@@ -225,14 +225,14 @@ module MotionPrime
       view
     end
 
-    def render_header(section)
-      return unless options = self.group_header_options.try(:[], section)
-      self.group_header_sections[section] ||= BaseHeaderSection.new(options.merge(screen: screen, table: self.weak_ref))
+    def render_header(group)
+      return unless options = self.group_header_options.try(:[], group)
+      self.group_header_sections[group] ||= FormHeaderSection.new(options.merge(screen: screen, table: self.weak_ref))
     end
 
-    def header_section_for_group(section)
+    def header_section_for_group(group)
       self.group_header_sections ||= []
-      self.group_header_sections[section] || render_header(section)
+      self.group_header_sections[group] || render_header(group)
     end
 
     def on_cell_render(cell, index); end
@@ -290,7 +290,7 @@ module MotionPrime
       return cached if cached.present?
 
       styles = cell_section_styles(header).values.flatten
-      wrapper = MotionPrime::BaseElement.factory(:table_view_header_footer_view, screen: screen, styles: styles, parent_view: table_view, reuse_identifier: reuse_identifier)
+      wrapper = MotionPrime::BaseElement.factory(:table_header, screen: screen, styles: styles, parent_view: table_view, reuse_identifier: reuse_identifier)
       wrapper.render do |container_view, container_element|
         header.container_element = container_element
         header.render

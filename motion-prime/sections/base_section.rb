@@ -331,7 +331,7 @@ module MotionPrime
       def build_element(options = {})
         type = options.delete(:type)
         render_as = options.delete(:as).to_s
-        if render_as != 'draw' && (render_as == 'view' || self.is_a?(BaseFieldSection) || self.is_a?(BaseHeaderSection))
+        if render_as != 'draw' && (render_as == 'view' || self.is_a?(BaseFieldSection) || self.is_a?(FormHeaderSection))
           BaseElement.factory(type, options)
         else
           DrawElement.factory(type, options) || BaseElement.factory(type, options)
