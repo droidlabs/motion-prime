@@ -1,4 +1,4 @@
-=== 0.8.3
+=== 0.8.3 - 0.8.4
 * Ability to pass UIButton to set_navigation_left_button/set_navigation_right_button
 * Bug fixes
 
