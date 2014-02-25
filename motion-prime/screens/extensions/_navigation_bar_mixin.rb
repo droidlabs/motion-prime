@@ -13,7 +13,6 @@ module MotionPrime
     end
 
     def set_navigation_right_button(title, args = {})
-      puts title.inspect
       navigationItem.rightBarButtonItem = create_navigation_button(title, args)
     end
 
@@ -52,7 +51,7 @@ module MotionPrime
         title.sizeToFit
         UIBarButtonItem.alloc.initWithCustomView(title)
       elsif args[:image]
-        create_navigation_button_with_icon(title, args)
+        create_navigation_button_with_image(title, args)
       elsif args[:icon]
         create_navigation_button_with_icon(title, args)
       else
@@ -61,7 +60,7 @@ module MotionPrime
       end
     end
 
-    def create_navigation_button_with_image(title, args)
+    def create_navigation_button_with_icon(title, args)
       image = args[:icon].uiimage
       face = UIButton.buttonWithType UIButtonTypeCustom
       face.setImage(image, forState: UIControlStateNormal)
@@ -74,7 +73,7 @@ module MotionPrime
       UIBarButtonItem.alloc.initWithCustomView(face)
     end
 
-    def create_navigation_button_with_icon(title, args)
+    def create_navigation_button_with_image(title, args)
       image = args[:image].uiimage
       face = UIButton.buttonWithType UIButtonTypeCustom
       face.bounds = CGRectMake(0, 0, image.size.width, image.size.height)
