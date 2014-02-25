@@ -1,3 +1,7 @@
+=== 0.8.3
+* Ability to pass UIButton to set_navigation_left_button/set_navigation_right_button
+* Bug fixes
+
 === 0.8.2
 * bug fixes.
 * added #clone method for Model.
