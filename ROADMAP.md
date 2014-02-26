@@ -1,8 +1,9 @@
-=== 0.8.2
+=== 0.9.0
 * Move api_client and model sync mixin to prime_api gem.
 * Move bind keyboard events to forms.
 
-=== 0.9.0
+=== 0.1.0
+* bug: header section draw elements doesn't work
 * bug: if mp label do not have text and was set as hidden, it should unhide after setting text
 * bug: size_to_fit works incorrect with relative width.
 * bug: bind_keyboard_close breaks bind_guesture
@@ -15,10 +16,10 @@
 * add different templates. some templates should be more like final app.
 * add size_to_fit support for images.
 
-=== 1.0.0
+=== 1.1.0
 * add sections/screens/models generator
 
-=== 1.1.0
+=== 1.2.0
 * add cell preload for reverse scrolling table.
 * add computed_options.get(), this will allow to make sure that options is computed.
 * add testing framework

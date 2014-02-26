@@ -100,10 +100,10 @@ module MotionPrime
     def delete_cell_sections(sections)
       paths = []
       Array.wrap(sections).each do |section|
-        index = @data.try(:index, section)
+        index = index_for_cell_section(section)
         next Prime.logger.debug("Delete cell section: `#{section.name}` is not in the list") unless index
-        paths << NSIndexPath.indexPathForRow(index, inSection: 0)
-        delete_from_data(section)
+        paths << index
+        delete_from_data(index)
       end
       if paths.any?
         table_view.beginUpdates
@@ -113,13 +113,37 @@ module MotionPrime
       paths
     end
 
-    def delete_from_data(section)
-      # section will not deallocate if you'll just write @data.delete(section)
-      unless index = @data.try(:index, section)
-        Prime.logger.debug("Delete cell section from @data: `#{section.name}` is not in the list") and return
+    # Delete section from data at index
+    # 
+    # @param index [NSIndexPath] index of cell which will be removed from table data.
+    def delete_from_data(index)
+      if flat_data?
+        delete_from_flat_data(index)
+      else
+        delete_from_groped_data(index)
       end
-      @data[index] = nil
-      @data.delete_at(index)
+    end
+
+    def delete_from_flat_data(index)
+      @data[index.row] = nil
+      @data.delete_at(index.row)
+    end
+
+    def delete_from_groped_data(index)
+      @data[index.section][index.row] = nil
+      @data[index.section].delete_at(index.row)
+    end
+
+    def index_for_cell_section(section)
+      if flat_data?
+        row = @data.try(:index, section)
+        NSIndexPath.indexPathForRow(row, inSection: 0)
+      else
+        (@data || []).each_with_index do |cell_sections, group|
+          row = cell_sections.index(section)
+          return NSIndexPath.indexPathForRow(row, inSection: group) if row
+        end
+      end
     end
 
     def reload_cell_section(section)
@@ -285,7 +309,7 @@ module MotionPrime
     def header_cell_in_group(table, group)
       return unless header = header_section_for_group(group)
 
-      reuse_identifier = "header_#{group}"
+      reuse_identifier = "header_#{group}_#{@header_stamp}"
       cached = table.dequeueReusableHeaderFooterViewWithIdentifier(reuse_identifier)
       return cached if cached.present?
 
@@ -364,9 +388,14 @@ module MotionPrime
         end
       end
 
+      def set_header_stamp
+        @header_stamp = Time.now.to_i
+      end
+
       def reset_data_stamps
         keys = data.flatten.map(&:object_id)
         set_data_stamp(keys)
+        set_header_stamp
       end
 
       def create_section_elements

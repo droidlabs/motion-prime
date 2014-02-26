@@ -1,5 +1,5 @@
 class MPTableHeaderWithSectionView < UITableViewHeaderFooterView
-  attr_accessor :section
+  attr_accessor :section, :selection_style
 
   def setSection(section)
     @section = section.try(:weak_ref)
