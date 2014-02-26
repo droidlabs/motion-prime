@@ -247,7 +247,7 @@ module MotionPrime
       end
 
       def init_form_headers
-        options = Array.wrap(self.class.group_header_options).clone
+        options = Array.wrap(self.class.group_header_options).map(&:clone)
         options.compact.each { |opts| normalize_options(opts) }
         self.group_header_options = options.delete_if.each_with_index { |opts, id| grouped_data[id].nil? }
       end
