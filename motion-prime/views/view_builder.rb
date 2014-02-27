@@ -94,7 +94,16 @@ module MotionPrime
             end
 
             obj = klass.alloc.initWithStyle style, reuseIdentifier: options.delete(:reuse_identifier)
-            obj.initialize_content
+            obj.initialize_content if obj.respond_to?(:initialize_content)
+            obj
+          },
+          'UITableViewHeaderFooterView' => Proc.new{|klass, options|
+            if options[:has_drawn_content]
+              options[:background_color] = :clear
+              options.delete(:gradient)
+            end
+            obj = klass.alloc.initWithReuseIdentifier options.delete(:reuse_identifier)
+            obj.initialize_content if obj.respond_to?(:initialize_content)
             obj
           },
           'MPViewWithSection' => Proc.new{|klass, options|

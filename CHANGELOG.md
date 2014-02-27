@@ -1,3 +1,7 @@
+=== 0.8.5
+* Table header improvements.
+* Fix bug: header section draw elements doesn't work
+
 === 0.8.3 - 0.8.4
 * Ability to pass UIButton to set_navigation_left_button/set_navigation_right_button
 * Bug fixes

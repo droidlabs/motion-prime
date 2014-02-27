@@ -4,7 +4,6 @@ class MPCellWithSection < UITableViewCell
 
   def setNeedsDisplay
     content_view.try(:setNeedsDisplay)
-
     super
   end
 

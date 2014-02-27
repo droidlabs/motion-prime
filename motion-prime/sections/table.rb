@@ -314,7 +314,13 @@ module MotionPrime
       return cached if cached.present?
 
       styles = cell_section_styles(header).values.flatten
-      wrapper = MotionPrime::BaseElement.factory(:table_header, screen: screen, styles: styles, parent_view: table_view, reuse_identifier: reuse_identifier)
+      wrapper = MotionPrime::BaseElement.factory(:table_header, 
+        screen: screen, 
+        styles: styles, 
+        parent_view: table_view, 
+        reuse_identifier: reuse_identifier,
+        section: header
+      )
       wrapper.render do |container_view, container_element|
         header.container_element = container_element
         header.render
