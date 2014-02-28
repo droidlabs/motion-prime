@@ -178,6 +178,14 @@ module MotionPrime
       super
     end
 
+    def on_cell_render(cell, index)
+      options = data[index.row].try(:options)
+      if options && options[:after_render]
+        self.send(options[:after_render])
+      end
+      super
+    end
+
     # Table View Delegate
     # ---------------------
 

@@ -7,6 +7,7 @@ MotionPrime::Styles.define :base_form do
     top: nil,
     width: 320,
     size_to_fit: true
+
   style :header_hint,
     left: 0,
     bottom: 5,
@@ -21,9 +22,6 @@ MotionPrime::Styles.define :base_form do
     left: 0,
     right: 0
 
-  # available options for string label:
-  # @background_color: COLOR
-  # @text_color: COLOR
   style :field_label,
     background_color: :clear,
     text_color: :gray,
@@ -42,12 +40,7 @@ MotionPrime::Styles.define :base_form do
     text_color: :app_error,
     font: proc { :app_base.uifont(12) }
 
-  # available options for input:
-  # @layer: @border_width: FLOAT
-  # @layer: @border_color: COLOR
-  # @background_color: COLOR
-  # @background_image: PATH_TO_FILE
-  style :field_text_field, :field_text_view,
+  style :string_field_input, :password_field_input, :text_field_input,
     layer: {
       border_width: 1,
       border_color: :gray
@@ -58,7 +51,7 @@ MotionPrime::Styles.define :base_form do
     left: 0,
     right: 0,
     top: 30,
-    bottom: 0
+    height: 30
 
   style :date_field_input,
     width: 300,

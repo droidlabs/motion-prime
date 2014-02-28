@@ -1,3 +1,8 @@
+=== 0.8.6
+* Ability to pass :after_render to form field.
+* Ability to append data to collection on sync.
+* Bug fixes.
+
 === 0.8.5
 * Table header improvements.
 * Fix bug: header section draw elements doesn't work

@@ -264,7 +264,7 @@ module MotionPrime
           unless model
             old_model.delete
           end
-        end
+        end unless sync_options[:append]
       end
       save if sync_options[:save] && has_changed?
       self.store.save_interval = 1

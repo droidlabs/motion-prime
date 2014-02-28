@@ -181,11 +181,11 @@ module MotionPrime
           suffixes[:specific] << :"#{name}_with_errors" if has_errors
         end
         # form cell: base_form_field, base_form_string_field
-        # form element: base_form_field_string_field, base_form_string_field_text_field
+        # form element: base_form_field_string_field, base_form_string_field_text_field, base_form_string_field_input
         # table cell: base_table_cell
         # table element: base_table_cell_image
         common_styles = if suffixes[:common].any?
-          build_styles_chain(base_styles[:common], suffixes[:common])
+          build_styles_chain(base_styles[:common], suffixes.values.flatten)
         elsif suffixes[:specific].any?
           build_styles_chain(base_styles[:common], suffixes[:specific])
         elsif @view_name == 'table_view_cell'

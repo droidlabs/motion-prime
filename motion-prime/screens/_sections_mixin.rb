@@ -10,6 +10,7 @@ module MotionPrime
     end
 
     def add_sections
+      @main_section = nil
       create_sections
       render_sections
     end
