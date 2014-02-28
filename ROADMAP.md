@@ -2,7 +2,7 @@
 * Move api_client and model sync mixin to prime_api gem.
 * Move bind keyboard events to forms.
 
-=== 0.1.0
+=== 1.0.0
 * bug: if mp label do not have text and was set as hidden, it should unhide after setting text
 * bug: size_to_fit works incorrect with relative width.
 * bug: bind_keyboard_close breaks bind_guesture
