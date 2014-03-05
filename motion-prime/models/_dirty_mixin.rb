@@ -25,13 +25,41 @@ module MotionPrime
       result
     end
 
-    def has_changed?(key = nil)
+    def changed_attributes
       @_changed_attributes ||= {}
+    end
+
+    def reset_changed_attributes
+      @_changed_attributes = {}
+    end
+
+    # Return true if model was changed
+    #
+    # @param key [Symbol,String] (not required) will return result only for that attribute if specified
+    # @return result [Boolean] result
+    def has_changed?(key = nil)
       if key
-        @_changed_attributes.has_key?(key.to_s)
+        changed_attributes.has_key?(key.to_s)
       else
-        @_changed_attributes.present?
+        changed_attributes.present?
       end
+    end
+
+    def save
+      super
+      reset_changed_attributes
+      self
+    end
+
+    # Reverts model changes and returns saved version
+    #
+    # @return model [MotionPrime::Model] reloaded model
+    def reload
+      changed_attributes.each do |key, value|
+        self.info[key] = value
+      end
+      reset_changed_attributes
+      self
     end
   end
 end

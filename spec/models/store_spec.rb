@@ -32,14 +32,14 @@ describe "Prime::Model Store" do
   end
 
   it "should use shared_store if a model has no store defined" do
-    Autobot.store = nil
+    Organization.store = nil
     MotionPrime::Store.connect
-    Autobot.store.should.not.be.nil
+    Organization.store.should.not.be.nil
     MotionPrime::Store.shared_store.should.not.be.nil
-    Autobot.store.should == MotionPrime::Store.shared_store
+    Organization.store.should == MotionPrime::Store.shared_store
 
-    Autobot.store = MotionPrime::Store.create :temp
-    Autobot.store.should.not == MotionPrime::Store.shared_store
+    Organization.store = MotionPrime::Store.create :temp
+    Organization.store.should.not == MotionPrime::Store.shared_store
   end
 
   it "should enable and disable debug mode" do

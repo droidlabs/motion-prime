@@ -172,17 +172,19 @@ module MotionPrime
         end
 
         define_method((name + "=").to_sym) do |*args, &block|
-          value = args[0]
-          case options[:type].to_s
-          when 'integer'
-            value = value.to_i
-          when 'float'
-            value = value.to_f
-          when 'time'
-            value = value.to_short_iso8601 unless value.is_a?(String)
-          end unless value.nil?
+          track_changed_attributes do
+            value = args[0]
+            case options[:type].to_s
+            when 'integer'
+              value = value.to_i
+            when 'float'
+              value = value.to_f
+            when 'time'
+              value = value.to_short_iso8601 unless value.is_a?(String)
+            end unless value.nil?
 
-          self.info[name] = value
+            self.info[name] = value
+          end
         end
 
         define_method(name.to_sym) do

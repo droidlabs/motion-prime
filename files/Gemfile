@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'motion-cocoapods', '~> 1.4.0'
-gem 'motion-support', '~> 0.2.4'
+gem 'motion-support', '~> 0.2.6'
 
 gem 'motion-prime', '0.8.6'
 

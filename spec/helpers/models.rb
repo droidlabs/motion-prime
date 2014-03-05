@@ -1,13 +1,8 @@
 class User < MotionPrime::Model
   attributes :name, :age, :created_at
 end
-
 class Plane < MotionPrime::Model
   attributes :name, :age
-end
-
-class Listing < MotionPrime::Model
-  attribute :name
 end
 
 class Todo < MotionPrime::Model
@@ -25,14 +20,6 @@ class Page < MotionPrime::Model
   attribute :index
 end
 
-class Animal < MotionPrime::Model
-  attribute :name
-end
-
-class Autobot < MotionPrime::Model
-  attribute :name
-end
-
 class Organization < MotionPrime::Model
   attribute :name
   has_many :projects
@@ -41,6 +28,10 @@ end
 class Project < MotionPrime::Model
   attribute :title
 end
+
+# class Autobot < MotionPrime::Model
+#   attribute :name
+# end
 
 module CustomModule; end
 class CustomModule::Car < MotionPrime::Model

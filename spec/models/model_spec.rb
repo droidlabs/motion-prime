@@ -73,8 +73,8 @@ describe MotionPrime::Model do
 
     it "create object in their class" do
       @store.allObjectClasses.should == []
-      Autobot.create(:name => "Bumblebee")
-      @store.allObjectClasses.should == ["Autobot"]
+      Organization.create(:name => "Bumblebee")
+      @store.allObjectClasses.should == ["Organization"]
     end
   end
 
