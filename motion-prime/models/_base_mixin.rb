@@ -112,6 +112,35 @@ module MotionPrime
       self.class.new(self.info.select { |key, value| !key.to_s.ends_with?('_bag') })
     end
 
+    protected
+      def attribute_convert_out(value, type)
+        return value if value.nil? || type.blank?
+        case type.to_s
+        when 'integer'
+          value.to_i
+        when 'float'
+          value.to_f
+        when 'time'
+          Time.short_iso8601(value)
+        else
+          value
+        end
+      end
+
+      def attribute_convert_in(value, type)
+        return value if value.nil? || type.blank?
+        case type.to_s
+        when 'integer'
+          value.to_i
+        when 'float'
+          value.to_f
+        when 'time'
+          value.to_short_iso8601 unless value.is_a?(String)
+        else
+          value
+        end
+      end
+
     module ClassMethods
       # Initialize a new object
       #
@@ -123,17 +152,8 @@ module MotionPrime
       # @option options [Boolean] :validate_attribute_presence Raise error if model do not have attribute
       # @return MotionPrime::Model unsaved model
       def new(data = {}, options = {})
-        data.keys.each do |key|
-          unless self.attributes.member? key.to_sym
-            if options[:validate_attribute_presence]
-              raise StoreError, "unknown attribute: '#{key}'"
-            else
-              data.delete(key)
-            end
-          end
-        end
-
-        object = self.nanoObjectWithDictionary(data)
+        object = self.nanoObjectWithDictionary({})
+        object.assign_attributes(data, options)
         object
       end
 
@@ -162,49 +182,26 @@ module MotionPrime
       def attribute(name, options = {})
         attributes << name
 
-        define_method(name) do |*args, &block|
-          value = self.info[name]
-          case options[:type].to_s
-          when 'time'
-            value = Time.short_iso8601(value) if value
-          end
-          value
-        end
-
-        define_method((name + "=").to_sym) do |*args, &block|
+        define_method(:"#{name}=") do |value, &block|
           track_changed_attributes do
-            value = args[0]
-            case options[:type].to_s
-            when 'integer'
-              value = value.to_i
-            when 'float'
-              value = value.to_f
-            when 'time'
-              value = value.to_short_iso8601 unless value.is_a?(String)
-            end unless value.nil?
-
-            self.info[name] = value
+            if options[:convert] || !options.has_key?(:convert)
+              self.info[name] = attribute_convert_in(value, options[:type])
+            else
+              self.info[name] = value
+            end
           end
         end
 
         define_method(name.to_sym) do
-          value = self.info[name]
-          case options[:type].to_s
-          when 'integer'
-            value.to_i
-          when 'float'
-            value.to_f
-          when 'time' && !value.is_a?(String)
-            value.to_short_iso8601
+          if options[:convert] || !options.has_key?(:convert)
+            attribute_convert_out(self.info[name], options[:type])
           else
-            value
+            self.info[name]
           end
-        end if options[:convert]
+        end
 
-        if options[:type].to_s == 'boolean'
-          define_method("#{name}?") do
-            !!self.info[name]
-          end
+        define_method("#{name}?") do
+          self.info[name].present?
         end
       end
 

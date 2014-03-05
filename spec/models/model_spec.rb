@@ -207,4 +207,17 @@ describe MotionPrime::Model do
       Plane.count.should == 1
     end
   end
+
+  describe "#attribute" do
+    it "should correctly save non-string attributes" do
+      release = Time.now + 1.day.to_i
+      Autobot.create(name: "Optimus Prime", uid: 1, release_at: release, strength: 15.7)
+      autobot = Autobot.find(uid: 1).first
+      autobot.name.is_a?(String).should.be.true
+      autobot.uid.is_a?(Integer).should.be.true
+      autobot.release_at.is_a?(Time).should.be.true
+      autobot.strength.is_a?(Float).should.be.true
+      autobot.release_at.should == release
+    end
+  end
 end

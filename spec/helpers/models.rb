@@ -29,9 +29,12 @@ class Project < MotionPrime::Model
   attribute :title
 end
 
-# class Autobot < MotionPrime::Model
-#   attribute :name
-# end
+class Autobot < MotionPrime::Model
+  attribute :name
+  attribute :uid, type: :integer
+  attribute :release_at, type: :time
+  attribute :strength, type: :float
+end
 
 module CustomModule; end
 class CustomModule::Car < MotionPrime::Model
