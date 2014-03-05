@@ -85,6 +85,17 @@ describe MotionPrime::Model do
       @store.count(User).should == 1
     end
 
+    it "should set default id" do
+      user1 = User.new
+      user2 = User.new
+      user1.id = 123
+      user1.save
+      user2.save
+
+      user1.id.should == 123
+      user2.id.present?.should.be.true
+    end
+
     # per object store since NanoStore 2.5.1
     it "user per instance store to save" do
       store1 = MotionPrime::Store.create

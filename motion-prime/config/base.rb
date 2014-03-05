@@ -5,6 +5,7 @@ MotionPrime::Config.configure do |config|
   else
     config.model.store_type = :file
   end
+  config.model.auto_generate_id = true
   
   config.fonts do |fonts|
     fonts.base = :system

@@ -10,6 +10,7 @@ module MotionPrime
     #
     # @return [Prime::Model] model
     def save
+      set_default_id_if_needed
       raise StoreError, 'No store provided' unless self.store
       error_ptr = Pointer.new(:id)
       self.store.addObject(self, error: error_ptr)
@@ -113,6 +114,12 @@ module MotionPrime
     end
 
     protected
+      def set_default_id_if_needed
+        if !self.id && MotionPrime::Config.model.auto_generate_id
+          self.id = RmDigest::MD5.hexdigest(Time.now.to_s + self.object_id.to_s)
+        end
+      end
+
       def attribute_convert_out(value, type)
         return value if value.nil? || type.blank?
         case type.to_s
