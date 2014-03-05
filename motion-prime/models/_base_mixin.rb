@@ -103,7 +103,10 @@ module MotionPrime
     #
     # @return [String] model representation
     def inspect
-      "#<#{self.class}:0x#{self.object_id.to_s(16)}> " + MotionPrime::JSON.generate(info)
+      inspection = self.info.keys.map { |name|
+        "#{name}: #{attribute_for_inspect(name)}"
+      }.compact.join(", ")
+      "#<#{self.class}:0x#{self.object_id.to_s(16)}> #{inspection}>"
     end
 
     # Returns a clone of the record with empty bags
@@ -142,9 +145,20 @@ module MotionPrime
         when 'float'
           value.to_f
         when 'time'
-          value.to_short_iso8601 unless value.is_a?(String)
+          value.is_a?(String) ? value : value.to_short_iso8601
         else
           value
+        end
+      end
+
+      def attribute_for_inspect(attribute)
+        value = send(attribute)
+        if value.nil?
+          "nil"
+        elsif value.is_a?(String)
+          "\"#{value}\""
+        else
+          value.to_s
         end
       end
 
