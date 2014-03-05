@@ -1,3 +1,8 @@
+=== 0.8.7
+* Refactored and improved model attributes convertion.
+* Refactored and improved model#dirty.
+* Added auto-generating model id by default.
+
 === 0.8.6
 * Ability to pass :after_render to form field.
 * Ability to append data to collection on sync.
