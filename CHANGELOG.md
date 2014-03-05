@@ -1,3 +1,6 @@
+=== 0.8.8
+* Improve model inspection.
+
 === 0.8.7
 * Refactored and improved model attributes convertion.
 * Refactored and improved model#dirty.
