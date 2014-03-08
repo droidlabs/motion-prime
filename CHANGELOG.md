@@ -1,3 +1,6 @@
+=== 0.8.9
+* Update form default styles.
+
 === 0.8.8
 * Improve model inspection.
 
