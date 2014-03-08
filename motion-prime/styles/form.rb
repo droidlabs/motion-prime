@@ -28,7 +28,7 @@ MotionPrime::Styles.define :base_form do
     top: 15,
     height: 16,
     left: 0,
-    right: 0,
+    right: 20,
     font: proc { :app_base.uifont(12) },
     size_to_fit: true
 
@@ -49,7 +49,7 @@ MotionPrime::Styles.define :base_form do
     placeholder_font: proc { :app_base.uifont(16) },
     background_color: :white,
     left: 0,
-    right: 0,
+    right: 20,
     top: 30,
     height: 30
 
@@ -61,7 +61,7 @@ MotionPrime::Styles.define :base_form do
   style :select_field_button,
     background_color: :white,
     left: 0,
-    right: 0,
+    right: 20,
     top: 30,
     height: 35,
     title_shadow_color: :white,
@@ -75,12 +75,14 @@ MotionPrime::Styles.define :base_form do
       font: proc {:app_base.uifont(16) }
     }
 
-  style :select_field_image,
+  style :select_field_arrow,
     image: "images/forms/select_arrow.png",
     top: 40,
-    right: 5,
+    right: 25,
     width: 9,
     height: 14
+
+
 
   style :with_sections_field_switch,
     right: 20
