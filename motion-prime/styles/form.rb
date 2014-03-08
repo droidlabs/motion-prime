@@ -5,29 +5,25 @@ MotionPrime::Styles.define :base_form do
     left: 0,
     bottom: 5,
     top: nil,
-    width: 320,
+    right: 0,
     size_to_fit: true
 
   style :header_hint,
     left: 0,
     bottom: 5,
     top: nil,
-    width: 320
+    right: 0
 
   style :field, :cell,
     selection_style: :none,
     background_color: :clear
-
-  style :with_sections,
-    left: 0,
-    right: 0
 
   style :field_label,
     background_color: :clear,
     text_color: :gray,
     top: 15,
     height: 16,
-    left: 0,
+    left: 20,
     right: 20,
     font: proc { :app_base.uifont(12) },
     size_to_fit: true
@@ -35,8 +31,8 @@ MotionPrime::Styles.define :base_form do
   style :field_error_message, mixins: [:multiline],
     top: nil,
     bottom: 0,
-    width: 280,
-    left: 0,
+    left: 20,
+    right: 20,
     text_color: :app_error,
     font: proc { :app_base.uifont(12) }
 
@@ -48,19 +44,20 @@ MotionPrime::Styles.define :base_form do
     font: proc { :app_base.uifont(16) },
     placeholder_font: proc { :app_base.uifont(16) },
     background_color: :white,
-    left: 0,
+    left: 20,
     right: 20,
     top: 30,
     height: 30
 
   style :date_field_input,
-    width: 300,
     height: 150,
-    top: 30, left: 0
+    top: 30,
+    left: 20,
+    right: 20
 
   style :select_field_button,
     background_color: :white,
-    left: 0,
+    left: 20,
     right: 20,
     top: 30,
     height: 35,
@@ -82,38 +79,9 @@ MotionPrime::Styles.define :base_form do
     width: 9,
     height: 14
 
-
-
-  style :with_sections_field_switch,
-    right: 20
-
-  style :with_sections_field_text_field,
-    :with_sections_field_text_view,
-    :with_sections_field_password_field,
-    :with_sections_field_label,
-    :with_sections_field_button,
-    left: 20,
-    right: 20
-
-  style :with_sections_select_field_image,
-    right: 25
-
-  style :with_sections_switch_field_input,
-    right: 25
-  style :with_sections_switch_field_label,
-    left: 25
-  style :with_sections_switch_hint,
-    left: 25
-
-  style :field_input_with_errors,
-    layer: {
-      border_color: :app_error
-    },
-    text_color: :app_error
-
   style :switch_field_input,
     top: 10,
-    right: 0,
+    right: 20,
     width: 51
 
   style :switch_field_label,
@@ -123,4 +91,10 @@ MotionPrime::Styles.define :base_form do
   style :switch_field_hint,
     top: 40,
     font: proc { :app_base.uifont(12) }
+
+  style :field_input_with_errors,
+    layer: {
+      border_color: :app_error
+    },
+    text_color: :app_error
 end

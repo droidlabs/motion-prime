@@ -19,8 +19,8 @@ MotionPrime::Styles.define :base do
   # basic form styles
   # ----------
   style :form,
-    width: 310,
-    left: 20,
+    width: 320,
+    left: 0,
     top: 0,
     right: 0,
     bottom: 0,
@@ -35,7 +35,7 @@ MotionPrime::Styles.define :base do
   style :submit_button, :form_submit_field_button,
     background_color: :gray,
     title_color: :white,
-    left: 0,
+    left: 20,
     right: 20,
     top: 10,
     height: 44
