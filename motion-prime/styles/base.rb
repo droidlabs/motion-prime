@@ -19,10 +19,10 @@ MotionPrime::Styles.define :base do
   # basic form styles
   # ----------
   style :form,
-    width: 280,
+    width: 310,
     left: 20,
     top: 0,
-    right: 30,
+    right: 0,
     bottom: 0,
     background_color: :clear,
     separator_color: :clear,
@@ -36,7 +36,7 @@ MotionPrime::Styles.define :base do
     background_color: :gray,
     title_color: :white,
     left: 0,
-    right: 0,
+    right: 20,
     top: 10,
     height: 44
 
