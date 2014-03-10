@@ -1,3 +1,6 @@
+=== 0.8.10
+* Added font_name/font_size options support.
+
 === 0.8.9
 * Update form default styles.
 

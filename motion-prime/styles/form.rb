@@ -25,7 +25,8 @@ MotionPrime::Styles.define :base_form do
     height: 16,
     left: 20,
     right: 20,
-    font: proc { :app_base.uifont(12) },
+    font_name: :app_base,
+    font_size: 12,
     size_to_fit: true
 
   style :field_error_message, mixins: [:multiline],
@@ -34,15 +35,18 @@ MotionPrime::Styles.define :base_form do
     left: 20,
     right: 20,
     text_color: :app_error,
-    font: proc { :app_base.uifont(12) }
+    font_name: :app_base,
+    font_size: 12
 
   style :string_field_input, :password_field_input, :text_field_input,
     layer: {
       border_width: 1,
       border_color: :gray
     },
-    font: proc { :app_base.uifont(16) },
-    placeholder_font: proc { :app_base.uifont(16) },
+    font_name: :app_base,
+    font_size: 16,
+    placeholder_font_name: :app_base,
+    placeholder_font_size: 16,
     background_color: :white,
     left: 20,
     right: 20,
@@ -69,7 +73,8 @@ MotionPrime::Styles.define :base_form do
     },
     title_color: :gray,
     title_label: {
-      font: proc {:app_base.uifont(16) }
+      font_name: :app_base,
+      font_size: 16
     }
 
   style :select_field_arrow,
@@ -86,11 +91,13 @@ MotionPrime::Styles.define :base_form do
 
   style :switch_field_label,
     top: 10,
-    font: proc { :app_base.uifont(16) }
+    font_name: :app_base,
+    font_size: 16
 
   style :switch_field_hint,
     top: 40,
-    font: proc { :app_base.uifont(12) }
+    font_name: :app_base,
+    font_size: 12
 
   style :field_input_with_errors,
     layer: {

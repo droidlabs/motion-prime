@@ -49,12 +49,13 @@ MotionPrime::Styles.define :base do
   style :spinner,
     annular: true,
     center: proc { screen.view.center }, width: 37, height: 37,
-    progress_tint_color: proc { :app_base.uicolor },
-    background_tint_color: proc { :black.uicolor(0.05) },
+    progress_tint_color: :app_base.uicolor,
+    background_tint_color: :black.uicolor(0.05),
     progress: 0.25
 
   style :spinner_message, mixins: [:multiline],
     top: proc { screen.view.center.y + 38 }, left: 50, width: 220, text_alignment: :center,
-    font: proc { :app_base.uifont(18) },
+    font_name: :app_base,
+    font_size: 18,
     line_spacing: 6
 end

@@ -34,6 +34,7 @@ module MotionPrime
         self.class.new(namespace).instance_eval(&block)
       end if block_given?
     end
+    alias_method :_, :style
 
     class << self
       include HasNormalizer

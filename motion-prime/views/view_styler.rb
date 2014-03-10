@@ -52,7 +52,22 @@ module MotionPrime
         options[:attributed_text] = html ? html_string(text_options) : attributed_string(text_options)
 
         # ios 7 bug fix when text is invisible
-        options[:number_of_lines] = 0 if text_options.slice(:line_height, :line_spacing, :text_alignment, :line_break_mode).any? && options.fetch(:number_of_lines, 1) == 1
+        if text_options.slice(:line_height, :line_spacing, :text_alignment, :line_break_mode).any? && options.fetch(:number_of_lines, 1) == 1
+          options[:number_of_lines] = 0
+        end
+      end
+      extract_font_options(options)
+      extract_font_options(options, 'placeholder')
+    end
+
+    def extract_font_options(options, prefix = nil)
+      key = [prefix, 'font'].compact.join('_').to_sym
+      name_key = [prefix, 'font_name'].compact.join('_').to_sym
+      size_key = [prefix, 'font_size'].compact.join('_').to_sym
+      if options.slice(size_key, name_key).any?
+        font_name = options.delete(name_key) || :system
+        font_size = options.delete(size_key) || 14
+        options[key] ||= font_name.uifont(font_size)
       end
     end
 
