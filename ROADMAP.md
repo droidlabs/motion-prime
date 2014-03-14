@@ -10,7 +10,6 @@
 * bug: bind_keyboard_close breaks bind_guesture
 * bug: dealloc of Prime::Section will not be called for cell created in table_data using #map.
 * bug: images does not render after reload table if using draw_with_layer (prerender not enabled).
-* add clone to models to prevent problems when bag_key is overrided
 * add dsl for push notifications
 * add some extensions/middleware system, at least for networking.
 * create "display_network_error" extension.

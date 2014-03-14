@@ -1,5 +1,6 @@
-=== 0.8.13.beta
+=== 0.8.13
 * Fix issue with deallocating screen if no sidebar is used.
+* motion_require now works inside application.
 
 === 0.8.11 - 0.8.12
 * Ability to send block to after_render/before_render
