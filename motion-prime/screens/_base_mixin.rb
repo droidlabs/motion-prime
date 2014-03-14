@@ -30,7 +30,7 @@ module MotionPrime
       unless self.is_a?(UIViewController)
         raise StandardError.new("ERROR: Screens must extend UIViewController.")
       end
-
+      options[:action] ||= 'render'
       self.options = options
       self.params = options[:params] || {}
       options.each do |k, v|

@@ -1,6 +1,3 @@
-=== 0.9.0
-* add sections/screens/models generator.
-
 === 1.0.0
 * bug: content_vertical_alignment conflicts with padding.
 * bug: content_vertical_alignment has not ideal centering.
