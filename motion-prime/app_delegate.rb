@@ -69,7 +69,7 @@ module MotionPrime
         screen.send(:on_screen_load) if screen.respond_to?(:on_screen_load)
         screen.wrap_in_navigation if screen.respond_to?(:wrap_in_navigation)
 
-        screen = screen.main_controller if screen.respond_to?(:main_controller)
+        screen = screen.main_controller.strong_ref if screen.respond_to?(:main_controller)
 
         self.window ||= UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
         if options[:animated]

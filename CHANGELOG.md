@@ -1,3 +1,6 @@
+=== 0.8.13.beta
+* Fix issue with deallocating screen if no sidebar is used.
+
 === 0.8.11 - 0.8.12
 * Ability to send block to after_render/before_render
 * Added ability to get all form field values via `field_values`
