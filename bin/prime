@@ -3,16 +3,17 @@
 require 'optparse'
 require 'methadone'
 require_relative '../motion-prime/version'
-
 class App
   include Methadone::Main
   include Methadone::CLILogging
   include Methadone::SH
   
-  main do |command, opt|
+  main do |command, *opts|
     case command.to_sym
-    when :new then create_base(opt)
-    when :bootstrap then create_bootstrap(opt)
+    when :new then create_base(*opts)
+    when :bootstrap then create_bootstrap(*opts)
+    when :generate then generate(*opts)
+    when :g then generate(*opts)
     else help
     end
     0
@@ -23,6 +24,8 @@ class App
     info "Commands:"
     info "  new <appname>"
     info "    Creates a new MotionPrime app from a template."
+    info "  generate screen|model|table <name>"
+    info "    Creates a new MotionPrime resource from a template."
   end
 
   def self.create_base(name)
@@ -48,6 +51,11 @@ class App
     sh "cd ./#{name}; pod setup"
     info "Command: rake pod:install"
     sh "cd ./#{name}; rake pod:install"
+  end
+
+  def self.generate(resource, name)
+    require_relative '../generators/generator'
+    MotionPrime::Generator.factory(resource).generate(name)
   end
 
   def self.home_path
