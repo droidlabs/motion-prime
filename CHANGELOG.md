@@ -1,4 +1,4 @@
-=== 0.8.11
+=== 0.8.11 - 0.8.12
 * Ability to send block to after_render/before_render
 * Added ability to get all form field values via `field_values`
 * Ability to automatically set models saved_at/created_at using `timestamp_attributes`.
