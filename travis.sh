@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+sudo motion update
 sudo gem install bundler
 sudo bundle install
 #sudo pod setup
