@@ -1,3 +1,6 @@
+=== 0.9.1
+* Set correct navigation button title color by default.
+
 === 0.9.0
 * Added generators for model/screen/table.
 * Added scaffold generator.
