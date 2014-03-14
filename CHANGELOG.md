@@ -1,3 +1,6 @@
+=== 0.8.11.beta
+* Ability to send block to after_render/before_render
+
 === 0.8.10
 * Added font_name/font_size options support.
 

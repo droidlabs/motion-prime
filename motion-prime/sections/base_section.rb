@@ -371,17 +371,17 @@ module MotionPrime
       def container(options)
         self.container_options = options
       end
-      def before_render(method_name)
-        set_callback :render, :before, method_name
+      def before_render(*method_names, &block)
+        set_callback :render, :before, *method_names, &block
       end
-      def after_render(method_name)
-        set_callback :render, :after, method_name
+      def after_render(*method_names, &block)
+        set_callback :render, :after, *method_names, &block
       end
-      def before_initialize(method_name)
-        set_callback :initialize, :before, method_name
+      def before_initialize(*method_names, &block)
+        set_callback :initialize, :before, *method_names, &block
       end
-      def after_initialize(method_name)
-        set_callback :initialize, :after, method_name
+      def after_initialize(*method_names, &block)
+        set_callback :initialize, :after, *method_names, &block
       end
       def bind_keyboard_close(options)
         self.keyboard_close_bindings = options

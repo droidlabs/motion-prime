@@ -70,11 +70,11 @@ module MotionPrime
           t ? @title = t : @title ||= self.to_s
         end
       end
-      def before_render(method_name)
-        set_callback :render, :before, method_name
+      def before_render(*method_names, &block)
+        set_callback :render, :before, *method_names, &block
       end
-      def after_render(method_name)
-        set_callback :render, :after, method_name
+      def after_render(*method_names)
+        set_callback :render, :after, *method_names, &block
       end
       def create_with_options(screen, navigation = true, options = {})
         screen = create_tab_bar(screen, options) if screen.is_a?(Array)
