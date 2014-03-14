@@ -73,7 +73,7 @@ module MotionPrime
       def before_render(*method_names, &block)
         set_callback :render, :before, *method_names, &block
       end
-      def after_render(*method_names)
+      def after_render(*method_names, &block)
         set_callback :render, :after, *method_names, &block
       end
       def create_with_options(screen, navigation = true, options = {})

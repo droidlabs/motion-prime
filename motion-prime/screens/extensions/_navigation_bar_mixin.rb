@@ -46,7 +46,7 @@ module MotionPrime
       # TODO: Find better place for this code, may be just create custom control
       if title.is_a?(UIButton)
         title.on :touch do
-          args[:action].to_proc.call(self)
+          args[:action].to_proc.call(args[:target] || self)
         end if args[:action]
         title.sizeToFit
         UIBarButtonItem.alloc.initWithCustomView(title)
@@ -68,7 +68,7 @@ module MotionPrime
       face.setContentHorizontalAlignment UIControlContentHorizontalAlignmentLeft
       face.sizeToFit
       face.on :touch do
-        args[:action].to_proc.call(self)
+        args[:action].to_proc.call(args[:target] || self)
       end if args[:action]
       UIBarButtonItem.alloc.initWithCustomView(face)
     end
@@ -79,7 +79,7 @@ module MotionPrime
       face.bounds = CGRectMake(0, 0, image.size.width, image.size.height)
       face.setImage image, forState: UIControlStateNormal
       face.on :touch do
-        args[:action].to_proc.call(self)
+        args[:action].to_proc.call(args[:target] || self)
       end if args[:action]
       UIBarButtonItem.alloc.initWithCustomView(face)
     end
