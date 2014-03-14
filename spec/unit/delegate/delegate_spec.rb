@@ -1,4 +1,4 @@
-describe MotionPrime::BaseAppDelegate do
+describe MotionPrime::BaseDelegate do
 
   before { @subject = BaseDelegate.new }
 

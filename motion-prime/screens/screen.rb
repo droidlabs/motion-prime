@@ -58,7 +58,7 @@ module MotionPrime
     end
 
     def visible?
-      @visible
+      !!@visible
     end
   end
 end
