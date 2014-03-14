@@ -12,12 +12,12 @@ module MotionPrime
       navigationItem.setRightBarButtonItem(nil, animated: args[:animated])
     end
 
-    def set_navigation_right_button(title, args = {})
-      navigationItem.rightBarButtonItem = create_navigation_button(title, args)
+    def set_navigation_right_button(title, args = {}, &block)
+      navigationItem.rightBarButtonItem = create_navigation_button(title, args, &block)
     end
 
-    def set_navigation_left_button(title, args = {})
-      navigationItem.leftBarButtonItem = create_navigation_button(title, args)
+    def set_navigation_left_button(title, args = {}, &block)
+      navigationItem.leftBarButtonItem = create_navigation_button(title, args, &block)
     end
 
     def set_navigation_back_button(title, args = {})
@@ -40,9 +40,9 @@ module MotionPrime
       navigationItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithCustomView(view)
     end
 
-    def create_navigation_button(title, args = {})
+    def create_navigation_button(title, args = {}, &block)
       args[:style]  ||= UIBarButtonItemStylePlain
-      args[:action] ||= nil
+      args[:action] ||= block || nil
       # TODO: Find better place for this code, may be just create custom control
       if title.is_a?(UIButton)
         title.on :touch do
@@ -53,17 +53,21 @@ module MotionPrime
       elsif args[:image]
         create_navigation_button_with_image(title, args)
       elsif args[:icon]
-        create_navigation_button_with_icon(title, args)
+        create_navigation_button_with_title(title, args)
       else
-        UIBarButtonItem.alloc.initWithTitle(title,
-          style: args[:style], target: args[:target] || self, action: args[:action])
+        if args[:action].is_a?(Proc)
+          create_navigation_button_with_title(title, args)
+        else
+          UIBarButtonItem.alloc.initWithTitle(title,
+            style: args[:style], target: args[:target] || self, action: args[:action])
+        end
       end
     end
 
-    def create_navigation_button_with_icon(title, args)
-      image = args[:icon].uiimage
+    def create_navigation_button_with_title(title, args)
+      image = args[:icon].uiimage if args[:icon]
       face = UIButton.buttonWithType UIButtonTypeCustom
-      face.setImage(image, forState: UIControlStateNormal)
+      face.setImage(image, forState: UIControlStateNormal) if args[:icon]
       face.setTitle(title, forState: UIControlStateNormal)
       face.setContentHorizontalAlignment UIControlContentHorizontalAlignmentLeft
       face.sizeToFit

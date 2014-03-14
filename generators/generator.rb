@@ -20,6 +20,9 @@ class MotionPrime::Generator < Thor
       when :table
         require_relative './table_generator'
         MotionPrime::TableGenerator.new
+      when :scaffold
+        require_relative './scaffold_generator'
+        MotionPrime::ScaffoldGenerator.new
       end
     end
   end

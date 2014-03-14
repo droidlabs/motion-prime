@@ -24,6 +24,8 @@ class App
     info "Commands:"
     info "  new <appname>"
     info "    Creates a new MotionPrime app from a template."
+    info "  generate scaffold <name>"
+    info "    Creates a new MotionPrime scaffold from a template."
     info "  generate screen|model|table <name>"
     info "    Creates a new MotionPrime resource from a template."
   end

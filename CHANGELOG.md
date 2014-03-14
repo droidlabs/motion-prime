@@ -1,3 +1,8 @@
+=== 0.9.0
+* Added generators for model/screen/table.
+* Added scaffold generator.
+* Added ability to open screen with action.
+
 === 0.8.13
 * Fix issue with deallocating screen if no sidebar is used.
 * motion_require now works inside application.

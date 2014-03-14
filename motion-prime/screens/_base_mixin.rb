@@ -12,7 +12,7 @@ module MotionPrime
     include MotionPrime::ScreenNavigationMixin
     include MotionPrime::ScreenSectionsMixin
 
-    attr_accessor :parent_screen, :modal, :params, :options, :tab_bar, :action, :model
+    attr_accessor :parent_screen, :modal, :params, :options, :tab_bar, :action
     class_attribute :current_screen
 
     def app_delegate
@@ -40,7 +40,7 @@ module MotionPrime
     end
 
     def action?(action)
-      self.action == action
+      self.action == action.to_s
     end
 
     def modal?

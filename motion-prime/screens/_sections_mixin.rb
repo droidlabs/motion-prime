@@ -35,8 +35,9 @@ module MotionPrime
       !options.has_key?(:if) || options[:if] ? section_class.new(options) : nil
     end
 
-    def section(name, options = {})
-      create_section(name, options).render
+    def set_section(name, options = {})
+      @main_section = create_section(name, options)
+      @main_section.render
     end
 
     def render_sections
