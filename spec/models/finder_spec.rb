@@ -116,7 +116,6 @@ describe "Prime::Model Finder" do
     it "should return object by key" do
       name = "Julien"
       age = 32
-      created_at = Time.now
       user = stub_user("Julien", 32, Time.now)
       user.save
       user2 = User.find_by_key(user.key)

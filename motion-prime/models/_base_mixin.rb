@@ -201,7 +201,8 @@ module MotionPrime
       #
       # @return Nil
       def attribute(name, options = {})
-        attributes << name
+        attributes << name.to_sym
+        attributes.uniq!
 
         define_method(:"#{name}=") do |value, &block|
           track_changed_attributes do

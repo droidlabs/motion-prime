@@ -1,6 +1,7 @@
 === 0.8.11.beta
 * Ability to send block to after_render/before_render
 * Added ability to get all form field values via `field_values`
+* Ability to automatically set models saved_at/created_at using `timestamp_attributes`.
 
 === 0.8.10
 * Added font_name/font_size options support.

@@ -16,6 +16,7 @@ module MotionPrime
     include MotionPrime::ModelSyncMixin
     include MotionPrime::ModelFinderMixin
     include MotionPrime::ModelDirtyMixin
+    include MotionPrime::ModelTimestampsMixin
 
     attribute :bag_key # need this as we use shared store; each nested resource must belong to parent bag
     attribute :id

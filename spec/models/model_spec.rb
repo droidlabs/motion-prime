@@ -21,11 +21,11 @@ describe MotionPrime::Model do
 
       user.info.keys.include?("name").should.be.true
       user.info.keys.include?("age").should.be.true
-      user.info.keys.include?("created_at").should.be.true
+      user.info.keys.include?("birthday").should.be.true
 
       user.info["name"].should == "Bob"
       user.info["age"].should == 10
-      user.info["created_at"].should == user.created_at
+      user.info["birthday"].should == user.birthday
 
       user.name.should == "Bob"
       user.age.should == 10
@@ -43,7 +43,7 @@ describe MotionPrime::Model do
         user = User.new({
           name: "Eddie", 
           age: 12, 
-          created_at: Time.now, 
+          birthday: Time.now, 
           gender: "m",
         }, validate_attribute_presence: true )
       }.should.raise(::MotionPrime::StoreError)
@@ -53,7 +53,7 @@ describe MotionPrime::Model do
       user = User.new({
         name: "Eddie", 
         age: 12, 
-        created_at: Time.now, 
+        birthday: Time.now, 
         gender: "m",
       })
       user.name.should == "Eddie"
@@ -64,17 +64,23 @@ describe MotionPrime::Model do
     it "create object with hash" do
       name = "Abby"
       age  = 30
-      created_at = Time.now
-      user = User.create(:name => name, :age => age, :created_at => created_at)
+      birthday = Time.now
+      user = User.create(name: name, age: age, birthday: birthday)
       user.name.should == name
       user.age.should == age
-      user.created_at.should == created_at
+      user.birthday.should == birthday
     end
 
     it "create object in their class" do
       @store.allObjectClasses.should == []
-      Organization.create(:name => "Bumblebee")
+      Organization.create(name: "Droid Labs")
       @store.allObjectClasses.should == ["Organization"]
+    end
+
+    it "sets timestamp" do
+      user = User.create(name: "Bob")
+      user.created_at.present?.should.be.true
+      user.saved_at.present?.should.be.true
     end
   end
 
@@ -94,6 +100,17 @@ describe MotionPrime::Model do
 
       user1.id.should == 123
       user2.id.present?.should.be.true
+    end
+
+    it "sets timestamp" do
+      user = stub_user("Bob", 10, Time.now)
+      user.id = nil
+      user.save
+      created_at = user.created_at
+      sleep(1)
+      user.save
+      user.created_at.should == created_at
+      user.saved_at.should != created_at
     end
 
     # per object store since NanoStore 2.5.1
@@ -130,7 +147,7 @@ describe MotionPrime::Model do
 
       user1 = User.find(15).first
       user1.name.should == "Bob"
-      user1.created_at.should.be.nil
+      user1.birthday.should.be.nil
     end
 
     it "create model in file store" do
@@ -141,7 +158,7 @@ describe MotionPrime::Model do
 
       user1 = User.find(15).first
       user1.name.should == "Bob"
-      user1.created_at.should.be.nil
+      user1.birthday.should.be.nil
 
       File.delete(path) rescue nil
     end

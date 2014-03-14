@@ -1,5 +1,6 @@
 class User < MotionPrime::Model
-  attributes :name, :age, :created_at
+  attributes :name, :age, :birthday
+  timestamp_attributes
 end
 class Plane < MotionPrime::Model
   attributes :name, :age
@@ -43,12 +44,12 @@ class CustomModule::Car < MotionPrime::Model
 end
 Car = CustomModule::Car
 
-def stub_user(name, age, created_at, id = nil)
+def stub_user(name, age, birthday, id = nil)
   user = User.new
   user.id = id || 1
   user.name = name
   user.age  = age
-  user.created_at = created_at
+  user.birthday = birthday
   user
 end
 
