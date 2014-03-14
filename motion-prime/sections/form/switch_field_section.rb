@@ -9,5 +9,13 @@ module MotionPrime
     element :hint, type: :label do
       options[:hint] || {}
     end
+
+    def value
+      view(:input).isOn
+    end
+
+    def input?
+      true
+    end
   end
 end

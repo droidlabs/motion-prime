@@ -134,6 +134,14 @@ module MotionPrime
       end
     end
 
+    def value
+      raise "should be defined"
+    end
+
+    def input?
+      false
+    end
+
     def observing_errors?
       @errors_observer_options.present?
     end

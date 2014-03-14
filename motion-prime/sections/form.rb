@@ -80,6 +80,14 @@ module MotionPrime
       fields.to_hash
     end
 
+    def field_values
+      values = {}
+      fields.each do |field_name, field|
+        values[field_name.to_sym] = field.value if field.input?
+      end
+      values
+    end
+
     def register_elements_from_section(section)
       self.rendered_views ||= {}
       section.elements.values.each do |element|

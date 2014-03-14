@@ -21,6 +21,14 @@ module MotionPrime
       end
     end
 
+    def value
+      view(:input).date
+    end
+
+    def input?
+      true
+    end
+
     def dealloc
       picker = view(:input)
       picker.setDelegate nil

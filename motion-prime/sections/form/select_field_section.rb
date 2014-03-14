@@ -18,5 +18,9 @@ module MotionPrime
         form.send(options[:action]) if options[:action]
       end
     end
+
+    def value
+      view(:button).title
+    end
   end
 end

@@ -10,5 +10,13 @@ module MotionPrime
 
     element :error_message, type: :error_message, text: proc { all_errors.join("\n") if observing_errors? }
     after_render :bind_text_input
+
+    def value
+      view(:input).text
+    end
+
+    def input?
+      true
+    end
   end
 end
