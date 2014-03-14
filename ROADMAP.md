@@ -1,6 +1,5 @@
 === 0.9.0
-* Move api_client and model sync mixin to prime_api gem.
-* Move bind keyboard events to forms.
+* add sections/screens/models generator.
 
 === 1.0.0
 * bug: content_vertical_alignment conflicts with padding.
@@ -17,7 +16,9 @@
 * add size_to_fit support for images.
 
 === 1.1.0
-* add sections/screens/models generator
+* Move api_client and model sync mixin to prime_model_sync gem.
+* Move models to prime_model gem.
+* Move bind keyboard events to forms.
 
 === 1.2.0
 * add cell preload for reverse scrolling table.
