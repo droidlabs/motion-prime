@@ -36,7 +36,9 @@ module MotionPrime
       @on_appear_happened ||= {}
       unless @on_appear_happened[view.object_id]
         setup view, styles: default_styles do
-          run_callbacks :render { render }
+          run_callbacks :render do 
+            send(action.to_sym)
+          end
         end
       end
       @on_appear_happened[view.object_id] = true

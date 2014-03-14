@@ -12,7 +12,7 @@ module MotionPrime
     include MotionPrime::ScreenNavigationMixin
     include MotionPrime::ScreenSectionsMixin
 
-    attr_accessor :parent_screen, :modal, :params, :options, :tab_bar
+    attr_accessor :parent_screen, :modal, :params, :options, :tab_bar, :action, :model
     class_attribute :current_screen
 
     def app_delegate
@@ -39,6 +39,10 @@ module MotionPrime
       self
     end
 
+    def action?(action)
+      self.action == action
+    end
+
     def modal?
       !!self.modal
     end
@@ -51,7 +55,9 @@ module MotionPrime
 
     def title=(new_title)
       self.class.title(new_title)
+      self.navigationItem.title = new_title
     end
+    alias_method :set_title, :title=
 
     def main_controller
       has_navigation? ? navigation_controller : self
@@ -78,9 +84,11 @@ module MotionPrime
       end
       def create_with_options(screen, navigation = true, options = {})
         screen = create_tab_bar(screen, options) if screen.is_a?(Array)
-        if screen.is_a?(Symbol)
+        if screen.is_a?(Symbol) || screen.is_a?(String)
+          screen_name, action_name = screen.to_s.split('#')
+          options[:action] ||= action_name || 'render'
           options[:navigation] = navigation unless options.has_key?(:navigation)
-          screen = class_factory("#{screen}_screen").new(options)
+          screen = class_factory("#{screen_name}_screen").new(options)
         end
         screen
       end

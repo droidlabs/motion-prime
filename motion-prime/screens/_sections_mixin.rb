@@ -24,15 +24,19 @@ module MotionPrime
       return unless section_options
       @sections = {}
       section_options.map do |name, options|
-        section = create_section(options.clone)
+        section = create_section(name, options.clone)
         @sections[name] = section if section
       end
     end
 
-    def create_section(options)
-      section_class = class_factory("#{options.delete(:name)}_section")
+    def create_section(name, options)
+      section_class = class_factory("#{name}_section")
       options = normalize_options(options).merge(screen: self)
       !options.has_key?(:if) || options[:if] ? section_class.new(options) : nil
+    end
+
+    def section(name, options = {})
+      create_section(name, options).render
     end
 
     def render_sections
@@ -52,7 +56,7 @@ module MotionPrime
     module ClassMethods
       def section(name, options = {})
         self._section_options ||= {}
-        self._section_options[name.to_sym] = options.merge(name: name)
+        self._section_options[name.to_sym] = options
 
         define_method name do
           @sections[name]
