@@ -69,6 +69,7 @@ module MotionPrime
       face = UIButton.buttonWithType UIButtonTypeCustom
       face.setImage(image, forState: UIControlStateNormal) if args[:icon]
       face.setTitle(title, forState: UIControlStateNormal)
+      face.setTitleColor((:app_base || args[:title_color]).uicolor, forState: UIControlStateNormal)
       face.setContentHorizontalAlignment UIControlContentHorizontalAlignmentLeft
       face.sizeToFit
       face.on :touch do
