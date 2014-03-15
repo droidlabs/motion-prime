@@ -1,3 +1,6 @@
+=== 0.9.3
+* Small refactor required for working prime_awesome
+
 === 0.9.2
 * Updated scaffold and added deleting items.
 * Ability to reload base section.
