@@ -53,6 +53,13 @@ module MotionPrime
       reload_table_data
     end
 
+    # Alias for reload_data
+    #
+    # @return [Boolean] true
+    def reload
+      reload_data
+    end
+
     # Reload table view
     #
     # @return [Boolean] true

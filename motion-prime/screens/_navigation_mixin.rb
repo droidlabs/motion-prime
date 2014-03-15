@@ -36,9 +36,9 @@ module MotionPrime
       close_screen
     end
 
-    def send_on_return
-      if parent_screen && parent_screen.respond_to?(:on_return)
-        parent_screen.send(:on_return)
+    def send_on_return(screen)
+      if screen && screen.respond_to?(:on_return)
+        screen.send(:on_return)
       end
     end
 
@@ -91,7 +91,7 @@ module MotionPrime
       # @return screen [Prime::Screen] screen appearing after close
       def close_screen_modal(args = {})
         parent_screen.dismissViewControllerAnimated(args[:animated], completion: lambda {
-          send_on_return
+          send_on_return(parent_screen)
         })
         parent_screen
       end
@@ -113,7 +113,7 @@ module MotionPrime
             result = self.navigation_controller.childViewControllers.last
           end
         end
-        send_on_return
+        send_on_return(result)
         result
       end
 

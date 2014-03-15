@@ -6,13 +6,26 @@ class <%= @p_class_name %>FormSection < Prime::FormSection
       placeholder: "Enter title here"
     }
 
+  field :delete, type: :submit,
+    button: { 
+      title: "Delete", 
+      background_color: :red 
+    },
+    action: :on_delete,
+    if: proc { model.persisted? }
+
   field :submit, type: :submit,
     button: { title: "Save" },
     action: :on_submit
 
+  def on_delete
+    model.delete
+    screen.close_screen(to_root: true)
+  end
+
   def on_submit
     model.assign_attributes(field_values)
     model.save
-    screen.back
+    screen.close_screen
   end
 end

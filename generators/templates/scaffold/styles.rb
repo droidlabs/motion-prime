@@ -1,6 +1,6 @@
 Prime::Styles.define :<%= @p_name %> do
-  style :cell do
-    style :title,
+  style :index do
+    style :cell_title,
       text_color: :app_base,
       left: 20,
       top: 10,

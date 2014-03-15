@@ -139,7 +139,11 @@ module MotionPrime
 
     # Force reload section, will also re-render elements.
     # For table view cells will also reload it's table data.
+    #
+    # @return [Boolean] true
     def reload_section
+      # reload Base Elements
+      # TODO: probably should use update_with_options for Base elements too?
       self.elements_to_render.values.map(&:view).flatten.each do |view|
         view.removeFromSuperview if view
       end
@@ -147,11 +151,23 @@ module MotionPrime
       run_callbacks :render do
         render!
       end
+      # reload Draw Elements
+      elements_to_draw.each do |key, element|
+        element.update_with_options
+      end
 
       if @table && !self.is_a?(BaseFieldSection)
         cell.setNeedsDisplay
         @table.reload_table_data
       end
+      true
+    end
+
+    # Alias for reload_section
+    #
+    # @return [Boolean] true
+    def reload
+      reload_section
     end
 
     def add_element(key, options = {})

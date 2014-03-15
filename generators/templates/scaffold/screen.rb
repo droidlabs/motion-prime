@@ -7,7 +7,7 @@ class <%= @p_class_name %>Screen < ApplicationScreen
     set_navigation_right_button 'New' do
       open_screen "<%= @p_name %>#new"
     end
-    set_section :<%= @p_name %>_table
+    set_section :<%= @p_name %>_index_table
   end
 
   # open_screen "<%= @p_name %>#show"
@@ -38,8 +38,8 @@ class <%= @p_class_name %>Screen < ApplicationScreen
   end
 
   def on_return
-    if action?(:index)
-      main_section.reload_data
+    if action?(:index) || action?(:show)
+      refresh
     end
   end
 end
