@@ -22,7 +22,7 @@ module MotionPrime
 
     define_callbacks :render
 
-    before_render :add_sections
+    after_render :add_sections
 
     def render
     end
