@@ -1,3 +1,6 @@
+=== 0.9.4
+* Ability to render multiple sections inside screen action.
+
 === 0.9.3
 * Small refactor required for working prime_awesome
 
