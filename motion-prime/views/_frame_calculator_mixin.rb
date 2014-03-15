@@ -1,6 +1,6 @@
 module MotionPrime
   module FrameCalculatorMixin
-    def calculate_frome_for(bounds, options)
+    def calculate_frame_for(bounds, options)
       width   = options[:width]
       height  = options[:height]
       top     = options[:top]

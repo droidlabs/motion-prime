@@ -11,7 +11,7 @@ module MotionPrime
       options = computed_options
       background_color = options[:background_color].try(:uicolor)
       {
-        rect: CGRectMake(computed_left, computed_top, computed_outer_width, computed_outer_height),
+        rect: CGRectMake(frame_left, frame_top, frame_outer_width, frame_outer_height),
         background_color: background_color,
         masks_to_bounds: options[:layer].try(:[], :masks_to_bounds) || options[:clips_to_bounds],
         corner_radius: options[:layer].try(:[], :corner_radius).to_f,
@@ -27,38 +27,12 @@ module MotionPrime
     end
 
     def computed_frame
-      @computed_frame ||= calculate_frome_for(view.try(:bounds) || section.container_bounds, computed_options)
+      @computed_frame ||= calculate_frame_for(view.try(:bounds) || section.container_bounds, computed_options)
     end
 
     def default_padding_for(side)
       0
     end
-
-    def computed_max_width
-      view.bounds.size.width
-    end
-
-    def computed_max_height
-      view.bounds.size.height
-    end
-
-    def computed_outer_width; computed_frame.size.width end
-    def computed_width; computed_outer_width - content_padding_width end
-
-    def computed_outer_height; computed_frame.size.height end
-    def computed_height; computed_outer_height - content_padding_height end
-
-    def computed_top; computed_frame.origin.y end
-    def computed_inner_top; computed_top + content_padding_top end
-
-    def computed_left; computed_frame.origin.x end
-    def computed_inner_left; computed_left + content_padding_left end
-
-    def computed_bottom; computed_top + computed_outer_height end
-    def computed_inner_bottom; computed_bottom - content_padding_bottom end
-
-    def computed_right; computed_left + computed_width end
-    def computed_inner_right; computed_right - content_padding_right end
 
     def bind_gesture(action, receiver = nil, target = nil)
       target ||= section
@@ -92,6 +66,24 @@ module MotionPrime
     end
 
     private
+      def frame_outer_width; computed_frame.size.width end
+      def frame_width; frame_outer_width - content_padding_width end
+
+      def frame_outer_height; computed_frame.size.height end
+      def frame_height; frame_outer_height - content_padding_height end
+
+      def frame_top; computed_frame.origin.y end
+      def frame_inner_top; frame_top + content_padding_top end
+
+      def frame_left; computed_frame.origin.x end
+      def frame_inner_left; frame_left + content_padding_left end
+
+      def frame_bottom; frame_top + frame_outer_height end
+      def frame_inner_bottom; frame_bottom - content_padding_bottom end
+
+      def frame_right; frame_left + frame_outer_width end
+      def frame_inner_right; frame_right - content_padding_right end
+
       def reset_computed_values
         @content_height = nil
         @content_width = nil

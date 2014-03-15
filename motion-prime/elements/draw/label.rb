@@ -16,9 +16,9 @@ module MotionPrime
       line_break_mode_name = options.fetch(:line_break_mode, :tail_truncation)
       line_break_mode = line_break_mode_name.uilinebreakmode
 
-      top_left_corner = CGPointMake(computed_inner_left, computed_inner_top)
+      top_left_corner = CGPointMake(frame_inner_left, frame_inner_top)
       if options[:number_of_lines].to_i.zero?
-        inner_rect = CGRectMake(*top_left_corner.to_a, computed_width, computed_height)
+        inner_rect = CGRectMake(*top_left_corner.to_a, frame_width, frame_height)
       end
       super.merge({
         text: text,
@@ -97,10 +97,10 @@ module MotionPrime
 
     def set_text_position
       if computed_options.slice(:padding_top, :padding_bottom, :padding).values.none?
-        computed_options[:width] ||= computed_width
+        computed_options[:width] ||= frame_width
         content_height = cached_content_height
-        content_height = computed_outer_height if content_height > computed_outer_height
-        @padding_top = (computed_outer_height - content_height)/2
+        content_height = frame_outer_height if content_height > frame_outer_height
+        @padding_top = (frame_outer_height - content_height)/2
         # @padding_top += 1 unless @padding_top.zero?
       end
     end
