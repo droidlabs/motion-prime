@@ -1,3 +1,7 @@
+=== 0.9.2
+* Updated scaffold and added deleting items.
+* Ability to reload base section.
+
 === 0.9.1
 * Set correct navigation button title color by default.
 

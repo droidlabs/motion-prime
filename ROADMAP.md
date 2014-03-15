@@ -1,6 +1,3 @@
-=== 0.9.2
-* Add ability to remove items in scaffold.
-
 === 1.0.0
 * bug: content_vertical_alignment conflicts with padding.
 * bug: content_vertical_alignment has not ideal centering.
