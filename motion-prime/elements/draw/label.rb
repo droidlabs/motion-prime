@@ -52,7 +52,8 @@ module MotionPrime
 
       UIGraphicsPushContext(context)
       options = draw_options
-      if options[:is_html] || options[:line_spacing] || options[:line_height] || options[:underline]
+      if options[:is_html] || options[:line_spacing] || 
+        options[:line_height] || options[:underline] || options[:force_attributed]
         prepared_text = options[:is_html] ? html_string(options) : attributed_string(options)
 
         CGContextSaveGState(context)

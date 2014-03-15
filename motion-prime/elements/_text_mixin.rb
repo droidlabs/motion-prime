@@ -28,6 +28,26 @@ module MotionPrime
     end
 
     def attributed_string(options)
+      attributes, paragrah_style = extract_attributed_string_options(options)
+
+      prepared_text = NSMutableAttributedString.alloc.initWithString(options[:text].to_s, attributes: attributes)
+      underline_range = options[:underline]
+      fragment_color = options[:fragment_color]
+      if paragrah_style && (underline_range || fragment_color) && options.fetch(:number_of_lines, 1) == 1
+        Prime.logger.debug "If attributed text has paragraph style and underline - you must set number of lines != 1"
+      end
+
+      if underline_range
+        underline_range = [0, options[:text].length] if underline_range === true
+        prepared_text.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
+      end
+      if fragment_color
+        prepared_text.addAttributes({NSForegroundColorAttributeName => fragment_color[:color].uicolor}, range: fragment_color[:range])
+      end
+      prepared_text
+    end
+
+    def extract_attributed_string_options(options)
       attributes = {}
       line_height = options[:line_height]
       line_spacing = options[:line_spacing]
@@ -51,25 +71,9 @@ module MotionPrime
         end
         attributes[NSParagraphStyleAttributeName] = paragrah_style
       end
-
       attributes[NSForegroundColorAttributeName] = options[:text_color].uicolor if options[:text_color]
       attributes[NSFontAttributeName] = options[:font].uifont if options[:font]
-
-      prepared_text = NSMutableAttributedString.alloc.initWithString(options[:text].to_s, attributes: attributes)
-      underline_range = options[:underline]
-      fragment_color = options[:fragment_color]
-      if paragrah_style && (underline_range || fragment_color) && options.fetch(:number_of_lines, 1) == 1
-        Prime.logger.debug "If attributed text has paragraph style and underline - you must set number of lines != 1"
-      end
-
-      if underline_range
-        underline_range = [0, options[:text].length] if underline_range === true
-        prepared_text.addAttributes({NSUnderlineStyleAttributeName => NSUnderlineStyleSingle}, range: underline_range)
-      end
-      if fragment_color
-        prepared_text.addAttributes({NSForegroundColorAttributeName => fragment_color[:color].uicolor}, range: fragment_color[:range])
-      end
-      prepared_text
+      [attributes, paragrah_style]
     end
   end
 end
