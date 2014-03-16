@@ -30,7 +30,7 @@ module MotionPrime
     end
 
     def prepare_frame_for(bounds)
-      options[:frame] = calculate_frome_for(bounds, options.merge(test: view.is_a?(UITextView)))
+      options[:frame] = calculate_frame_for(bounds, options.merge(test: view.is_a?(UITextView)))
       if options.slice(:width, :height, :right, :bottom, :height_to_fit).values.any?
         mask = UIViewAutoresizingNone
         mask |= UIViewAutoresizingFlexibleTopMargin if options[:top].nil?

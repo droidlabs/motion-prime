@@ -1,4 +1,5 @@
 === 1.0.0
+* bug: size_to_fit makes draw label multiline by default.
 * bug: content_vertical_alignment conflicts with padding.
 * bug: content_vertical_alignment has not ideal centering.
 * bug: if mp label do not have text and was set as hidden, it should unhide after setting text.

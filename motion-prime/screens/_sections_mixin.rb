@@ -25,6 +25,10 @@ module MotionPrime
     end
     alias_method :section, :set_section
 
+    def set_sections_wrapper(value)
+      self.class.set_sections_wrapper(value)
+    end
+
     protected
       def add_sections
         @main_section ||= nil
@@ -52,17 +56,33 @@ module MotionPrime
         _action_section_options || {}
       end
 
+      def sections_wrapper
+        self.class.sections_wrapper
+      end
+
       def render_sections
         return unless @sections.present?
-        if all_sections.count > 1
-          @main_section = MotionPrime::TableSection.new(model: all_sections, screen: self)
+        table_wrap = sections_wrapper.nil? ? all_sections.count > 1 : sections_wrapper
+        if table_wrap
+          table_class = table_wrap.is_a?(TrueClass) ? MotionPrime::TableSection : table_class
+          @main_section = table_class.new(model: all_sections, screen: self)
           @main_section.render
         else
-          all_sections.first.render
+          all_sections.each do |section|
+            section.render
+          end
         end
       end
 
     module ClassMethods
+      def sections_wrapper
+        @sections_wrapper
+      end
+
+      def set_sections_wrapper(value)
+        @sections_wrapper = value
+      end
+
       def section_options
         _section_options || {}
       end
