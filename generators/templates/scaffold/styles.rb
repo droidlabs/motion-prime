@@ -6,7 +6,7 @@ Prime::Styles.define :<%= @p_name %> do
       top: 10,
       width: 280,
       font: :app_base.uifont(16),
-      size_to_fit: true
+      height: 20
   end
   style :show do
     style :title,
