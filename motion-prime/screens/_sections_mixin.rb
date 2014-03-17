@@ -19,6 +19,10 @@ module MotionPrime
       Array.wrap(@sections.try(:values))
     end
 
+    def all_sections_with_main
+      (all_sections + [main_section]).compact.uniq
+    end
+
     def set_section(name, options = {})
       self._action_section_options ||= {}
       self._action_section_options[name.to_sym] = options
@@ -27,6 +31,10 @@ module MotionPrime
 
     def set_sections_wrapper(value)
       self.class.set_sections_wrapper(value)
+    end
+
+    def refresh
+      all_sections_with_main.each { |s| s.try(:reload) }
     end
 
     protected

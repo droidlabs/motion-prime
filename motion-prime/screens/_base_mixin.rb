@@ -63,10 +63,6 @@ module MotionPrime
       has_navigation? ? navigation_controller : self
     end
 
-    def refresh
-      main_section.try(:reload)
-    end
-
     # Class methods
     module ClassMethods
       def title(t = nil, &block)
