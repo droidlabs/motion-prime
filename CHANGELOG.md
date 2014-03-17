@@ -1,5 +1,7 @@
 === 0.9.5.beta
 * Ability to set wrapper for sections in screen.
+* Screen refresh reloads all sections in screen.
+* Fix overriding title color of button in nav bar.
 
 === 0.9.4
 * Ability to render multiple sections inside screen action.
