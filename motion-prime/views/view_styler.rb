@@ -157,12 +157,15 @@ module MotionPrime
         view.setSelectionStyle value.uitablecellselectionstyle
       elsif key == 'estimated_cell_height' && view.is_a?(UITableView)
         view.setEstimatedRowHeight value
-      elsif key == 'separator_inset' && (view.is_a?(UITableViewCell) || view.is_a?(UITableView))
-        if value.to_s == 'none'
-          view.separatorInset = UIEdgeInsetsMake(0, 320, 0, 0)
+      elsif key.end_with?('inset') && (view.is_a?(UITableViewCell) || view.is_a?(UITableView))
+        inset = if value.to_s == 'none'
+          UIEdgeInsetsMake(0, 320, 0, 0)
         elsif value.is_a?(Array) && value.count == 2
-          view.separatorInset = UIEdgeInsetsMake(0, value.first, 0, value.last)
+          UIEdgeInsetsMake(0, value.first, 0, value.last)
+        elsif value.is_a?(Array) && value.count == 4
+          UIEdgeInsetsMake(value[0], value[1], value[2], value[3])
         end
+        view.send(:"#{low_camelize_factory(key)}=", inset) if inset
       elsif value.is_a?(Hash)
         self.class.new(view.send(low_camelize_factory(key).to_sym), nil, value.merge(parent_frame: options[:frame] || options[:parent_frame])).apply
       else

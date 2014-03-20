@@ -2,6 +2,7 @@
 * Ability to set wrapper for sections in screen.
 * Screen refresh reloads all sections in screen.
 * Fix overriding title color of button in nav bar.
+* Better support for edge inset attributes.
 
 === 0.9.4
 * Ability to render multiple sections inside screen action.

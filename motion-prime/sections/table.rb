@@ -230,7 +230,7 @@ module MotionPrime
     end
 
     def table_view
-      table_element.view
+      table_element.try(:view)
     end
 
     def hide
