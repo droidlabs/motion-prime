@@ -118,7 +118,7 @@ module MotionPrime
       end
 
       def wrap_in_navigation!
-        self.navigation_controller = UINavigationController.alloc.initWithRootViewController(self)
+        self.navigation_controller = NavigationController.alloc.initWithRootViewController(self)
       end
   end
 end

@@ -190,6 +190,7 @@ module MotionPrime
       true
     end
 
+    # FIXME: probably it should not be here.
     def cell
       container_view || begin
         first_element = elements.values.first
@@ -233,19 +234,35 @@ module MotionPrime
       element(name).view
     end
 
+    # Hide all elements of section.
+    # It will hide all base elements and container of draw elements.
+    # FIXME: container_view manipulation should be in draw mixin.
     def hide
       if container_view
         container_view.hidden = true
-      else
-        elements.values.each(&:hide)
       end
+      elements_to_render.values.each(&:hide)
     end
 
+    # Show all elements of section.
+    # It will show all base elements and container of draw elements.
+    # FIXME: container_view manipulation should be in draw mixin.
     def show
       if container_view
         container_view.hidden = false
-      else
-        elements.values.each(&:show)
+      end
+      elements_to_render.values.each(&:show)
+    end
+
+    # Bring all views of section to front.
+    # It will bring to front all base elements and container of draw elements.
+    # FIXME: container_view manipulation should be in draw mixin.
+    def bring_to_front
+      if container_view
+        container_view.superview.bringSubviewToFront container_view
+      end
+      elements_to_render.values.each do |element|
+        element.view.superview.bringSubviewToFront element.view
       end
     end
 
@@ -331,9 +348,7 @@ module MotionPrime
       end
 
       def has_drawn_content?
-        self.elements.values.any? do |element|
-          element.is_a?(DrawElement)
-        end
+        elements_to_draw.any?
       end
 
       # Force load section

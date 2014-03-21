@@ -18,6 +18,7 @@ module MotionPrime
     def application(application, didRegisterForRemoteNotificationsWithDeviceToken: token)
       on_apn_register_success(application, token)
     end
+
     def application(application, didFailToRegisterForRemoteNotificationsWithError: error)
       on_apn_register_fail(application, error)
     end
@@ -25,8 +26,14 @@ module MotionPrime
     def on_load(application, launch_options)
     end
 
-    def app_window
-      self.app_delegate.window
+    # Return the main controller.
+    def main_controller
+      window.rootViewController
+    end
+
+    # Return content controller (without sidebar)
+    def content_controller
+      main_controller.content_controller
     end
   end
 end

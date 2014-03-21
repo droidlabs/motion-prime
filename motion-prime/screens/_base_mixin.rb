@@ -59,8 +59,14 @@ module MotionPrime
     end
     alias_method :set_title, :title=
 
+    # Return the main controller.
     def main_controller
       has_navigation? ? navigation_controller : self
+    end
+
+    # Return content controller (without sidebar)
+    def content_controller
+      self
     end
 
     # Class methods
