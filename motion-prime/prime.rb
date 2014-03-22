@@ -8,7 +8,7 @@ module MotionPrime
   end
 
   def self.low_camelize_factory_cache
-    @camelize_factory_cache ||= {}
+    @low_camelize_factory_cache ||= {}
   end
 
   def self.env

@@ -118,7 +118,7 @@ module MotionPrime
       end
 
       def set_image_options(key, value)
-        if key.end_with?('background_image') && view.is_a?(UIControl)
+        if key.end_with?('background_image')
           if view.is_a?(UIControl) || view.is_a?(UISearchBar)
             view.send :"set#{camelize_factory(key)}:forState", value.uiimage, UIControlStateNormal
           else
