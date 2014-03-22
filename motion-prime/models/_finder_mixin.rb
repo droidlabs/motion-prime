@@ -64,12 +64,8 @@ module MotionPrime
           raise "Unexpected parameters: #{arg}."
         end
         search = NSFNanoSearch.searchWithStore(self.store)
-
-        expressions = expressions_with_options(options)
-        search.expressions = expressions
-
-        sort_descriptors = sort_descriptor_with_options(sort_options)
-        search.sort = sort_descriptors
+        search.expressions = expressions_with_options(options)
+        search.sort = sort_descriptor_with_options(sort_options)
         search.filterClass = self.bare_class_name
 
         error_ptr = Pointer.new(:id)
@@ -86,25 +82,15 @@ module MotionPrime
       # Find model keys by criteria
       #
       # @example:
-      #   User.find_keys(:name, NSFEqualTo, "Bob") # => ["1"]
       #   User.find_keys(:name => "Bob") # => ["1"]
       #   User.find_keys(:name => {NSFEqualTo => "Bob"}) # => ["1"]
       #
       # @return keys [Array] array of models
       def find_keys(*arg)
         if arg[0].is_a?(Hash)
-          # hash style
           options = arg[0]
           if arg[1] && arg[1].is_a?(Hash)
             sort_options = arg[1][:sort] || {}
-          else
-            sort_options = {}
-          end
-        elsif arg[0] && arg[1] && arg[2]
-          # standard way to find
-          options = {arg[0] => {arg[1] => arg[2]}}
-          if arg[4] && arg[4].is_a?(Hash)
-            sort_options = arg[4][:sort] || {}
           else
             sort_options = {}
           end
@@ -116,12 +102,8 @@ module MotionPrime
         end
 
         search = NSFNanoSearch.searchWithStore(self.store)
-
-        expressions = expressions_with_options(options)
-        search.expressions = expressions
-
-        sort_descriptors = sort_descriptor_with_options(sort_options)
-        search.sort = sort_descriptors
+        search.expressions = expressions_with_options(options)
+        search.sort = sort_descriptor_with_options(sort_options)
         search.filterClass = self.bare_class_name
 
         error_ptr = Pointer.new(:id)
