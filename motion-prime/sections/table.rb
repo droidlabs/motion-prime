@@ -121,7 +121,7 @@ module MotionPrime
     end
 
     # Delete section from data at index
-    # 
+    #
     # @param index [NSIndexPath] index of cell which will be removed from table data.
     def delete_from_data(index)
       if flat_data?
@@ -321,10 +321,10 @@ module MotionPrime
       return cached if cached.present?
 
       styles = cell_section_styles(header).values.flatten
-      wrapper = MotionPrime::BaseElement.factory(:table_header, 
-        screen: screen, 
-        styles: styles, 
-        parent_view: table_view, 
+      wrapper = MotionPrime::BaseElement.factory(:table_header,
+        screen: screen,
+        styles: styles,
+        parent_view: table_view,
         reuse_identifier: reuse_identifier,
         section: header
       )

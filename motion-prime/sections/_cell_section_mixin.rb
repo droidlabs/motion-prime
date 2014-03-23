@@ -61,6 +61,13 @@ module MotionPrime
       container_view.setNeedsDisplay
     end
 
+    def cell
+      container_view || begin
+        first_element = elements.values.first
+        first_element.view.superview.superview
+      end
+    end
+
     def dealloc
       # TODO: remove this when solve this problem: dealloc TableCells on TableView.reloadData (in case when reuseIdentifier has been used)
       container_view.section = nil if container_view.respond_to?(:setSection)

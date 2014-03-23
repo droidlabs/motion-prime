@@ -190,14 +190,6 @@ module MotionPrime
       true
     end
 
-    # FIXME: probably it should not be here.
-    def cell
-      container_view || begin
-        first_element = elements.values.first
-        first_element.view.superview.superview
-      end
-    end
-
     def render(container_options = {})
       create_elements
       self.container_options.merge!(container_options)

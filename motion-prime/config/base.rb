@@ -6,12 +6,13 @@ MotionPrime::Config.configure do |config|
     config.model.store_type = :file
   end
   config.model.auto_generate_id = true
-  
+
   config.fonts do |fonts|
     fonts.base = :system
   end
 
   config.colors do |colors|
+    colors.navigation_base = 0x1b75bc
     colors.base = 0x1b75bc
     colors.dark = 0x333333
     colors.error = 0xef471f
