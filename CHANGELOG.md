@@ -1,4 +1,4 @@
-=== 0.9.6
+=== 0.9.6.beta
 * BREAKING CHANGE: proc for form field option will be executed in context of form, not field.
 
 === 0.9.5
