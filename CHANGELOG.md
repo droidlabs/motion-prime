@@ -1,3 +1,6 @@
+=== 0.9.6
+* BREAKING CHANGE: proc for form field option will be executed in context of form, not field.
+
 === 0.9.5
 * Ability to set wrapper for sections in screen.
 * Screen refresh reloads all sections in screen.

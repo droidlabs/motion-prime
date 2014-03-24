@@ -84,7 +84,11 @@ module MotionPrime
       compute_style_options(raw_options)
       raw_options = Styles.for(styles).merge(raw_options)
       @computed_options = raw_options
-      normalize_options(@computed_options, section, %w[text placeholder font title_label padding padding_left padding_right min_width min_outer_width max_width max_outer_width width left right])
+      normalize_options(
+        @computed_options, section.try(:elements_eval_object), 
+        %w[text placeholder font title_label padding padding_left padding_right 
+          min_width min_outer_width max_width max_outer_width width left right]
+      )
     end
 
     def reload!

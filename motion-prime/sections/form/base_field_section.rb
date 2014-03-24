@@ -187,5 +187,10 @@ module MotionPrime
       error_height = element ? element.cached_content_height + 5 : 0
       super + error_height
     end
+
+    protected
+      def elements_eval_object
+        form
+      end
   end
 end

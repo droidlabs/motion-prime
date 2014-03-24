@@ -131,7 +131,7 @@ module MotionPrime
       elements_options.each do |key, opts|
         add_element(key, opts)
       end
-      self.instance_eval(&@options_block) if @options_block.is_a?(Proc)
+      elements_eval(&@options_block) if @options_block.is_a?(Proc)
 
       @section_loading = false
       return @section_loaded = true
@@ -309,6 +309,14 @@ module MotionPrime
     end
 
     protected
+      def elements_eval_object
+        self
+      end
+
+      def elements_eval(&block)
+        self.instance_eval(self, &block)
+      end
+
       def bind_keyboard_close
         bindings = self.class.keyboard_close_bindings
         return unless bindings.present?
