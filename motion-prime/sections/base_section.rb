@@ -314,7 +314,7 @@ module MotionPrime
       end
 
       def elements_eval(&block)
-        self.instance_eval(self, &block)
+        elements_eval_object.instance_eval(self, &block)
       end
 
       def bind_keyboard_close
