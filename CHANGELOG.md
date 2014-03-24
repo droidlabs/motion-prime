@@ -1,4 +1,4 @@
-=== 0.9.5.beta
+=== 0.9.5
 * Ability to set wrapper for sections in screen.
 * Screen refresh reloads all sections in screen.
 * Fix overriding title color of button in nav bar.
