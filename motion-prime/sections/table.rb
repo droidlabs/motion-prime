@@ -165,7 +165,7 @@ module MotionPrime
       base_styles = [type]
       base_styles << :"#{type}_with_sections" unless flat_data?
       item_styles = [name.to_sym]
-      item_styles << @styles if @styles.present?
+      item_styles += Array.wrap(@styles) if @styles.present?
       {common: base_styles, specific: item_styles}
     end
 
@@ -216,13 +216,13 @@ module MotionPrime
     end
 
     def table_element_options
-      {
+      container_options.slice(:render_target).merge({
         section: self.weak_ref,
         styles: table_styles.values.flatten,
         delegate: table_delegate,
         data_source: table_delegate,
         style: (UITableViewStyleGrouped unless flat_data?)
-      }
+      })
     end
 
     def render_table
@@ -388,9 +388,11 @@ module MotionPrime
       end
 
       def container_element_options_for(index)
+        cell_section = cell_section_by_index(index)
         {
           reuse_identifier: cell_name(table_view, index),
-          parent_view: table_view
+          parent_view: table_view,
+          bounds: {height: cell_section.container_height}
         }
       end
 

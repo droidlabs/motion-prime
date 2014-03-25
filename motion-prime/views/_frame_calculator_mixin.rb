@@ -1,6 +1,6 @@
 module MotionPrime
   module FrameCalculatorMixin
-    def calculate_frame_for(bounds, options)
+    def calculate_frame_for(parent_bounds, options)
       width   = options[:width]
       height  = options[:height]
       top     = options[:top]
@@ -14,11 +14,11 @@ module MotionPrime
         height = options[:height_to_fit]
       end
 
-      return bounds if width.nil? && height.nil? && right.nil? && bottom.nil?
+      return parent_bounds if width.nil? && height.nil? && right.nil? && bottom.nil?
       frame = CGRectMake(0,0,0,0)
 
-      max_width = bounds.size.width
-      max_height = bounds.size.height
+      max_width = parent_bounds.size.width
+      max_height = parent_bounds.size.height
       width = 0.0 if width.nil?
       height = 0.0 if height.nil?
 

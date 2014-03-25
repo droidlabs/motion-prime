@@ -7,10 +7,10 @@ module MotionPrime
 
     attr_reader :view, :options
 
-    def initialize(view, bounds = CGRectZero, options = {})
+    def initialize(view, parent_bounds = CGRectZero, options = {})
       @options = Styles.extend_and_normalize_options options
       @view = view
-      prepare_frame_for(bounds) if @options.delete(:calculate_frame)
+      prepare_frame_for(parent_bounds) if @options.delete(:calculate_frame)
       prepare_options!
     end
 
@@ -29,8 +29,8 @@ module MotionPrime
       end
     end
 
-    def prepare_frame_for(bounds)
-      options[:frame] = calculate_frame_for(bounds, options.merge(test: view.is_a?(UITextView)))
+    def prepare_frame_for(parent_bounds)
+      options[:frame] = calculate_frame_for(parent_bounds, options)
       if options.slice(:width, :height, :right, :bottom, :height_to_fit).values.any?
         mask = UIViewAutoresizingNone
         mask |= UIViewAutoresizingFlexibleTopMargin if options[:top].nil?
@@ -141,7 +141,10 @@ module MotionPrime
       end
 
       def set_text_options(key, value)
-        if key.end_with?('alignment') && value.is_a?(Symbol)
+        if key == 'content_horizontal_alignment' && value.is_a?(Symbol) && %[left right center fill].include?(value.to_s)
+          view.setValue "UIControlContentHorizontalAlignment#{value.camelize}".constantize, forKey: camelize_factory(key)
+          true
+        elsif key.end_with?('alignment') && value.is_a?(Symbol)
           view.setValue value.uitextalignment, forKey: camelize_factory(key)
           true
         elsif key.end_with?('line_break_mode') && value.is_a?(Symbol)
@@ -166,7 +169,7 @@ module MotionPrime
           current_inset.send("#{key.partition('_').first}=", value)
           view.contentInset = current_inset
           true
-        elsif key.end_with?('inset')
+        elsif key.end_with?('inset') || key.end_with?('indicator_insets')
           inset = if value.to_s == 'none'
             UIEdgeInsetsMake(0, 320, 0, 0)
           elsif value.is_a?(Array) && value.count == 2
@@ -181,16 +184,38 @@ module MotionPrime
 
       def set_layer_options(key, value)
         if key == 'rounded_corners'
+          layer_bounds = bounds
+          if value[:overlap]
+            size = layer_bounds.size
+            size.height += value.fetch(:border_width, 0) # overlap to the next cell
+            layer_bounds.size = size
+          end
+
           radius = value[:radius].to_f
           corner_consts = {top_left: UIRectCornerTopLeft, bottom_left: UIRectCornerBottomLeft, bottom_right: UIRectCornerBottomRight, top_right: UIRectCornerTopRight}
           corners = value[:corners].inject(0) { |result, corner| result|corner_consts[corner] }
-          size = options[:parent_frame].size
-          bounds = CGRectMake(0, 0, size.width, size.height)
-          mask_path = UIBezierPath.bezierPathWithRoundedRect(bounds, byRoundingCorners: corners, cornerRadii: CGSizeMake(radius, radius))
+          mask_path = UIBezierPath.bezierPathWithRoundedRect(layer_bounds, byRoundingCorners: corners, cornerRadii: CGSizeMake(radius, radius))
           mask_layer = CAShapeLayer.layer
-          mask_layer.frame = bounds
+
+
+          mask_layer.frame = layer_bounds
           mask_layer.path = mask_path.CGPath
           view.mask = mask_layer
+
+          if value[:border_color] && value[:border_width]
+            stroke_layer = CAShapeLayer.layer
+            stroke_layer.path = mask_path.CGPath
+            stroke_layer.fillColor = :clear.uicolor.cgcolor
+            stroke_layer.strokeColor = value[:border_color].uicolor.cgcolor
+            stroke_layer.lineWidth = value[:border_width].to_f*2 # another half is hidden by the mask
+
+            container_view = view.delegate
+            stroke_view = UIView.alloc.initWithFrame(layer_bounds)
+            stroke_view.userInteractionEnabled = false
+            stroke_view.layer.addSublayer(stroke_layer)
+            container_view.addSubview(stroke_view)
+            view.addSublayer(stroke_layer)
+          end
           true
         end
       end
@@ -199,7 +224,7 @@ module MotionPrime
         if value.is_a?(Hash)
           self.class.new(
             view.send(low_camelize_factory(key).to_sym), nil,
-            value.merge(parent_frame: options[:frame] || options[:parent_frame])
+            value.merge(parent_frame: options[:frame] || options[:parent_frame], bounds: options[:bounds])
           ).apply
           true
         end
@@ -227,7 +252,15 @@ module MotionPrime
           width height top right bottom left
           max_width max_outer_width min_width min_outer_width
           max_height max_outer_height min_height min_outer_width
+          bounds
         ].include?(key.to_s)
+      end
+
+      def bounds
+        # TODO: raise error if parent_frame is nill
+        frame_size = options[:parent_frame].size
+        bounds_options = options[:bounds] || {}
+        CGRectMake(0, 0, bounds_options.fetch(:width, frame_size.width), bounds_options.fetch(:height, frame_size.height))
       end
 
     STRUCTS_MAP = {

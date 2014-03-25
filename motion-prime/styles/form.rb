@@ -66,7 +66,6 @@ MotionPrime::Styles.define :base_form do
     top: 30,
     height: 35,
     title_shadow_color: :white,
-    content_horizontal_alignment: :left,
     layer: {
       border_color: :gray,
       border_width: 1

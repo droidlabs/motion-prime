@@ -24,7 +24,7 @@ module MotionPrime
         options[:add_to_view] ||= self.view
         @progress_indicator_view = self.progress_hud(options).view
       else
-        self.setup(@progress_indicator_view, options.except(:add_to_view))
+        self.set_options(@progress_indicator_view, options.except(:add_to_view))
         @progress_indicator_view.show options.has_key?(:animated) ? options[:animatetd] : true
       end
     end
