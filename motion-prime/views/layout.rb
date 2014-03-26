@@ -33,6 +33,11 @@ module MotionPrime
       view_stack.pop
     end
 
+    def setup(view, options = {}, &block)
+      puts "DEPRECATION: screen#setup is deprecated, please use screen#set_options instead"
+      set_options(view, options, &block)
+    end
+
     def view_stack
       @view_stack ||= []
     end
