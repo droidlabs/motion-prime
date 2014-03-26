@@ -77,6 +77,9 @@ module MotionPrime
         :text_alignment, :font, :line_break_mode, :number_of_lines
       ]
       attributed_text_options = options.slice(*text_attributes)
+      if view.is_a?(UIButton)
+        attributed_text_options[:text] ||= options[:title]
+      end
       options.except!(*text_attributes)
       attributed_text_options
     end

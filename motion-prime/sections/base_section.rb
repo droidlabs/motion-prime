@@ -373,15 +373,16 @@ module MotionPrime
         raw_options = {}
         raw_options.merge!(self.class.container_options.try(:clone) || {})
         raw_options.merge!(options.delete(:container) || {})
-        normalize_options(raw_options, elements_eval_object)
-        @container_options = raw_options
 
-        # must be here because section_styles may use container_options for custom styles
+        # allow to pass styles as proc
+        normalize_options(raw_options, elements_eval_object, nil, [:styles])
+        @container_options = raw_options # must be here because section_styles may use container_options for custom styles
+
         container_options_from_styles = Styles.for(section_styles.values.flatten)[:container] if section_styles
         if container_options_from_styles.present?
-          normalize_options(container_options_from_styles, elements_eval_object)
           @container_options = container_options_from_styles.merge(@container_options)
         end
+        normalize_options(@container_options, elements_eval_object)
       end
 
     class << self
