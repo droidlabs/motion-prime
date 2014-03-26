@@ -1,15 +1,15 @@
 class <%= @p_class_name %>FormSection < Prime::FormSection
   field :title,
     label: { text: 'Title' },
-    input: { 
-      text: proc { form.model.title }, 
+    input: {
+      text: proc { model.title },
       placeholder: "Enter title here"
     }
 
   field :delete, type: :submit,
-    button: { 
-      title: "Delete", 
-      background_color: :red 
+    button: {
+      title: "Delete",
+      background_color: :red
     },
     action: :on_delete,
     if: proc { model.persisted? }

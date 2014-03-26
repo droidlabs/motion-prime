@@ -15,7 +15,7 @@ module MotionPrime
     def normalize_object(object, receiver = nil)
       receiver ||= self
       if object.is_a?(Proc)
-        receiver.send(:instance_exec, self, &object)
+        normalize_value(object, receiver)
       elsif object.is_a?(Hash)
         object.inject({}) do |result, (key, nested_object)|
           result.merge(key => normalize_object(nested_object, receiver))
@@ -23,6 +23,25 @@ module MotionPrime
       else
         object
       end
+    end
+
+    def normalize_value(object, receiver)
+      if element?
+        receiver.send(:instance_exec, section || screen, self, &object)
+      else
+        receiver.send(:instance_exec, self, &object)
+      end
+    rescue => e
+      if element?
+        Prime.logger.error "Can't normalize: ", self.class.name, self.name, section.try(:name)
+      else
+        Prime.logger.error "Can't normalize: ", self.class.name, self.name, @table.try(:class).try(:name)
+      end
+      raise e
+    end
+
+    def element?
+      self.is_a?(BaseElement)
     end
   end
 end

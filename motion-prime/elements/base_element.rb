@@ -124,7 +124,7 @@ module MotionPrime
       #   {name: model.name}
       # end
       def compute_block_options
-        section.send(:instance_exec, self, &@block) if @block
+        normalize_value(@block, section) if @block
       end
 
       def compute_style_options(*style_sources)
@@ -140,10 +140,10 @@ module MotionPrime
         custom_styles = []
         style_sources.each do |source|
           if source_mixins = source.delete(:mixins)
-            mixins += Array.wrap(normalize_object(source_mixins, section))
+            mixins += Array.wrap(normalize_object(source_mixins, section.try(:elements_eval_object)))
           end
           if source_styles = source.delete(:styles)
-            custom_styles += Array.wrap(normalize_object(source_styles, section))
+            custom_styles += Array.wrap(normalize_object(source_styles, section.try(:elements_eval_object)))
           end
         end
         # styles got from mixins option

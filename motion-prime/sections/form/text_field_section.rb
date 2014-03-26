@@ -3,11 +3,11 @@ module MotionPrime
     element :label, type: :label do
       default_label_options
     end
-    element :input, type: :text_view, delegate: proc { form.table_delegate } do
+    element :input, type: :text_view, delegate: proc { table_delegate } do
       {editable: true}.merge(options[:input] || {})
     end
 
-    element :error_message, type: :error_message, text: proc { observing_errors? and all_errors.join("\n") }
+    element :error_message, type: :error_message, text: proc { |field| field.observing_errors? and field.all_errors.join("\n") }
     after_render :bind_text_input
 
     def value

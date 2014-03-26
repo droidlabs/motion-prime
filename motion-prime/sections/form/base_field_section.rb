@@ -6,14 +6,13 @@ module MotionPrime
     attr_reader :form
     after_render :on_section_render
 
-    before_initialize :prepare_table_data
     after_initialize :observe_model_errors
 
     def prepare_table_data
       @form = @options[:table]
       if options[:observe_errors]
         # Do not remove clone() after delete()
-        @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, self)
+        @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, elements_eval_object)
       end
     end
 
@@ -50,6 +49,7 @@ module MotionPrime
     end
 
     def observe_model_errors
+      prepare_table_data
       return unless observing_errors?
       on_error_change = proc { |old_value, new_value|
         changes = observing_errors_for.errors.changes

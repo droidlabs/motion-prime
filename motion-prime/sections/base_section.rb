@@ -314,7 +314,7 @@ module MotionPrime
       end
 
       def elements_eval(&block)
-        elements_eval_object.instance_eval(self, &block)
+        elements_eval_object.instance_exec(self, &block)
       end
 
       def bind_keyboard_close
@@ -331,7 +331,7 @@ module MotionPrime
 
       def keyboard_close_bindings_options
         return {} unless self.class.keyboard_close_bindings.present?
-        @keyboard_close_bindings_options ||= normalize_options(self.class.keyboard_close_bindings.clone, self)
+        @keyboard_close_bindings_options ||= normalize_options(self.class.keyboard_close_bindings.clone, elements_eval_object)
       end
 
       def build_options_for_element(opts)
@@ -373,13 +373,13 @@ module MotionPrime
         raw_options = {}
         raw_options.merge!(self.class.container_options.try(:clone) || {})
         raw_options.merge!(options.delete(:container) || {})
-        normalize_options(raw_options)
+        normalize_options(raw_options, elements_eval_object)
         @container_options = raw_options
 
         # must be here because section_styles may use container_options for custom styles
         container_options_from_styles = Styles.for(section_styles.values.flatten)[:container] if section_styles
         if container_options_from_styles.present?
-          normalize_options(container_options_from_styles)
+          normalize_options(container_options_from_styles, elements_eval_object)
           @container_options = container_options_from_styles.merge(@container_options)
         end
       end

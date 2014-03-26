@@ -1,9 +1,9 @@
 # ** What is a Section? **
 #
-# "Section" is something like "partial" which you may know from RubyOnRails. 
+# "Section" is something like "partial" which you may know from RubyOnRails.
 # In the first look it's just a list of elements which will be added to the "Screen".
-# But the magic is inside. 
-# When you add "Element" to a "Section", e.g. image or label, 
+# But the magic is inside.
+# When you add "Element" to a "Section", e.g. image or label,
 # it will try to draw it using CALayer/CGContext/etc, instead of adding new UIView.
 # That way increases application speed (especially on Table elements) by 5-10 times.
 #
@@ -18,7 +18,7 @@ end
 
 # ** Add some elements to the section. **
 #
-# Each element should have name and type: "image", "label", "button", etc. 
+# Each element should have name and type: "image", "label", "button", etc.
 #
 # When you send `:text` option, type will be "label" by default.
 #
@@ -31,7 +31,7 @@ class FooSection < Prime::Section
 end
 
 # ** Render Section to Screen **
-# 
+#
 # NOTE: it's recommended to use instance variables for sections, e.g. `@main_section` instead of `main_section`.
 
 class FooScreen < Prime::Screen
@@ -42,12 +42,12 @@ class FooScreen < Prime::Screen
 end
 
 # ** Add some styles for section **
-# 
+#
 # Generally styles are just attributes of UIView elements.
 #
 # Let's style the UILabel element (:welcome label element we added above.)
 #
-# We send :foo parameter to `define`, because we have section named `foo` (FooSection) 
+# We send :foo parameter to `define`, because we have section named `foo` (FooSection)
 # and :welcome parameter to `style`, because the name of element is `welcome`.
 #
 Prime::Styles.define :foo do
@@ -56,7 +56,7 @@ Prime::Styles.define :foo do
     top: 100,
     width: 320,
     left: 20,
-    font: proc { :system.uifont(20) },
+    font: :system.uifont(20),
     size_to_fit: true,
 end
 
