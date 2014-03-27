@@ -1,5 +1,6 @@
-=== 0.9.6.beta
+=== 0.9.6
 * BREAKING CHANGE: proc for form field option will be executed in context of form, not field.
+* BREAKING CHANGE: screen#setup renamed to screen#set_options.
 
 === 0.9.5
 * Ability to set wrapper for sections in screen.
