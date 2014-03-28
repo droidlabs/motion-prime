@@ -70,6 +70,7 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 ## Samples
 
 * [Simple to-do app](https://github.com/motionprime/prime_sample_todo)
+* [Send mail with attached file](https://github.com/cactis/email_attachment_example)
 
 ## Documentation
 
