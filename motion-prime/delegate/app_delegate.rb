@@ -24,5 +24,9 @@ module MotionPrime
       @current_user = nil
       NSNotificationCenter.defaultCenter.postNotificationName(:on_current_user_reset, object: user_was)
     end
+
+    def api_client
+      @api_client ||= ApiClient.new(access_token: current_user.try(:access_token))
+    end
   end
 end

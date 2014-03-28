@@ -10,7 +10,7 @@ module MotionPrime
       current_user.present?
     end
     def api_client
-      @api_client ||= ApiClient.new(access_token: current_user.try(:access_token))
+      App.delegate.api_client
     end
   end
 end

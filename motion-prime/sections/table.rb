@@ -104,7 +104,7 @@ module MotionPrime
     #
     # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be removed from table view.
     # @return [Array<NSIndexPath>] index paths of removed cells.
-    def delete_cell_sections(sections)
+    def delete_cell_sections(sections, &block)
       paths = []
       Array.wrap(sections).each do |section|
         index = index_for_cell_section(section)
@@ -113,9 +113,11 @@ module MotionPrime
         delete_from_data(index)
       end
       if paths.any?
-        table_view.beginUpdates
-        table_view.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationLeft)
-        table_view.endUpdates
+        UIView.animate(duration: 0, after: block) do
+          table_view.beginUpdates
+          table_view.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationLeft)
+          table_view.endUpdates
+        end
       end
       paths
     end
@@ -144,7 +146,7 @@ module MotionPrime
     def index_for_cell_section(section)
       if flat_data?
         row = @data.try(:index, section)
-        NSIndexPath.indexPathForRow(row, inSection: 0)
+        NSIndexPath.indexPathForRow(row, inSection: 0) if row
       else
         (@data || []).each_with_index do |cell_sections, group|
           row = cell_sections.index(section)
@@ -157,6 +159,10 @@ module MotionPrime
       section.elements.values.each(&:compute_options!)
       section.cached_draw_image = nil
       # TODO: reset date stamps, reload row
+    end
+
+    def set_options(options)
+      ViewStyler.new(table_view, table_view.superview.try(:bounds), options).apply
     end
 
     def table_styles

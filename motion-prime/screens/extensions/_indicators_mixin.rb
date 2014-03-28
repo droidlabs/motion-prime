@@ -1,17 +1,23 @@
 module MotionPrime
   module ScreenIndicatorsMixin
-    def show_activity_indicator
-      if @activity_indicator_view.nil?
-        @activity_indicator_view = UIActivityIndicatorView.gray
-        @activity_indicator_view.center = CGPointMake(view.center.x, view.center.y)
-        view.addSubview @activity_indicator_view
+    def show_activity_indicator(render_target = nil, options = {})
+      render_target ||= view
+      @activity_indicator_view ||= {}
+      indicator = @activity_indicator_view[render_target.object_id] ||= begin
+        indicator = UIActivityIndicatorView.gray
+        render_target.addSubview(indicator)
+        indicator
       end
-      @activity_indicator_view.startAnimating
+
+      center = options[:center] || {}
+      indicator.center = CGPointMake(center.fetch(:x, render_target.center.x), center.fetch(:y, render_target.center.y))
+      indicator.startAnimating
     end
 
-    def hide_activity_indicator
-      return unless @activity_indicator_view
-      @activity_indicator_view.stopAnimating
+    def hide_activity_indicator(render_target = nil)
+      @activity_indicator_view ||= {}
+      render_target ||= view
+      @activity_indicator_view[render_target.object_id].try(:stopAnimating)
     end
 
     def show_progress_indicator(text = nil, options = {})
