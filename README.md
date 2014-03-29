@@ -85,16 +85,6 @@ MotionPrime is yet another framework written on RubyMotion for creating really f
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## Help us with documentation
-
-We are using [Docco](http://jashkenas.github.io/docco/) to generate documentation.
-
-Please install the tool and run this to update documentation:
-
-```
-$ cd doc && docco code/*.rb --layout linear
-```
-
 ## Thanks for using MotionPrime!
 
 Hope, you'll enjoy MotionPrime!

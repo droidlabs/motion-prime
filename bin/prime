@@ -47,7 +47,7 @@ class App
       clone_template(template_name, repo)
       sh "motion create #{name} --template=#{template_name}"
     end
-    info "Command: bundle instal"
+    info "Command: bundle install"
     sh "cd ./#{name}; bundle install"
     info "Command: pod setup"
     sh "cd ./#{name}; pod setup"
