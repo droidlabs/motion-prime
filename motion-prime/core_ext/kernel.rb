@@ -1,6 +1,7 @@
 class Kernel
   def pp(*attrs)
     NSLog([*attrs].map(&:inspect).join(' '))
+    attrs
   end
 
   def class_name_without_kvo

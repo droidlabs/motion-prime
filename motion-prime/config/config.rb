@@ -1,5 +1,7 @@
 module MotionPrime
   class Config
+    attr_accessor :attributes
+    
     def initialize(attributes = {})
       @attributes = attributes || {}
     end
@@ -13,8 +15,8 @@ module MotionPrime
     end
     alias :[]= :store
 
-    def fetch(key)
-      @attributes[key.to_sym]
+    def fetch(key, default = nil)
+      @attributes[key.to_sym] || default
     end
 
     def nil?
@@ -31,7 +33,11 @@ module MotionPrime
     end
 
     def to_hash
-      @attributes
+      hash = {}
+      @attributes.each do |key, value|
+        hash[key] = value.is_a?(MotionPrime::Config) ? value.to_hash : value
+      end
+      hash
     end
 
     class << self
