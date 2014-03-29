@@ -17,7 +17,6 @@ Bundler.require
 require 'motion-support'
 require 'motion-prime'
 require 'motion-stump'
-require 'motion-redgreen'
 
 Motion::Project::App.setup do |app|
   app.name = 'Prime'

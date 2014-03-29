@@ -1,5 +1,6 @@
 motion_require './config.rb'
 MotionPrime::Config.configure do |config|
+  # MODELS
   if MotionPrime.env.test?
     config.model.store_type = :memory
   else
@@ -7,16 +8,6 @@ MotionPrime::Config.configure do |config|
   end
   config.model.auto_generate_id = true
 
-  config.fonts do |fonts|
-    fonts.base = :system
-  end
-
-  config.colors do |colors|
-    colors.navigation_base = 0x1b75bc
-    colors.base = 0x1b75bc
-    colors.dark = 0x333333
-    colors.error = 0xef471f
-  end
   config.api_client do |api|
     api.base = "http://example.com"
     api.client_id = ""
@@ -27,7 +18,26 @@ MotionPrime::Config.configure do |config|
     api.api_namespace = '/api'
     api.allow_queue = false
   end
+
+  # APPEARANCE
+  config.fonts do |fonts|
+    fonts.base = :system
+  end
+  config.colors do |colors|
+    colors.navigation_base = 0x1b75bc
+    colors.base = 0x1b75bc
+    colors.dark = 0x333333
+    colors.error = 0xef471f
+  end
+  
+  # SECTIONS
   config.prime.cell_section.mixins = [Prime::CellSectionMixin]
-  config.logger.level = :info
+
+  # LOGGER
   config.logger.dealloc_items = ['screen']
+  if MotionPrime.env.development?
+    config.logger.level = :info
+  else
+    config.logger.level = :error
+  end
 end

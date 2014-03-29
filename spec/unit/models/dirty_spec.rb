@@ -15,7 +15,6 @@ describe MotionPrime::Model do
     end
 
     it "should be false after save" do
-      puts @user.changed_attributes
       @user.has_changed?.should.be.false
     end
 

@@ -2,7 +2,7 @@ describe "open screen" do
   describe "from app delegate with default options" do
     before do
       App.delegate.open_screen :sample
-      @controller = App.delegate.window.rootViewController
+      @controller = App.delegate.content_controller
     end
     it "should open with navigation by default" do
       @controller.is_a?(UINavigationController).should.be.true
@@ -25,6 +25,18 @@ describe "open screen" do
     end
   end
 
+  describe "from app delegate with action" do
+    before do
+      App.delegate.open_screen 'tasks#new'
+      @controller = App.delegate.content_controller.childViewControllers.last
+    end
+
+    it "should open screen with action" do
+      @controller.is_a?(TasksScreen).should.be.true
+      @controller.title.should == 'New Task'
+    end
+  end
+
   describe "from another screen with navigation: true" do
     before do
       @parent_screen = SampleScreen.new(navigation: true)
@@ -32,7 +44,7 @@ describe "open screen" do
 
       App.delegate.open_screen @parent_screen
       @parent_screen.open_screen @child_screen
-      @controller = App.delegate.window.rootViewController
+      @controller = App.delegate.content_controller
 
       # we should call it because will_appear will happen async
       @child_screen.will_appear

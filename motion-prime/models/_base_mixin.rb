@@ -49,7 +49,7 @@ module MotionPrime
         elsif options[:validate_attribute_presence]
           raise(StoreError, "unknown attribute: '#{k}'")
         else
-          NSLog("unknown attribute: #{k}")
+          Prime.logger.info("unknown attribute: #{k}")
         end
       end
     end
