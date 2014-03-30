@@ -127,7 +127,7 @@ module MotionPrime
     # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be updated.
     # @param around callback [Proc] Callback which will be executed before reloading.
     # @return [Array<NSIndexPath>] index paths of reloaded cells.
-    def realod_cell_sections(sections, &block)
+    def reload_cell_sections(sections, &block)
       paths = []
       Array.wrap(sections).each_with_index do |section, counter|
         index = index_for_cell_section(section)
@@ -147,7 +147,7 @@ module MotionPrime
     # @param height [Integer, Array<Integer>] new height of all cells, or height for each cell.
     # @return [Array<NSIndexPath>] index paths of removed cells.
     def resize_cell_sections(sections, height) 
-      realod_cell_sections(sections) do |section, index, counter|
+      reload_cell_sections(sections) do |section, index, counter|
         container_height = height.is_a?(Array) ? height[counter] : height
         section.container_options[:height] = container_height
       end
