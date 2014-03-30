@@ -29,7 +29,7 @@ module MotionPrime
       end
     end
 
-    def reload_cell_section(section)
+    def hard_reload_cell_section(section)
       field = section.name.to_sym
       path = field_indexes[field]
       section.cell.try(:removeFromSuperview)
@@ -43,10 +43,7 @@ module MotionPrime
       end
 
       set_data_stamp(fields[field].object_id)
-
-      # table_view.beginUpdates
       table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
-      # table_view.endUpdates
     end
 
     # Returns element based on field name and element name
@@ -173,7 +170,7 @@ module MotionPrime
     def reload_data
       @groups_count = nil
       init_form_fields # must be before resetting to reflect changes on @data
-      reset_data
+      reset_table_data
       reload_table_data
     end
 

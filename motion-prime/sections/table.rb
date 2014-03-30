@@ -49,7 +49,7 @@ module MotionPrime
     #
     # @return [Boolean] true
     def reload_data
-      reset_data
+      reset_table_data
       reload_table_data
     end
 
@@ -60,7 +60,7 @@ module MotionPrime
       reload_data
     end
 
-    # Reload table view
+    # Reload table view data
     #
     # @return [Boolean] true
     def reload_table_data
@@ -78,7 +78,7 @@ module MotionPrime
     # Reset all table data.
     #
     # @return [Boolean] true
-    def reset_data
+    def reset_table_data
       @did_appear = false
       @data = nil
       @data_stamp = nil
@@ -122,6 +122,37 @@ module MotionPrime
       paths
     end
 
+    # Reloads cells with animation, executes given block before reloading.
+    #
+    # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be updated.
+    # @param around callback [Proc] Callback which will be executed before reloading.
+    # @return [Array<NSIndexPath>] index paths of reloaded cells.
+    def realod_cell_sections(sections, &block)
+      paths = []
+      Array.wrap(sections).each_with_index do |section, counter|
+        index = index_for_cell_section(section)
+        next Prime.logger.debug("Reload section: `#{section.name}` is not in the list") unless index
+        paths << index
+        block.call(section, index, counter)
+        set_data_stamp(section.object_id)
+        section.reload
+      end
+      table_view.reloadRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationFade)
+      paths
+    end
+
+    # Changes height of cells with animation.
+    #
+    # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be updated.
+    # @param height [Integer, Array<Integer>] new height of all cells, or height for each cell.
+    # @return [Array<NSIndexPath>] index paths of removed cells.
+    def resize_cell_sections(sections, height) 
+      realod_cell_sections(sections) do |section, index, counter|
+        container_height = height.is_a?(Array) ? height[counter] : height
+        section.container_options[:height] = container_height
+      end
+    end
+
     # Delete section from data at index
     #
     # @param index [NSIndexPath] index of cell which will be removed from table data.
@@ -129,20 +160,14 @@ module MotionPrime
       if flat_data?
         delete_from_flat_data(index)
       else
-        delete_from_groped_data(index)
+        delete_from_grouped_data(index)
       end
     end
 
-    def delete_from_flat_data(index)
-      @data[index.row] = nil
-      @data.delete_at(index.row)
-    end
-
-    def delete_from_groped_data(index)
-      @data[index.section][index.row] = nil
-      @data[index.section].delete_at(index.row)
-    end
-
+    # Get index path for cell section
+    #
+    # @param section [Prime::Section] cell section.
+    # @return index [NSIndexPath] index of cell section.
     def index_for_cell_section(section)
       if flat_data?
         row = @data.try(:index, section)
@@ -153,12 +178,6 @@ module MotionPrime
           return NSIndexPath.indexPathForRow(row, inSection: group) if row
         end
       end
-    end
-
-    def reload_cell_section(section)
-      section.elements.values.each(&:compute_options!)
-      section.cached_draw_image = nil
-      # TODO: reset date stamps, reload row
     end
 
     def set_options(options)
@@ -361,6 +380,16 @@ module MotionPrime
     end
 
     private
+      def delete_from_flat_data(index)
+        @data[index.row] = nil
+        @data.delete_at(index.row)
+      end
+
+      def delete_from_grouped_data(index)
+        @data[index.section][index.row] = nil
+        @data[index.section].delete_at(index.row)
+      end
+
       def display_pending_cells
         table_view.visibleCells.each do |cell_view|
           if cell_view.section && cell_view.section.pending_display

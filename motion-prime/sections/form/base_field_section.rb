@@ -30,19 +30,6 @@ module MotionPrime
       end
     end
 
-    # Changes height of the field (the cell in table) with animation.
-    #
-    # @param height [Integet] new height of field
-    # @return [MotionPrime::BaseFieldSection]
-    def update_height(height)
-      return if container_options[:height] == height
-      container_options[:height] = height
-      index = form.field_indexes[name]
-      form.send :set_data_stamp, self.object_id
-      form.table_view.reloadRowsAtIndexPaths([index], withRowAnimation: UITableViewRowAnimationFade)
-      self
-    end
-
     def on_section_render
       @status_for_updated = :rendered
       form.register_elements_from_section(self)
@@ -171,14 +158,13 @@ module MotionPrime
 
     def reload_section
       clear_observers
-      form.reload_cell_section(self)
+      form.hard_reload_cell_section(self)
     end
 
     def clear_observers
       return unless observing_errors?
       # unobserve_all cause double dealloc, following code is a replacement
       unobserve observing_errors_for.errors, :info
-      # TODO: clear 'on' events
     end
 
     def container_height

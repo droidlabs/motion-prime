@@ -42,30 +42,21 @@ module MotionPrime
     def hide
       return if computed_options[:hidden]
       computed_options[:hidden] = true
-      section.cached_draw_image = nil
-      view.setNeedsDisplay
+      rerender!
     end
 
     def show
       return if !computed_options[:hidden]
       computed_options[:hidden] = false
+      rerender!
+    end
+
+    def rerender!
       section.cached_draw_image = nil
       view.setNeedsDisplay
     end
 
-    def reload!
-      reset_computed_values
-      compute_options!
-      section.cached_draw_image = nil
-    end
-
-    def update_with_options(new_options = {})
-      options.merge!(new_options)
-      reload!
-      view.setNeedsDisplay
-    end
-
-    private
+    protected
       def frame_outer_width; computed_frame.size.width end
       def frame_width; frame_outer_width - content_padding_width end
 
@@ -85,8 +76,7 @@ module MotionPrime
       def frame_inner_right; frame_right - content_padding_right end
 
       def reset_computed_values
-        @content_height = nil
-        @content_width = nil
+        super
         @computed_frame = nil
       end
 

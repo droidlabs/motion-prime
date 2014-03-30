@@ -24,7 +24,7 @@ module Prime
     # Reset async loaded table data and preloader queue.
     #
     # @return [Boolean] true
-    def reset_data
+    def reset_table_data
       super # must be before to update fixed_table_data
       @async_loaded_data = async_data? ? fixed_table_data : nil
       Array.wrap(@preloader_queue).each { |queue| queue[:state] = :cancelled }

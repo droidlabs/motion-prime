@@ -1,3 +1,8 @@
+=== 0.9.7.beta
+* section#reload_section renamed to section#hard_reload_section. in common cases use section#reload.
+* form#reload_cell_section renamed to form#hard_reload_cell_section. in common cases use form#reload_cell_sections.
+* table#reset_data renamed to table#reset_table_data
+
 === 0.9.6
 * BREAKING CHANGE: proc for form field option will be executed in context of form, not field.
 * BREAKING CHANGE: screen#setup renamed to screen#set_options.

@@ -92,14 +92,23 @@ module MotionPrime
     end
 
     def reload!
+      reset_computed_values
       compute_options!
+    end
+
+    def rerender!
+      view.try(:removeFromSuperview)
+      render
     end
 
     def update_with_options(new_options = {})
       options.merge!(new_options)
       reload!
-      view.try(:removeFromSuperview)
-      render
+      rerender!
+    end
+
+    def update
+      update_with_options({})
     end
 
     def hide
@@ -118,6 +127,10 @@ module MotionPrime
     end
 
     protected
+      def reset_computed_values
+        @content_height = nil
+        @content_width = nil
+      end
 
       # Compute options sent inside block, e.g.
       # element :button do
