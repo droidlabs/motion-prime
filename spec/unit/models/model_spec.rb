@@ -50,6 +50,7 @@ describe MotionPrime::Model do
     end
 
     it "creates model when invalid parameter and validate_attribute_presence=false" do
+      Prime.logger.disabled = true
       user = User.new({
         name: "Eddie", 
         age: 12, 
@@ -57,6 +58,7 @@ describe MotionPrime::Model do
         gender: "m",
       })
       user.name.should == "Eddie"
+      Prime.logger.disabled = false
     end
   end
 

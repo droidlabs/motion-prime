@@ -35,9 +35,5 @@ MotionPrime::Config.configure do |config|
 
   # LOGGER
   config.logger.dealloc_items = ['screen']
-  if MotionPrime.env.development?
-    config.logger.level = :info
-  else
-    config.logger.level = :error
-  end
+  config.logger.level = :info
 end

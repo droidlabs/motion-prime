@@ -18,5 +18,9 @@ module MotionPrime
   def self.logger
     @logger ||= MotionPrime::Logger.new
   end
+
+  def self.logger=(value)
+    @logger = value
+  end
 end
 ::Prime = MotionPrime unless defined?(::Prime)

@@ -14,22 +14,37 @@ module MotionPrime
     }
 
     class_attribute :level, :dealloc_items
+    attr_accessor :disabled
 
     def initialize
       @default_level = Config.logger.level.nil? ? :info : Config.logger.level
+      @disabled = false
     end
 
     # Log message, colorized if using simulator.
     # @param message [Array<String>, String] Message or array of messages to log.
     # @param color [Symbol] Color of message: red, green, yellow, blue.
     # @return message [Array<String>, String] Logged message
-    def log(message, label = '', color = :none)
-      out_message = [label] + Array.wrap(message)
+    def log(objects, label = '', color = :none)
+      message = "#{label || 'PRIME_LOG'} : " + Array.wrap(objects).map(&:inspect).join(',')
       if Device.simulator?
         color_parts = COLORS[color] || COLORS[:none]
-        puts color_parts.first + out_message.join(' : ') + color_parts.last
+        output(color_parts.first + message + color_parts.last)
       else
-        pp(*out_message)
+        output(message)
+      end
+      objects
+    end
+
+    # Output message, using "puts" for simulator and NSLog for Device.
+    # @param message [String] Message or array of messages to output.
+    # @return message [Array<String>, String] Message
+    def output(message)
+      return if disabled
+      if Device.simulator?
+        puts(message)
+      else
+        NSLog(message)
       end
       message
     end
@@ -49,29 +64,30 @@ module MotionPrime
     def dealloc_message(type, object, *args)
       if LOGGER_DEALLOC_LEVEL <= current_level
         if dealloc_items.include?(type.to_s)
-          pp([object.object_id, object.to_s] + args, "DEALLOC #{type}", :yellow)
+          log([object.object_id, object.to_s] + args, "DEALLOC #{type}", :yellow)
         end
       end
     end
 
-    def dealloc_items
-      self.class.dealloc_items || []
-    end
-
-    def current_level
-      current_level = self.class.level || @default_level
-      case current_level.to_s
-      when 'error'
-        LOGGER_ERROR_LEVEL
-      when 'info'
-        LOGGER_INFO_LEVEL
-      when 'debug'
-        LOGGER_DEBUG_LEVEL
-      when 'dealloc'
-        LOGGER_DEALLOC_LEVEL
-      else
-        2
+    private
+      def dealloc_items
+        self.class.dealloc_items || []
       end
-    end
+
+      def current_level
+        current_level = self.class.level || @default_level
+        case current_level.to_s
+        when 'error'
+          LOGGER_ERROR_LEVEL
+        when 'info'
+          LOGGER_INFO_LEVEL
+        when 'debug'
+          LOGGER_DEBUG_LEVEL
+        when 'dealloc'
+          LOGGER_DEALLOC_LEVEL
+        else
+          2
+        end
+      end
   end
 end
