@@ -147,6 +147,9 @@ module MotionPrime
         if key == 'content_horizontal_alignment' && value.is_a?(Symbol) && %[left right center fill].include?(value.to_s)
           view.setValue "UIControlContentHorizontalAlignment#{value.camelize}".constantize, forKey: camelize_factory(key)
           true
+        elsif key == 'content_vertical_alignment' && value.is_a?(Symbol) && %[top bottom center fill].include?(value.to_s)
+          view.setValue "UIControlContentHorizontalAlignment#{value.camelize}".constantize, forKey: camelize_factory(key)
+          true
         elsif key.end_with?('alignment') && value.is_a?(Symbol)
           view.setValue value.uitextalignment, forKey: camelize_factory(key)
           true

@@ -17,7 +17,7 @@ class ApiClient
     end
     if config.sign_request?
       signature = RmDigest::MD5.hexdigest(
-        config.signature_secret + filter_sign_params(params).keys.map(&:to_s).sort.join
+        config.signature_secret + params.keys.map(&:to_s).sort.join
       )
       params.merge!(sign: signature)
     end
@@ -53,43 +53,58 @@ class ApiClient
   end
 
   def request(method, path, params = {}, options = {}, &block)
-    params.merge!(access_token: access_token)
-    data = request_params(params)
-    files = data.delete(:_files)
-    use_callback = block_given?
+    files = params.delete(:_files)
+    data = request_params(params.merge(access_token: access_token))
 
-    client_method = files.present? ? :"multipart_#{method}" : method
+    if !options.has_key?(:allow_queue) && config.default_methods_queue.include?(method.to_sym)
+      options[:allow_queue] = true
+    end
+
+    if !options.has_key?(:allow_cache) && config.default_methods_cache.include?(method.to_sym)
+      options[:allow_cache] = true
+    end
+
+    if allow_cache?(method, path, options)
+      cached_request!(method, path, data, files, options, &block)
+    else
+      request!(method, path, data, files, options, &block)
+    end
+  end
+
+  def request!(method, path, data, files = nil, options = {}, &block)
+    use_callback = block_given?
     path = "#{config.api_namespace}#{path}" unless path.starts_with?('http')
+    client_method = files.present? ? :"multipart_#{method}" : method
     AFMotion::Client.shared.send client_method, path, data do |response, form_data, progress|
       if form_data && files.present?
-        files.each do |file_data|
-          form_data.appendPartWithFileData(file_data[:data], name: file_data[:name], fileName:"avatar.png", mimeType: "image/jpeg")
-        end
+        append_files_to_data(file_data, files)
       elsif progress
         # handle progress
-      elsif !response.success? && options[:allow_queue] && config.allow_queue?
-        add_to_queue(method: method, path: path, params: params)
+      elsif !response.success? && allow_queue?(method, path, options)
+        queue(method: method, path: path, params: params)
       elsif response.operation.response.nil?
         block.call if use_callback
       else
-        block.call(prepared_object(response.object), response.operation.response.statusCode) if use_callback
-        process_queue
+        prepared_response = prepare_response_object(response.object)
+        block.call(prepared_response, response.operation.response.statusCode) if use_callback
+        process_queue if config.allow_queue?
       end
     end
   end
 
-  def process_queue
-    queue = user_defaults['api_client_queue']
-    user_defaults['api_client_queue'] = []
-    Array.wrap(queue).each do |item|
-      request(item[:method], item[:path], item[:params].clone.symbolize_keys)
+  def cached_request!(method, path, data, files = nil, options = {}, &block)
+    use_callback = block_given?
+    params = data.map { |key, value| "#{key}=#{value}" }.join('&')
+    cache_key = [method, path, params].join(' ')
+    response = read_cache(cache_key)
+    if response && use_callback
+      block.call(prepare_response_object(response), 200)
+    else
+      request!(method, path, data, files, options) do |response, status|
+        write_cache(cache_key, response)
+        block.call(response, status) if use_callback
+      end
     end
-  end
-
-  def add_to_queue(item)
-    queue = user_defaults['api_client_queue'].clone || []
-    queue.push(item)
-    user_defaults['api_client_queue'] = queue
   end
 
   def get(path, params = {}, options = {}, &block)
@@ -101,18 +116,47 @@ class ApiClient
   end
 
   def post(path, params = {}, options = {}, &block)
-    options[:allow_queue] = true unless options.has_key?(:allow_queue)
     request(:post, path, params, options, &block)
   end
 
   def delete(path, params = {}, options = {}, &block)
-    options[:allow_queue] = true unless options.has_key?(:allow_queue)
     request(:delete, path, params, options, &block)
   end
 
-  private
-    def filter_sign_params(params)
-      params.except(:_files)
+  def queue(item)
+    queue_list = user_defaults['api_client_queue'].clone || []
+    queue_list.push(item)
+    user_defaults['api_client_queue'] = queue_list
+  end
+
+  # TODO: temporary solution, add real caching system here
+  def read_cache(key)
+    puts "read cache #{key}"
+    @cache ||= {}
+    @cache[key]
+  end
+
+  # TODO: temporary solution, add real caching system here
+  def write_cache(key, data)
+    @cache ||= {}
+    @cache[key] = data
+  end
+
+  protected
+    def allow_queue?(method, path, options)
+      options[:allow_queue] && config.allow_queue?
+    end
+
+    def allow_cache?(method, path, options)
+      options[:allow_cache] && config.allow_cache?
+    end
+
+    def process_queue
+      queue_list = user_defaults['api_client_queue']
+      user_defaults['api_client_queue'] = []
+      Array.wrap(queue_list).each do |item|
+        request(item[:method], item[:path], item[:params].clone.symbolize_keys)
+      end
     end
 
     def config
@@ -123,11 +167,23 @@ class ApiClient
       @user_defaults ||= NSUserDefaults.standardUserDefaults
     end
 
-    def prepared_object(object)
+    def append_files_to_data(files, data)
+      files.each do |file|
+        name = file[:name]
+        file_name = file[:file_name] || "avatar.png"
+        mime_type = file[:mime_type] || "image/jpeg"
+        data.appendPartWithFileData(
+          file[:data], name: name, fileName: file_name, mimeType: mime_type
+        )
+      end
+      data
+    end
+
+    def prepare_response_object(object)
       if object.is_a?(Hash)
         object.with_indifferent_access
       elsif object.is_a?(Array)
-        object.map(&:with_indifferent_access)
+        object.map{ |obj| prepare_response_object(obj) }
       else
         object
       end

@@ -1,0 +1,11 @@
+# this constants should be listed here to be accessible in constantize
+
+UIControlContentHorizontalAlignmentCenter
+UIControlContentHorizontalAlignmentLeft
+UIControlContentHorizontalAlignmentRight
+UIControlContentHorizontalAlignmentFill
+
+UIControlContentVerticalAlignmentCenter
+UIControlContentVerticalAlignmentTop
+UIControlContentVerticalAlignmentBottom
+UIControlContentVerticalAlignmentFill

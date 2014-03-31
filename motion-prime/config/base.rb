@@ -17,6 +17,9 @@ MotionPrime::Config.configure do |config|
     api.auth_path = '/oauth/token'
     api.api_namespace = '/api'
     api.allow_queue = false
+    api.allow_cache = false
+    api.default_methods_queue = [:post, :delete]
+    api.default_methods_cache = [:get]
   end
 
   # APPEARANCE
