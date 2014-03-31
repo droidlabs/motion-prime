@@ -14,7 +14,7 @@ module MotionPrime
     before_render :render_table
     after_render :init_pull_to_refresh
     delegate :init_pull_to_refresh, to: :table_delegate
-
+    delegate :set_options, :update_options, to: :table_element, allow_nil: true
 
     # Return sections which will be used to render as table cells.
     #
@@ -146,7 +146,7 @@ module MotionPrime
     # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be updated.
     # @param height [Integer, Array<Integer>] new height of all cells, or height for each cell.
     # @return [Array<NSIndexPath>] index paths of removed cells.
-    def resize_cell_sections(sections, height) 
+    def resize_cell_sections(sections, height)
       reload_cell_sections(sections) do |section, index, counter|
         container_height = height.is_a?(Array) ? height[counter] : height
         section.container_options[:height] = container_height
@@ -178,10 +178,6 @@ module MotionPrime
           return NSIndexPath.indexPathForRow(row, inSection: group) if row
         end
       end
-    end
-
-    def set_options(options)
-      ViewStyler.new(table_view, table_view.superview.try(:bounds), options).apply
     end
 
     def table_styles

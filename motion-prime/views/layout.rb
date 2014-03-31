@@ -18,7 +18,7 @@ module MotionPrime
       view = builder.view
       insert_index = options.delete(:at_index)
 
-      set_options(view, options, &block)
+      set_options_for(view, options, &block)
       if superview = render_target || view_stack.last
         insert_index ? superview.insertSubview(view, atIndex: insert_index) : superview.addSubview(view)
       end
@@ -26,16 +26,17 @@ module MotionPrime
       view
     end
 
-    def set_options(view, options = {}, &block)
+    def set_options_for(view, options = {}, &block)
       ViewStyler.new(view, options.delete(:parent_bounds), options).apply
       view_stack.push(view)
       block.call(view) if block_given?
       view_stack.pop
     end
+    alias_method :update_options_for, :set_options_for
 
     def setup(view, options = {}, &block)
-      puts "DEPRECATION: screen#setup is deprecated, please use screen#set_options instead"
-      set_options(view, options, &block)
+      puts "DEPRECATION: screen#setup is deprecated, please use screen#set_options_for instead"
+      set_options_for(view, options, &block)
     end
 
     def view_stack

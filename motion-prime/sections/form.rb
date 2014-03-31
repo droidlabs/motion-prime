@@ -18,7 +18,7 @@ module MotionPrime
     # end
     #
 
-    class_attribute :fields_options, :text_field_limits, :text_view_limits
+    class_attribute :fields_options, :text_field_limits, :text_view_limits, :fields_callbacks
     attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :grouped_data
 
     def table_data
@@ -188,6 +188,13 @@ module MotionPrime
       if options && options[:after_render]
         self.send(options[:after_render])
       end
+
+      section = cell_section_by_index(index)
+      if callbacks = fields_callbacks.try(:[], section.name)
+        callbacks.each do |options|
+          options[:method].to_proc.call(options[:target] || self)
+        end
+      end
       super
     end
 
@@ -202,6 +209,7 @@ module MotionPrime
       def inherited(subclass)
         super
         subclass.fields_options = self.fields_options.try(:clone)
+        subclass.fields_callbacks = self.fields_callbacks.try(:clone)
         subclass.text_field_limits = self.text_field_limits.try(:clone)
         subclass.text_view_limits = self.text_view_limits.try(:clone)
       end
@@ -218,6 +226,13 @@ module MotionPrime
         self.fields_options ||= {}
         self.fields_options[name] = options
         self.fields_options[name]
+      end
+
+      def after_field_render(field_name, method, options = {})
+        options.merge!(method: method)
+        self.fields_callbacks ||= {}
+        self.fields_callbacks[field_name] ||= []
+        self.fields_callbacks[field_name] << options
       end
 
       def limit_text_field_length(name, limit)
@@ -249,6 +264,9 @@ module MotionPrime
           section_indexes[section_id] ||= 0
 
           section = load_field(field)
+          if section.options[:after_render].present?
+            puts "DEPRECATION: form field's option :after_render is deprecated, please use Prime::Section#after_field_render instead"
+          end
           self.fields[key] = section
           self.field_indexes[key] = NSIndexPath.indexPathForRow(section_indexes[section_id], inSection: section_id)
           grouped_data[section_id][section_indexes[section_id]] = section

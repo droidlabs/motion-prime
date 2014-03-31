@@ -22,7 +22,7 @@ module MotionPrime
     include DelegateMixin
 
     attr_accessor :screen, :model, :name, :options, :elements, :section_styles
-    class_attribute :elements_options, :container_options, :keyboard_close_bindings
+    class_attribute :elements_options, :container_options, :keyboard_close_bindings, :elements_callbacks
     define_callbacks :render, :initialize
 
     def initialize(options = {})
@@ -166,6 +166,17 @@ module MotionPrime
       true
     end
 
+    def render_container(options = {}, &block)
+      if should_render_container? && !self.container_element.try(:view)
+        element = self.init_container_element(options)
+        element.render do
+          block.call
+        end
+      else
+        block.call
+      end
+    end
+
     def add_element(key, options = {})
       return unless render_element?(key)
       opts = options.clone
@@ -194,22 +205,19 @@ module MotionPrime
       end
     end
 
-    def render_container(options = {}, &block)
-      if should_render_container? && !self.container_element.try(:view)
-        element = self.init_container_element(options)
-        element.render do
-          block.call
-        end
-      else
-        block.call
-      end
-    end
-
     def render!
       render_container(container_options) do
         elements_to_render.each do |key, element|
           element.render
+          on_element_render(element)
         end
+      end
+    end
+
+    def on_element_render(element)
+      return unless callbacks = elements_callbacks.try(:[], element.name)
+      callbacks.each do |options|
+        options[:method].to_proc.call(options[:target] || self)
       end
     end
 
@@ -383,6 +391,7 @@ module MotionPrime
 
     class << self
       def inherited(subclass)
+        subclass.elements_callbacks = self.elements_callbacks.try(:clone)
         subclass.elements_options = self.elements_options.try(:clone)
         subclass.container_options = self.container_options.try(:clone)
         subclass.keyboard_close_bindings = self.keyboard_close_bindings.try(:clone)
@@ -410,6 +419,12 @@ module MotionPrime
       end
       def after_initialize(*method_names, &block)
         set_callback :initialize, :after, *method_names, &block
+      end
+      def after_element_render(element_name, method, options = {})
+        options.merge!(method: method)
+        self.elements_callbacks ||= {}
+        self.elements_callbacks[element_name] ||= []
+        self.elements_callbacks[element_name] << options
       end
       def bind_keyboard_close(options)
         self.keyboard_close_bindings = options

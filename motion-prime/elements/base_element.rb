@@ -97,14 +97,20 @@ module MotionPrime
     end
 
     def rerender!
+      render_target = view.try(:superview)
       view.try(:removeFromSuperview)
-      render
+      render(render_target: render_target)
+      section.try(:on_element_render, self)
     end
 
     def update_with_options(new_options = {})
       options.merge!(new_options)
       reload!
       rerender!
+    end
+
+    def update_options(options)
+      ViewStyler.new(view, view.superview.try(:bounds), options).apply
     end
 
     def update

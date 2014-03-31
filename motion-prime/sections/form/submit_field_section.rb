@@ -5,7 +5,7 @@ module MotionPrime
     end
     element :error_message, type: :error_message, text: proc { |field| field.all_errors.join("\n") if field.observing_errors? }
 
-    after_render :bind_button
+    after_element_render :button, :bind_button
 
     def bind_button
       view(:button).on :touch do

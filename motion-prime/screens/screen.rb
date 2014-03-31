@@ -35,7 +35,7 @@ module MotionPrime
       @visible = true
       @on_appear_happened ||= {}
       unless @on_appear_happened[view.object_id]
-        set_options view, styles: default_styles do
+        set_options_for view, styles: default_styles do
           run_callbacks :render do
             send((action).to_sym)
           end

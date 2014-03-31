@@ -7,7 +7,7 @@ module MotionPrime
       {secure_text_entry: true}.merge(options[:input] || {})
     end
     element :error_message, type: :error_message, text: proc { |field| field.all_errors.join("\n") if field.observing_errors? }
-    after_render :bind_text_input
+    after_element_render :input, :bind_text_input
 
     def value
       view(:input).text

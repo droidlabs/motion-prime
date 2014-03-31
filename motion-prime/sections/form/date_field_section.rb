@@ -8,7 +8,7 @@ module MotionPrime
       options[:input] || {}
     end
 
-    after_render :bind_input
+    after_element_render :input, :bind_input
 
     def bind_input
       picker = view(:input)
