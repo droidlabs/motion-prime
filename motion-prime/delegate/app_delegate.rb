@@ -23,6 +23,7 @@ module MotionPrime
       user_was = @current_user
       @current_user = nil
       NSNotificationCenter.defaultCenter.postNotificationName(:on_current_user_reset, object: user_was)
+      api_client.access_token = current_user.try(:access_token)
     end
 
     def api_client

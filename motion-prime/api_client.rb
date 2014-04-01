@@ -77,7 +77,7 @@ class ApiClient
     client_method = files.present? ? :"multipart_#{method}" : method
     AFMotion::Client.shared.send client_method, path, data do |response, form_data, progress|
       if form_data && files.present?
-        append_files_to_data(file_data, files)
+        append_files_to_data(files, form_data)
       elsif progress
         # handle progress
       elsif !response.success? && allow_queue?(method, path, options)
