@@ -36,7 +36,7 @@ module MotionPrime
 
     def bind_gesture(action, receiver = nil, target = nil)
       target ||= section
-      target.bind_gesture_on_container_for(self, action, receiver)
+      target.bind_gesture_on_container_for(self, action, receiver.weak_ref)
     end
 
     def hide

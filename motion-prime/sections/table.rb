@@ -347,7 +347,7 @@ module MotionPrime
         styles: styles,
         parent_view: table_view,
         reuse_identifier: reuse_identifier,
-        section: header
+        section: header.weak_ref
       )
       wrapper.render do |container_view, container_element|
         header.container_element = container_element

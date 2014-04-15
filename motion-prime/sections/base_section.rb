@@ -309,7 +309,7 @@ module MotionPrime
     end
 
     def screen?
-      screen && screen.weakref_alive?
+      screen.weakref_alive?
     end
 
     protected

@@ -23,7 +23,7 @@ module MotionPrime
 
     def table_data
       if has_many_sections?
-        grouped_data.compact
+        grouped_data.reject(&:nil?)
       else
         fields.values
       end
@@ -202,7 +202,7 @@ module MotionPrime
     # ---------------------
 
     def number_of_groups(table = nil)
-      has_many_sections? ? grouped_data.compact.count : 1
+      has_many_sections? ? grouped_data.reject(&:nil?).count : 1
     end
 
     class << self

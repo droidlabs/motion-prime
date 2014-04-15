@@ -175,7 +175,6 @@ module Prime
 
       def preload_section_by_index(index)
         section = cell_section_by_index(index)
-
         if section.create_elements && !section.container_element && async_data? # perform only if just loaded
           section.load_container_with_elements(container: container_element_options_for(index))
           section

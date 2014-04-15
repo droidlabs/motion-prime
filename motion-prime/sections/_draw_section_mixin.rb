@@ -37,7 +37,9 @@ module MotionPrime
 
     def clear_gesture_for_receiver(receiver)
       return unless self.container_gesture_recognizers
-      self.container_gesture_recognizers.delete_if { |recognizer| recognizer[:receiver] == receiver }
+      self.container_gesture_recognizers.delete_if { |recognizer|
+        !recognizer[:receiver].weakref_alive? || recognizer[:receiver] == receiver
+      }
     end
 
     def prerender_elements_for_state(state = :normal)

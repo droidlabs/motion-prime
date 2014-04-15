@@ -40,7 +40,7 @@ class Kernel
       return false
     end
     key ||= @_strong_references.keys.last
-    @_strong_references.delete(key)
+    @_strong_references.try(:delete, key)
     key
   end
 
