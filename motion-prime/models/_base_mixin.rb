@@ -205,13 +205,15 @@ module MotionPrime
         attributes.uniq!
 
         define_method(:"#{name}=") do |value, &block|
-          track_changed_attributes do
+          block = proc {
             if options[:convert] || !options.has_key?(:convert)
               self.info[name] = attribute_convert_in(value, options[:type])
             else
               self.info[name] = value
             end
-          end
+          }
+          return block.call if @_tracking_changes
+          track_changed_attributes(&block)
         end
 
         define_method(name.to_sym) do

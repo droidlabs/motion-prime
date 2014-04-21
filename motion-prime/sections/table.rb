@@ -93,10 +93,11 @@ module MotionPrime
     #
     # @param cell sections [Prime::Section, Array<Prime::Section>] cells which will be added to table view.
     # @return [Boolean] true
-    def add_cell_sections(sections)
+    def add_cell_sections(sections, index = nil)
       prepare_table_cell_sections(sections)
       @data ||= []
-      @data += sections
+      index ||= @data.count
+      @data.insert([index, @data.count].min, *sections)
       reload_table_data
     end
 
