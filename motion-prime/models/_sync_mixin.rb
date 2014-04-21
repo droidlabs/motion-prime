@@ -225,7 +225,8 @@ module MotionPrime
       options = associations[key.to_sym]
       return unless options
       if options[:type] == :many
-        fetch_has_many_with_attributes(key, data || [], sync_options)
+        bag_options = fetch_has_many_with_attributes(key, data || [], sync_options)
+        update_storage({key => bag_options}, sync_options)
       else
         fetch_has_one_with_attributes(key, data || {}, sync_options)
       end
@@ -241,7 +242,7 @@ module MotionPrime
         if data
           NSLog("SYNC: finished sync for #{key} in #{self.class_name_without_kvo}")
           bag_options = fetch_has_many_with_attributes(key, data, sync_options)
-          update_storage(key => bag_options) if sync_options[:save]
+          update_storage({key => bag_options}, sync_options)
           block.call(data, status_code, response) if use_callback
         else
           NSLog("SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}")
@@ -250,13 +251,16 @@ module MotionPrime
       end
     end
 
-    def update_storage(bags_options)
-      models_to_save = bags_options.inject([]) { |result, (key, bag_options)| result + bag_options[:save] }
-      models_to_delete = bags_options.inject([]) { |result, (key, bag_options)| result + bag_options[:delete] }
-      self.store.save_interval = [models_to_save.count, 1].max
+    def update_storage(bags_options, sync_options = {})
+      should_save = sync_options[:save]
+      if should_save
+        models_to_save = bags_options.inject([]) { |result, (key, bag_options)| result + bag_options[:save] }
+        models_to_delete = bags_options.inject([]) { |result, (key, bag_options)| result + bag_options[:delete] }
+        self.store.save_interval = [models_to_save.count, 1].max
 
-      models_to_save.each(&:save)
-      models_to_delete.each(&:delete)
+        models_to_save.each(&:save)
+        models_to_delete.each(&:delete)
+      end
 
       bags_changed = false
       bags_options.each do |bag_key, bag_options|
@@ -264,10 +268,10 @@ module MotionPrime
         bags_changed = true
         bag = self.send(:"#{bag_key}_bag")
         bag.add(bag_options[:add], silent_validation: true)
-        bag.save
+        bag.save if should_save
       end
 
-      save if bags_changed || has_changed?
+      save if should_save && (bags_changed || has_changed?)
 
       self.store.save_interval = 1
     end

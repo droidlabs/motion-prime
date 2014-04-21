@@ -6,11 +6,6 @@ module MotionPrime
       base.class_attribute :_changed_attributes
     end
 
-    def call_block(*args)
-      block = args.shift
-      @_block_result = block.call(*args)
-    end
-
     def track_changed_attributes(&block)
       @_block_semaphore.try(:wait)
       @_result_semaphore ||= Dispatch::Semaphore.new(0)
@@ -45,7 +40,7 @@ module MotionPrime
     end
 
     def changed_attributes
-      # pp('concurrent') if @_tracking_changes
+      Prime.logger.error('Concurrent thread is trying to access @_changed_attributes') if @_tracking_changes
       @_changed_attributes ||= {}
     end
 

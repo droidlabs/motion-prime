@@ -72,8 +72,9 @@ module MotionPrime
         self._associations[association_name] = options.merge(type: :one)
 
         define_method("#{association_name}=") do |value|
-          self.send(bag_name).clear
-          self.send(:"#{bag_name}") << value
+          bag = self.send(bag_name)
+          bag.clear
+          bag << value
           value
         end
         define_method("#{association_name}_attributes=") do |value|

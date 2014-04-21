@@ -17,7 +17,9 @@ module MotionPrime
         options[:class_name] == inverse_relation.class_name_without_kvo
       end.try(:first)
 
-      data = stored? ? find(*args) : filter(*args)
+      # when use #find() nested children will be reallocated and their bags will be empty
+      # data = stored? ? find(*args) : filter(*args)
+      data = filter(*args)
       super data
     end
 
@@ -82,7 +84,6 @@ module MotionPrime
     def filter(find_options = {}, sort_options = nil)
       find_options = build_find_options(find_options)
       sort_options = build_sort_options(sort_options)
-
       data = filter_array(bag.to_a, find_options, sort_options)
 
       set_inverse_relation_for(data)
