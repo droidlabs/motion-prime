@@ -30,20 +30,19 @@ module MotionPrime
     end
 
     def hard_reload_cell_section(section)
-      field = section.name.to_sym
-      path = field_indexes[field]
-      section.cell.try(:removeFromSuperview)
+      name = section.name.to_sym
+      path = field_indexes[name]
+      deque_cell(section, at: path) # deque cached
 
-      fields[field] = load_field(self.class.fields_options[field])
-      fields[field].create_elements
+      fields[name] = load_field(self.class.fields_options[name])
+      fields[name].create_elements
       if flat_data?
-        @data[path.row] = fields[field]
+        @data[path.row] = fields[name]
       else
-        @data[path.section][path.row] = fields[field]
+        @data[path.section][path.row] = fields[name]
       end
 
-      set_data_stamp(fields[field].object_id)
-      table_view.reloadRowsAtIndexPaths([path], withRowAnimation: UITableViewRowAnimationNone)
+      self.performSelectorOnMainThread(:reload_cells, withObject: path, waitUntilDone: false)
     end
 
     # Returns element based on field name and element name
@@ -201,7 +200,7 @@ module MotionPrime
     # Table View Delegate
     # ---------------------
 
-    def number_of_groups(table = nil)
+    def number_of_groups
       has_many_sections? ? grouped_data.reject(&:nil?).count : 1
     end
 

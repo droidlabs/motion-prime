@@ -80,12 +80,11 @@ module MotionPrime
     # @return [Boolean] true
     def reset_table_data
       @did_appear = false
+      Array.wrap(@data).flatten.each do |section|
+        section.container_element.try(:update_options, reuse_identifier: nil)
+      end
       @data = nil
       @data_stamp = nil
-      @reusable_cells.each do |object_id, cell|
-        cell.reuseIdentifier = nil
-      end if @reusable_cells
-      @reusable_cells = nil
       true
     end
 
@@ -135,11 +134,16 @@ module MotionPrime
         next Prime.logger.debug("Reload section: `#{section.name}` is not in the list") unless index
         paths << index
         block.call(section, index, counter)
-        set_data_stamp(section.object_id)
+        deque_cell(section, at: path) # deque cached
         section.reload
       end
-      table_view.reloadRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimationFade)
+      self.performSelectorOnMainThread(:reload_rows, withObject: paths, waitUntilDone: false)
       paths
+    end
+
+    def reload_cells(*paths)
+      table_view.reloadRowsAtIndexPaths(Array.wrap(paths), withRowAnimation: UITableViewRowAnimationFade)
+      table_view.reloadData # do not use reload_table_data (due to async_form_mixin)
     end
 
     # Changes height of cells with animation.
@@ -263,8 +267,7 @@ module MotionPrime
       table_view.try(:show)
     end
 
-    def render_cell(index, table = nil)
-      table ||= table_view
+    def render_cell(index)
       section = cell_sections_for_group(index.section)[index.row]
       element = section.container_element || section.init_container_element(container_element_options_for(index))
 
@@ -272,8 +275,6 @@ module MotionPrime
         section.render
       end
 
-      @reusable_cells ||= {}
-      @reusable_cells[section.object_id] = view
       on_cell_render(view, index)
       view
     end
@@ -290,7 +291,7 @@ module MotionPrime
 
     def on_cell_render(cell, index); end
     def on_appear; end
-    def on_click(table, index); end
+    def on_click(index); end
 
     def has_many_sections?
       group_header_options.present? || data.try(:first).is_a?(Array)
@@ -308,7 +309,7 @@ module MotionPrime
       cell_sections_for_group(index.section)[index.row]
     end
 
-    def cell_name(table, index)
+    def cell_name(index)
       record = cell_section_by_index(index)
       "cell_#{record.object_id}_#{@data_stamp[record.object_id]}"
     end
@@ -316,12 +317,12 @@ module MotionPrime
     # Table View Delegate
     # ---------------------
 
-    def number_of_groups(table = nil)
+    def number_of_groups
       has_many_sections? ? data.count : 1
     end
 
-    def cell_for_index(table, index)
-      cell = cached_cell(index, table) || render_cell(index, table)
+    def cell_for_index(index)
+      cell = cached_cell(index) || render_cell(index)
       # run table view is appeared callback if needed
       if !@did_appear && index.row == cell_sections_for_group(index.section).size - 1
         on_appear
@@ -329,17 +330,17 @@ module MotionPrime
       cell.is_a?(UIView) ? cell : cell.view
     end
 
-    def height_for_index(table, index)
+    def height_for_index(index)
       section = cell_section_by_index(index)
       section.create_elements
       section.container_height
     end
 
-    def header_cell_in_group(table, group)
+    def header_cell_in_group(group)
       return unless header = header_section_for_group(group)
 
       reuse_identifier = "header_#{group}_#{@header_stamp}"
-      cached = table.dequeueReusableHeaderFooterViewWithIdentifier(reuse_identifier)
+      cached = table_view.dequeueReusableHeaderFooterViewWithIdentifier(reuse_identifier)
       return cached if cached.present?
 
       styles = cell_section_styles(header).values.flatten
@@ -356,7 +357,7 @@ module MotionPrime
       end
     end
 
-    def height_for_header_in_group(table, group)
+    def height_for_header_in_group(group)
       header_section_for_group(group).try(:container_height) || 0
     end
 
@@ -404,15 +405,27 @@ module MotionPrime
         @data
       end
 
-      def cached_cell(index, table = nil)
-        table ||= self.table_view
-        table.dequeueReusableCellWithIdentifier(cell_name(table, index))
+      def cached_cell(index)
+        table_view.dequeueReusableCellWithIdentifier(cell_name(index)) || begin
+          section = cell_section_by_index(index)
+          cell = section.try(:cell)
+          if cell.try(:superview)
+            Prime.logger.error "cell already exists: #{section.name}: #{cell}"
+            nil
+          end
+        end
+      end
+
+      def deque_cell(section, at: index)
+        table_view.dequeueReusableCellWithIdentifier(cell_name(index))
+        section.cell.try(:removeFromSuperview)
+        set_data_stamp(section.object_id)
       end
 
       def prepare_table_cell_sections(cells)
         Array.wrap(cells.flatten).each do |cell|
           Prime::Config.prime.cell_section.mixins.each do |mixin|
-            cell.class.send(:include, mixin)
+            cell.class.send(:include, mixin) unless (class << cell; self; end).included_modules.include?(mixin)
           end
           cell.screen ||= screen
           cell.table ||= self.weak_ref if cell.respond_to?(:table=)
@@ -422,7 +435,7 @@ module MotionPrime
       def container_element_options_for(index)
         cell_section = cell_section_by_index(index)
         {
-          reuse_identifier: cell_name(table_view, index),
+          reuse_identifier: cell_name(index),
           parent_view: table_view,
           bounds: {height: cell_section.container_height}
         }

@@ -5,7 +5,7 @@ class TasksIndexTableSection < Prime::TableSection
     end
   end
 
-  def on_click(table, index)
+  def on_click(index)
     section = data[index.row]
     screen.open_screen 'tasks#show', params: { model: section.model }
   end

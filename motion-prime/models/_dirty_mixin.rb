@@ -33,8 +33,9 @@ module MotionPrime
         end
         @_result_semaphore.signal
       end
-      @_result_semaphore.wait
-      @_block_semaphore.signal
+      Prime.logger.error 'result_semaphore is nil' unless @_result_semaphore
+      @_result_semaphore.try(:wait)
+      @_block_semaphore.try(:signal)
       @_tracking_changes = false
       result
     end
