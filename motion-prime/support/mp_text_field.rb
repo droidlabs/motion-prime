@@ -32,7 +32,7 @@ class MPTextField < UITextField
 
     truncation = :tail_truncation.uilinebreakmode
     alignment = (placeholderAlignment || :left)
-    alignment = alignment.uitextalignment if alignment.is_a?(Symbol)
+    alignment = alignment.nstextalignment if alignment.is_a?(Symbol)
     self.placeholder.drawInRect(rect, withFont: font, lineBreakMode: truncation, alignment: alignment)
   end
 

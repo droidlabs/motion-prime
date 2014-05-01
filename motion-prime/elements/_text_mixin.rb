@@ -62,7 +62,7 @@ module MotionPrime
           paragrah_style.setLineSpacing(line_spacing)
         end
         if text_alignment
-          text_alignment = text_alignment.uitextalignment if text_alignment.is_a?(Symbol)
+          text_alignment = text_alignment.nstextalignment if text_alignment.is_a?(Symbol)
           paragrah_style.setAlignment(text_alignment)
         end
         if line_break_mode

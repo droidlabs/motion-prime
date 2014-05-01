@@ -12,7 +12,7 @@ module MotionPrime
       font = (options[:font] || :system).uifont
 
       text_alignment_name = options.fetch(:text_alignment, :left)
-      text_alignment = text_alignment_name.uitextalignment
+      text_alignment = text_alignment_name.nstextalignment
       line_break_mode_name = options.fetch(:line_break_mode, :tail_truncation)
       line_break_mode = line_break_mode_name.uilinebreakmode
 

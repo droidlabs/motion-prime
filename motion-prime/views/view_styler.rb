@@ -151,7 +151,7 @@ module MotionPrime
           view.setValue "UIControlContentHorizontalAlignment#{value.camelize}".constantize, forKey: camelize_factory(key)
           true
         elsif key.end_with?('alignment') && value.is_a?(Symbol)
-          view.setValue value.uitextalignment, forKey: camelize_factory(key)
+          view.setValue value.nstextalignment, forKey: camelize_factory(key)
           true
         elsif key.end_with?('line_break_mode') && value.is_a?(Symbol)
           view.setValue value.uilinebreakmode, forKey: camelize_factory(key)
