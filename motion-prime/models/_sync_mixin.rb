@@ -139,7 +139,7 @@ module MotionPrime
     end
 
     # Assign model attributes, using fetch. Differenct between assign_attributes and fetch_with_attributes is
-    # ths you can create method named fetch_:attribute and it will be used to assign attribute only on fetch.
+    # that you can create method named fetch_:attribute and it will be used to assign attribute only on fetch.
     #
     # @example
     #   class User < Prime::Model
@@ -339,6 +339,44 @@ module MotionPrime
     end
 
     module ClassMethods
+      # Fetch collection from server
+      #
+      # @param options [Hash] fetch options
+      # @option options [Symbol] :method Http method to calculate url, `:get` by default
+      # @option options [Boolean] :save Save model after fetch
+      # @param block [Proc] block to be executed after fetch
+      def fetch_all(options = {}, &block)
+        use_callback = block_given?
+        url = self.new.sync_url(options[:method] || :get, options)
+
+        fetch_all_with_url url, options do |records, status_code, response|
+          records.each(&:save) if options[:save]
+          block.call(records, status_code, response) if use_callback
+        end if !url.blank?
+      end
+
+      # Fetch collection from server using url
+      #
+      # @param url [String] url to fetch
+      # @param block [Proc] block to be executed after fetch
+      def fetch_all_with_url(url, options = {}, &block)
+        use_callback = block_given?
+        App.delegate.api_client.get(url) do |response, status_code|
+          if response.present?
+            records = fetch_all_with_attributes(response, save_associations: options[:save], &block)
+          else
+            records = []
+          end
+          block.call(records, status_code, response) if use_callback
+        end
+      end
+
+      # Assign collection attributes, using fetch.
+      #
+      # @params attributes [Array<Hash>] attributes to be assigned
+      # @params options [Hash] options
+      # @option options [Boolean] :save_associations Save included to hash associations
+      # @return model [Prime::Model] the model
       def fetch_all_with_attributes(data)
         data.map do |attrs|
           item = self.new
