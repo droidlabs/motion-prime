@@ -339,6 +339,24 @@ module MotionPrime
     end
 
     module ClassMethods
+      # Fetch model from server
+      #
+      # @param id [Integer] model id
+      # @param options [Hash] fetch options
+      # @option options [Symbol] :method Http method to calculate url, `:get` by default
+      # @option options [Boolean or Array] :associations Also fetch associations
+      # @option options [Boolean] :save Save model after fetch
+      # @param block [Proc] block to be executed after fetch
+      def fetch(id, options = {}, &block)
+        model = self.new(id: id)
+        model.fetch(options, &block)
+      end
+
+      # Fetch model from server and save on local
+      def fetch!(id, options = {}, &block)
+        fetch(id, options.merge(save: true), &block)
+      end
+
       # Fetch collection from server
       #
       # @param options [Hash] fetch options
