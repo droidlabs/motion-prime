@@ -398,7 +398,7 @@ module MotionPrime
       def fetch_all_with_attributes(data)
         data.map do |attrs|
           item = self.new
-          item.fetch_with_attributes(attrs)
+          item.fetch_with_attributes(attrs, options)
           item
         end
       end
