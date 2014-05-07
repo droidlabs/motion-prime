@@ -395,7 +395,7 @@ module MotionPrime
       # @params options [Hash] options
       # @option options [Boolean] :save_associations Save included to hash associations
       # @return model [Prime::Model] the model
-      def fetch_all_with_attributes(data)
+      def fetch_all_with_attributes(data, options ={}, &block)
         data.map do |attrs|
           item = self.new
           item.fetch_with_attributes(attrs)
