@@ -4,14 +4,14 @@ PATH
     motion-prime (0.9.7)
       activesupport
       afmotion (~> 2.1.0)
-      bubble-wrap (~> 1.5.0)
+      bubble-wrap (~> 1.6.0)
       cocoapods
       methadone
       motion-cocoapods
       motion-require
       motion-support (~> 0.2.6)
       rm-digest
-      sugarcube (~> 1.5.2)
+      sugarcube (~> 1.6.0)
       thor
 
 GEM
@@ -23,7 +23,9 @@ GEM
     afmotion (2.1.4)
       motion-cocoapods (~> 1.4.0)
       motion-require (>= 0.1)
-    bubble-wrap (1.5.0)
+    bubble-wrap (1.6.0)
+      bubble-wrap-http (= 1.6.0)
+    bubble-wrap-http (1.6.0)
     claide (0.5.0)
     cocoapods (0.32.1)
       activesupport (>= 3.2.15, < 4)
@@ -49,7 +51,7 @@ GEM
     fuzzy_match (2.0.4)
     i18n (0.6.9)
     json_pure (1.8.1)
-    methadone (1.3.2)
+    methadone (1.4.0)
       bundler
     motion-cocoapods (1.4.1)
       cocoapods (>= 0.32.1)
@@ -63,7 +65,7 @@ GEM
     open4 (1.3.3)
     rake (10.3.1)
     rm-digest (0.0.2)
-    sugarcube (1.5.9)
+    sugarcube (1.6.0)
     thor (0.19.1)
     xcodeproj (0.16.1)
       activesupport (~> 3.0)
