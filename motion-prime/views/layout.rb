@@ -1,6 +1,10 @@
 # TODO: make it part of Sections
 motion_require '../support/mp_cell_with_section'
 motion_require '../support/mp_spinner'
+motion_require '../support/mp_button'
+motion_require '../support/mp_label'
+motion_require '../support/mp_text_field'
+motion_require '../support/mp_text_view'
 module MotionPrime
   module Layout
     def add_view(klass, options = {}, &block)
@@ -45,9 +49,9 @@ module MotionPrime
 
     def self.included base
       base.class_eval do
-        [::UIActionSheet, ::UIActivityIndicatorView, ::UIButton, ::UIDatePicker, ::UIImageView, ::UILabel,
+        [::UIActionSheet, ::UIActivityIndicatorView, ::MPButton, ::UIDatePicker, ::UIImageView, ::MPLabel,
           ::UIPageControl, ::UIPickerView, ::UIProgressView, ::UIScrollView, ::UISearchBar, ::UISegmentedControl,
-          ::UISlider, ::UIStepper, ::UISwitch, ::UITabBar, ::UITableView, ::UITableViewCell, ::UITextField, ::UITextView,
+          ::UISlider, ::UIStepper, ::UISwitch, ::UITabBar, ::UITableView, ::UITableViewCell, ::MPTextField, ::MPTextView,
           ::UIToolbar, ::UIWebView, ::UINavigationBar, ::MPCellWithSection, ::MBProgressHUD, ::MPSpinner].each do |klass|
 
           shorthand = "#{klass}"[2..-1].underscore.to_sym

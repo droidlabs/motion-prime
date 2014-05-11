@@ -1,3 +1,5 @@
+motion_require '../support/_key_value_store'
+motion_require '../support/_padding_attribute'
 class MPButton < UIButton
   include MotionPrime::SupportKeyValueStore
   include MotionPrime::SupportPaddingAttribute
