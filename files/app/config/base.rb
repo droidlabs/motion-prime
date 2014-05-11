@@ -5,6 +5,7 @@ Prime::Config.configure do |config|
 
   # After defining colors you will be able to use it via <uilabel>.text_color = :app_base.uicolor
   # config.colors do |colors|
+  #   colors.navigation_base = 0x1b75bc
   #   colors.base = 0x1b75bc
   #   colors.dark = 0x333333
   #   colors.error = 0xef471f
