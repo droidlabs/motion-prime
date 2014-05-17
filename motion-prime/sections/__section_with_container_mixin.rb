@@ -15,7 +15,8 @@ module MotionPrime
         options.merge!({
           screen: screen,
           section: self.weak_ref,
-          has_drawn_content: true
+          has_drawn_content: true,
+          # clips_to_bounds: true
         })
         container_element_options = self.class.container_element_options.clone
         type = container_element_options.delete(:type)
@@ -41,7 +42,6 @@ module MotionPrime
           element.compute_options! if element.respond_to?(:computed_options) && !element.computed_options
         end
       end
-
 
     module ClassMethods
       def container_element(options)

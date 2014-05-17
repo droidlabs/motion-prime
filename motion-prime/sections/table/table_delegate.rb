@@ -20,7 +20,7 @@ module MotionPrime
     end
 
     def numberOfSectionsInTableView(table)
-      table_section.number_of_groups(table)
+      table_section.number_of_groups
     end
 
     def tableView(table, cellForRowAtIndexPath: index)
@@ -34,7 +34,7 @@ module MotionPrime
       @prev_call_time = cur_call_time
       @prev_call_offset = cur_call_offset
 
-      table_section.cell_for_index(table, index)
+      table_section.cell_for_index(index)
     end
 
     def tableView(table, numberOfRowsInSection: group)
@@ -42,19 +42,19 @@ module MotionPrime
     end
 
     def tableView(table, heightForRowAtIndexPath: index)
-      table_section.height_for_index(table, index)
+      table_section.height_for_index(index)
     end
 
     def tableView(table, didSelectRowAtIndexPath:index)
-      table_section.on_click(table, index)
+      table_section.on_click(index)
     end
 
     def tableView(table, viewForHeaderInSection: group)
-      table_section.header_cell_in_group(table, group)
+      table_section.header_cell_in_group(group)
     end
 
     def tableView(table, heightForHeaderInSection: group)
-      table_section.height_for_header_in_group(table, group)
+      table_section.height_for_header_in_group(group)
     end
 
     def scrollViewDidScroll(scroll)

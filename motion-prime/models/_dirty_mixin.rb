@@ -7,29 +7,46 @@ module MotionPrime
     end
 
     def track_changed_attributes(&block)
-      @_changed_attributes ||= {}
-      old_attrs = self.info.clone
-      result = block.call
-      new_attrs = self.info.clone
-      new_bags = self._bags.clone
-      new_attrs.each do |key, value|
-        if value != old_attrs[key] && !@_changed_attributes.has_key?(key.to_s)
-          @_changed_attributes[key.to_s] = old_attrs[key]
+      @_block_semaphore.try(:wait)
+      @_result_semaphore ||= Dispatch::Semaphore.new(0)
+      @_block_semaphore ||= Dispatch::Semaphore.new(0)
+
+      @_tracking_changes = true
+      result = nil
+      BW::Reactor.schedule do
+        @_changed_attributes ||= {}
+        old_attrs = self.info.to_hash.clone.with_indifferent_access
+
+        result = block.call
+
+        new_attrs = self.info.clone
+        new_bags = self._bags.clone
+        new_attrs.each do |key, value|
+          if value != old_attrs[key] && !@_changed_attributes.has_key?(key.to_s)
+            @_changed_attributes[key.to_s] = old_attrs[key]
+          end
         end
-      end
-      new_bags.each do |key, value|
-        if value.key != old_attrs[key] && !@_changed_attributes.has_key?(key.to_s)
-          @_changed_attributes[key.to_s] = old_attrs[key]
+        new_bags.each do |key, value|
+          if value.key != old_attrs[key] && !@_changed_attributes.has_key?(key.to_s)
+            @_changed_attributes[key.to_s] = old_attrs[key]
+          end
         end
+        @_result_semaphore.signal
       end
+      Prime.logger.error 'result_semaphore is nil' unless @_result_semaphore
+      @_result_semaphore.try(:wait)
+      @_block_semaphore.try(:signal)
+      @_tracking_changes = false
       result
     end
 
     def changed_attributes
+      Prime.logger.error('Concurrent thread is trying to access @_changed_attributes') if @_tracking_changes
       @_changed_attributes ||= {}
     end
 
     def reset_changed_attributes
+      @_reset_semaphore.try(:wait)
       @_changed_attributes = {}
     end
 
