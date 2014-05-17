@@ -1,3 +1,7 @@
+=== 0.9.8
+* Ability to fetch one record / all records from server using Model.fetch(id) or Model.fetch_all
+* Bug fixes
+
 === 0.9.7
 * BREAKING CHANGE: screen#set_options renamed to screen#set_options_for.
 * BREAKING CHANGE: section#reload_section renamed to section#hard_reload_section. in common cases use section#reload.
