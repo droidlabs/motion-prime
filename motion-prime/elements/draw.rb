@@ -53,7 +53,7 @@ module MotionPrime
 
     def rerender!
       section.cached_draw_image = nil
-      view.setNeedsDisplay
+      view.try(:setNeedsDisplay)
     end
 
     protected

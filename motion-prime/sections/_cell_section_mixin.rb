@@ -3,7 +3,7 @@ module MotionPrime
   module CellSectionMixin
     extend ::MotionSupport::Concern
 
-    include SectionWithContainerMixin
+    # include SectionWithContainerMixin # already included in draw_section_mixin
 
     attr_writer :table
     attr_reader :pending_display
@@ -64,6 +64,7 @@ module MotionPrime
     def cell
       container_view || begin
         first_element = elements.values.first
+        return unless first_element.is_a?(BaseElement) && first_element.view
         first_element.view.superview.superview
       end
     end

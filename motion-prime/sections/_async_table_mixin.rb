@@ -31,7 +31,7 @@ module Prime
       @preloader_next_starts_from = nil
     end
 
-    def height_for_index(table, index)
+    def height_for_index(index)
       section = cell_section_by_index(index)
       unless section
         Prime.logger.debug "could not find section with index #{index} for #{self.to_s}"
@@ -41,7 +41,7 @@ module Prime
       section.container_height
     end
 
-    def render_cell(index, table)
+    def render_cell(index)
       preload_sections_after(index)
       super
     end

@@ -5,7 +5,7 @@ class <%= @p_class_name %>IndexTableSection < Prime::TableSection
     end
   end
 
-  def on_click(table, index)
+  def on_click(index)
     section = data[index.row]
     screen.open_screen '<%= @p_name %>#show', params: { model: section.model }
   end
