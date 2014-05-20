@@ -2,7 +2,13 @@ module MotionPrime
   module FilterMixin
     def filter_array(data, find_options = {}, sort_options = nil)
       data = data.select do |entity|
-        find_options.all? { |field, value| entity.info[field] == value }
+        find_options.all? do |field, value|
+          if value.is_a?(Array)
+            value.include?(entity.info[field].to_s)
+          else
+            entity.info[field] == value
+          end
+        end
       end if find_options.present?
 
       data.sort! do |a, b|

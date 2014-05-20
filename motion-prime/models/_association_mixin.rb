@@ -6,6 +6,10 @@ module MotionPrime
       @_bags ||= {}
     end
 
+    def bag_key_for(bag_name)
+      self.info[bag_name]
+    end
+
     # Saves model and all associations to store.
     #
     # @return [Prime::Model] model
@@ -16,9 +20,7 @@ module MotionPrime
       end
       super
     rescue StoreError => e
-      if Prime.env.development?
-        raise StoreError, e.description
-      end
+      raise e if Prime.env.development?
     end
 
     module ClassMethods
@@ -28,8 +30,9 @@ module MotionPrime
       # @return [Nil]
       def bag(name)
         define_method(name) do |*args, &block|
-          return _bags[name] if _bags[name]
-          bag_key = self.info[name]
+          # use users_bag(true) to reload bag
+          return _bags[name] if _bags[name] && args[0] != true
+          bag_key = bag_key_for(name)
           if bag_key.present?
             bag = self.class.store.bagsWithKeysInArray([bag_key]).first
           end
@@ -69,8 +72,9 @@ module MotionPrime
         self._associations[association_name] = options.merge(type: :one)
 
         define_method("#{association_name}=") do |value|
-          self.send(bag_name).clear
-          self.send(:"#{bag_name}") << value
+          bag = self.send(bag_name)
+          bag.clear
+          bag << value
           value
         end
         define_method("#{association_name}_attributes=") do |value|

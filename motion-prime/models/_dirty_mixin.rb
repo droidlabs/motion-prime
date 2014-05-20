@@ -7,6 +7,7 @@ module MotionPrime
     end
 
     def track_changed_attributes(&block)
+      @_tracking_changes = true
       @_changed_attributes ||= {}
       old_attrs = self.info.clone
       result = block.call
@@ -22,6 +23,7 @@ module MotionPrime
           @_changed_attributes[key.to_s] = old_attrs[key]
         end
       end
+      @_tracking_changes = false
       result
     end
 
