@@ -109,8 +109,10 @@ module MotionPrime
       rerender!
     end
 
-    def update_options(options)
-      ViewStyler.new(view, view.superview.try(:bounds), options).apply
+    def update_options(new_options)
+      options.merge!(new_options)
+      return unless view
+      ViewStyler.new(view, view.superview.try(:bounds), new_options).apply
     end
 
     def update
