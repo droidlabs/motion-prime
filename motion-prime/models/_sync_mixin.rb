@@ -157,14 +157,12 @@ module MotionPrime
     # @option options [Boolean] :save_associations Save included to hash associations
     # @return model [Prime::Model] the model
     def fetch_with_attributes(attrs, options = {})
-      should_save = options[:save_associations]
-
       track_changed_attributes do
         attrs.each do |key, value|
           if respond_to?(:"fetch_#{key}")
             self.send(:"fetch_#{key}", value)
           elsif has_association?(key) && (value.is_a?(Hash) || value.is_a?(Array))
-            fetch_association_with_attributes(key, value, save: should_save)
+            fetch_association_with_attributes(key, value, save: options[:save_associations])
           elsif respond_to?(:"#{key}=")
             self.send(:"#{key}=", value)
             # TODO: self.info[:"#{key}"] = value is much faster, maybe we could use it
