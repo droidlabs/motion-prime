@@ -171,7 +171,6 @@ module MotionPrime
           end
         end
       end
-      save if should_save && has_changed?
       self
     end
 
@@ -225,8 +224,7 @@ module MotionPrime
       options = associations[key.to_sym]
       return unless options
       if options[:type] == :many
-        bag_options = fetch_has_many_with_attributes(key, data || [], sync_options)
-        update_storage({key => bag_options}, sync_options)
+        fetch_has_many_with_attributes(key, data || [], sync_options)
       else
         fetch_has_one_with_attributes(key, data || {}, sync_options)
       end
@@ -241,8 +239,7 @@ module MotionPrime
         data = options[:sync_key] && response ? response[options[:sync_key]] : response
         if data
           NSLog("SYNC: finished sync for #{key} in #{self.class_name_without_kvo}")
-          bag_options = fetch_has_many_with_attributes(key, data, sync_options)
-          update_storage({key => bag_options}, sync_options)
+          fetch_has_many_with_attributes(key, data, sync_options)
           block.call(data, status_code, response) if use_callback
         else
           NSLog("SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}")
@@ -307,11 +304,11 @@ module MotionPrime
         end unless sync_options[:append]
       end
 
-      {
+      update_storage({key => {
         save: models_to_save,
         delete: models_to_delete,
         add: models_to_add
-      }
+      }}, sync_options)
     end
 
     def fetch_has_one(key, options = {}, sync_options = {}, &block)
