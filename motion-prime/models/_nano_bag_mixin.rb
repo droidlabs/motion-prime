@@ -34,9 +34,8 @@ module MotionPrime
     # @return self [Prime::Model]
     def add(object_or_array, options = {})
       error_ptr = Pointer.new(:id)
-      if object_or_array.is_a?(Array)
-        options[:existed_ids] = filter_array(self.to_a, bag_key: self.key).map(&:id)
-      end
+      options[:existed_ids] ||= []
+      options[:existed_ids] += filter_array(self.to_a, bag_key: self.key).map(&:id)
       prepared = prepare_for_store(object_or_array, options)
 
       if object_or_array.is_a?(Array)

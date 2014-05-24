@@ -24,6 +24,26 @@ describe "Prime::Model Bag" do
       bag.saved.count.should.be == 1
       bag.changed?.should.be.false
     end
+
+    it "should raise error if item already exists" do
+      bag = Bag.bag
+      page = Page.new(:text => "Hello", :id => 1)
+      bag << page
+      lambda {
+        bag << page
+      }.should.raise(Prime::StoreError)
+      lambda {
+        bag << [page, page]
+      }.should.raise(Prime::StoreError)
+    end
+
+    it "should not add duplicated items without an error" do
+      bag = Bag.bag
+      page = Page.new(:text => "Hello", :id => 1)
+      bag << page
+      bag.add([page, page], silent_validation: true)
+      bag.count.should == 1
+    end
   end
 
   describe "#+" do

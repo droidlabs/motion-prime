@@ -41,9 +41,9 @@ describe MotionPrime::Model do
     it "throw error when invalid parameter and validate_attribute_presence=true" do
       lambda {
         user = User.new({
-          name: "Eddie", 
-          age: 12, 
-          birthday: Time.now, 
+          name: "Eddie",
+          age: 12,
+          birthday: Time.now,
           gender: "m",
         }, validate_attribute_presence: true )
       }.should.raise(::MotionPrime::StoreError)
@@ -52,9 +52,9 @@ describe MotionPrime::Model do
     it "creates model when invalid parameter and validate_attribute_presence=false" do
       Prime.logger.disabled = true
       user = User.new({
-        name: "Eddie", 
-        age: 12, 
-        birthday: Time.now, 
+        name: "Eddie",
+        age: 12,
+        birthday: Time.now,
         gender: "m",
       })
       user.name.should == "Eddie"
@@ -248,6 +248,45 @@ describe MotionPrime::Model do
       autobot.release_at.is_a?(Time).should.be.true
       autobot.strength.is_a?(Float).should.be.true
       autobot.release_at.should == release
+    end
+  end
+
+  describe "#fetch_has_many_with_attributes" do
+    before do
+      @organization = Organization.create(name: "Droid Labs")
+      @organization.projects << Project.new({id: 2, title: 'to_delete'})
+      @organization.projects << Project.new({id: 1, title: 'something'})
+      @organization.save
+    end
+
+    def process
+      @organization.fetch_has_many_with_attributes :projects, [{id: 1, title: 'to_save'}, {id: 3, title: 'to_add'}, {id: 4, title: 'to_add'}], save: true
+    end
+
+    it "should call #update_storage with valid params" do
+      @organization.mock!(:update_storage) do |bag_options, sync_options|
+        options = bag_options[:projects]
+        options[:delete].count.should == 1
+        options[:delete].first[:title].should == 'to_delete'
+
+        options[:add].count.should == 2
+        options[:add].all? { |to_add| to_add.title == 'to_add' }.should.be.true
+
+        options[:save].count.should == 3
+        to_save = options[:save] - options[:add]
+        to_save.count.should == 1
+        to_save.first[:title].should == 'to_save'
+        to_save.first[:id].should == 1
+      end
+      process
+    end
+
+    it "should update_storage" do
+      process
+      @organization.projects.count.should == 3
+      @organization.projects(id: 1).first.title.should == 'to_save'
+      @organization.projects(id: 3).first.title.should == 'to_add'
+      @organization.projects(id: 4).first.title.should == 'to_add'
     end
   end
 end

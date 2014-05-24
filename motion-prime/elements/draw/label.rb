@@ -13,7 +13,9 @@ module MotionPrime
 
       text_alignment_name = options.fetch(:text_alignment, :left)
       text_alignment = text_alignment_name.nstextalignment
-      line_break_mode_name = options.fetch(:line_break_mode, :tail_truncation)
+
+      default_break_mode = options[:size_to_fit] ? :word_wrap : :tail_truncation
+      line_break_mode_name = options.fetch(:line_break_mode, default_break_mode)
       line_break_mode = line_break_mode_name.uilinebreakmode
 
       top_left_corner = CGPointMake(frame_inner_left, frame_inner_top)
@@ -52,7 +54,7 @@ module MotionPrime
 
       UIGraphicsPushContext(context)
       options = draw_options
-      if options[:is_html] || options[:line_spacing] || 
+      if options[:is_html] || options[:line_spacing] ||
         options[:line_height] || options[:underline] || options[:force_attributed]
         prepared_text = options[:is_html] ? html_string(options) : attributed_string(options)
 
