@@ -1,5 +1,5 @@
 describe "Prime::Model Associations" do
-   before do
+  before do
     MotionPrime::Store.connect
   end
 
@@ -26,6 +26,15 @@ describe "Prime::Model Associations" do
       todo.items = MotionPrime::Bag.bag
       todo.items.is_a?(MotionPrime::Bag).should == true
       todo.items.size.should == 0
+    end
+
+    it "allows to reload bag" do
+      todo = Todo.create(:title => "Today Tasks")
+      todo.items = [TodoItem.new(:text => "Hi")]
+      todo.items.save
+      todo.items << [TodoItem.new(:text => "Foo"), TodoItem.new(:text => "Bar")]
+      todo.items.count.should == 3
+      todo.items(true).count.should == 1
     end
   end
 

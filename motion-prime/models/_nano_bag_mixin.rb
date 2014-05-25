@@ -1,6 +1,8 @@
 motion_require './_finder_mixin.rb'
 module MotionPrime
   module NanoBagMixin
+    include FilterMixin
+
     def self.included(base)
       base.class_eval do
         alias_method :saved, :savedObjects
@@ -30,9 +32,11 @@ module MotionPrime
     # Add an object or array of objects to bag
     #
     # @return self [Prime::Model]
-    def add(object_or_array)
+    def add(object_or_array, options = {})
       error_ptr = Pointer.new(:id)
-      prepared = prepare_for_store(object_or_array)
+      options[:existed_ids] ||= []
+      options[:existed_ids] += filter_array(self.to_a, bag_key: self.key).map(&:id)
+      prepared = prepare_for_store(object_or_array, options)
 
       if object_or_array.is_a?(Array)
         self.addObjectsFromArray(prepared, error:error_ptr)
@@ -45,12 +49,13 @@ module MotionPrime
     alias_method :+, :add
     alias_method :<<, :add
 
-    def prepare_for_store(object)
+    def prepare_for_store(object, options = {})
       if object.is_a?(Array)
-        object.map { |entity| prepare_for_store(entity) }.compact
+        object.map { |entity| prepare_for_store(entity, options) }.compact
       else
         object.bag_key = self.key
-        if object.id.present? && self.store && self.find(id: object.id, bag_key: self.key).any?
+        if object.id.present? && Array.wrap(options[:existed_ids]).include?(object.id)
+          return if options[:silent_validation]
           raise StoreError, "duplicated item added `#{object.class_name_without_kvo}` with `id` = #{object.id}"
         end
         object

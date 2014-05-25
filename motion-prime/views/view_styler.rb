@@ -44,6 +44,11 @@ module MotionPrime
     end
 
     def prepare_options!
+      if options[:size_to_fit]
+        options[:line_break_mode] ||= :word_wrap
+        options[:number_of_lines] ||= 0
+      end
+
       if options.slice(:html, :line_spacing, :line_height, :underline, :fragment_color).any?
         text_options = extract_attributed_text_options(options)
 
@@ -148,7 +153,7 @@ module MotionPrime
           view.setValue "UIControlContentHorizontalAlignment#{value.camelize}".constantize, forKey: camelize_factory(key)
           true
         elsif key == 'content_vertical_alignment' && value.is_a?(Symbol) && %[top bottom center fill].include?(value.to_s)
-          view.setValue "UIControlContentHorizontalAlignment#{value.camelize}".constantize, forKey: camelize_factory(key)
+          view.setValue "UIControlContentVerticalAlignment#{value.camelize}".constantize, forKey: camelize_factory(key)
           true
         elsif key.end_with?('alignment') && value.is_a?(Symbol)
           view.setValue value.nstextalignment, forKey: camelize_factory(key)

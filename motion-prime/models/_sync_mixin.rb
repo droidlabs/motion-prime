@@ -162,10 +162,10 @@ module MotionPrime
           if respond_to?(:"fetch_#{key}")
             self.send(:"fetch_#{key}", value)
           elsif has_association?(key) && (value.is_a?(Hash) || value.is_a?(Array))
-            should_save = options[:save_associations]
-            fetch_association_with_attributes(key, value, save: should_save)
+            fetch_association_with_attributes(key, value, save: options[:save_associations])
           elsif respond_to?(:"#{key}=")
             self.send(:"#{key}=", value)
+            # TODO: self.info[:"#{key}"] = value is much faster, maybe we could use it
           end
         end
       end
@@ -231,11 +231,13 @@ module MotionPrime
     def fetch_has_many(key, options = {}, sync_options = {}, &block)
       use_callback = block_given?
       NSLog("SYNC: started sync for #{key} in #{self.class_name_without_kvo}")
-      api_client.get association_sync_url(key, options, sync_options) do |response, status_code|
+
+      params = (options[:params] || {}).deep_merge(sync_options[:params] || {})
+      api_client.get association_sync_url(key, options, sync_options), params do |response, status_code|
         data = options[:sync_key] && response ? response[options[:sync_key]] : response
         if data
-          fetch_has_many_with_attributes(key, data, sync_options)
           NSLog("SYNC: finished sync for #{key} in #{self.class_name_without_kvo}")
+          fetch_has_many_with_attributes(key, data, sync_options)
           block.call(data, status_code, response) if use_callback
         else
           NSLog("SYNC ERROR: failed sync for #{key} in #{self.class_name_without_kvo}")
@@ -244,36 +246,74 @@ module MotionPrime
       end
     end
 
+    def update_storage(bags_options, sync_options = {})
+      should_save = sync_options[:save]
+      if should_save
+        models_to_save = bags_options.inject([]) { |result, (key, bag_options)| result + bag_options[:save] }
+        models_to_delete = bags_options.inject([]) { |result, (key, bag_options)| result + bag_options[:delete] }
+        self.store.save_interval = [models_to_save.count, 1].max
+
+        models_to_save.each(&:save)
+        models_to_delete.each(&:delete)
+      end
+
+      bags_changed = false
+      bags_options.each do |bag_key, bag_options|
+        next if bag_options[:add].empty? && bag_options[:delete].empty?
+        bags_changed = true
+        bag = self.send(:"#{bag_key}_bag")
+        bag.add(bag_options[:add], silent_validation: true)
+        bag.save if should_save
+      end
+
+      save if should_save && (bags_changed || has_changed?)
+
+      self.store.save_interval = 1
+    end
+
     def fetch_has_many_with_attributes(key, data, sync_options = {})
-      old_collection = self.send(key)
-      model_class = key.classify.constantize
-      self.store.save_interval = data.present? ? data.count : 1
-      # Update/Create existing records
+      # TODO: should we skip add/delete/save unless should_save?
+      should_save = sync_options[:save]
+
+      models_to_add = []
+      models_to_save = []
+      models_to_delete = []
+
       track_changed_attributes do
+        old_collection = self.send(key)
+        model_class = key.classify.constantize
+
         data.each do |attributes|
           model = old_collection.detect{ |model| model.id == attributes[:id]}
           unless model
             model = model_class.new
-            self.send(key).add(model)
+            models_to_add << model
           end
-          model.fetch_with_attributes(attributes, save_associations: sync_options[:save])
-          model.save if sync_options[:save] && model.has_changed?
+          model.fetch_with_attributes(attributes, save_associations: should_save)
+          if should_save && model.has_changed?
+            models_to_save << model
+          end
         end
         old_collection.each do |old_model|
           model = data.detect{ |model| model[:id] == old_model.id}
           unless model
-            old_model.delete
+            models_to_delete << old_model
           end
         end unless sync_options[:append]
       end
-      save if sync_options[:save] && has_changed?
-      self.store.save_interval = 1
+
+      update_storage({key => {
+        save: models_to_save,
+        delete: models_to_delete,
+        add: models_to_add
+      }}, sync_options)
     end
 
     def fetch_has_one(key, options = {}, sync_options = {}, &block)
       use_callback = block_given?
       NSLog("SYNC: started sync for #{key} in #{self.class_name_without_kvo}")
-      api_client.get association_sync_url(key, options, sync_options) do |response, status_code|
+      params = (options[:params] || {}).deep_merge(sync_options[:params] || {})
+      api_client.get association_sync_url(key, options, sync_options), params do |response, status_code|
         data = options.has_key?(:sync_key) ? response[options[:sync_key]] : response
         if data.present?
           fetch_has_one_with_attributes(key, data, save_associations: sync_options[:save])

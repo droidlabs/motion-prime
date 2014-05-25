@@ -17,7 +17,9 @@ module MotionPrime
         options[:class_name] == inverse_relation.class_name_without_kvo
       end.try(:first)
 
-      data = bag.store.present? ? find(*args) : filter(*args)
+      # when use #find() nested children will be reallocated and their bags will be empty
+      # data = stored? ? find(*args) : filter(*args)
+      data = filter(*args)
       super data
     end
 
@@ -69,7 +71,7 @@ module MotionPrime
     # @params sort_options [Hash] sorting options.
     # @return Array<MotionPrime::Model> association records
     def find(find_options = {}, sort_options = nil)
-      raise "Use `filter` method when bag has not been saved yet" unless bag.store.present?
+      raise "Use `filter` method when bag has not been saved yet" unless stored?
 
       find_options = build_find_options(find_options)
       sort_options = build_sort_options(sort_options)
@@ -101,6 +103,10 @@ module MotionPrime
     # @return Array<MotionPrime::Model> association records
     def delete_all
       all.each { |obj| obj.delete }
+    end
+
+    def stored?
+      bag.store.present?
     end
 
     private
