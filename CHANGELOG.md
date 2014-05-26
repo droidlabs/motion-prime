@@ -1,3 +1,8 @@
+=== 0.9.9
+* BREAKING CHANGE: table delegate methods in table section does not accept table_view as first param.
+  See https://github.com/droidlabs/motion-prime/commit/c8f7b2e4fd1665a45309585484ac211381854f62
+* Bug fixes
+
 === 0.9.8
 * Ability to fetch one record / all records from server using Model.fetch(id) or Model.fetch_all
 * Bug fixes
