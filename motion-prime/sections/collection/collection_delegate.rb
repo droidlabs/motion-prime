@@ -1,5 +1,5 @@
 module MotionPrime
-  class TableDelegate
+  class CollectionDelegate
     include DelegateMixin
     attr_accessor :table_section
 
@@ -8,11 +8,6 @@ module MotionPrime
       @section_instance = table_section.to_s
     end
 
-    # def dealloc
-    #   pp 'Deallocating table_delegate for ', @section_instance
-    #   super
-    # end
-
     def init_pull_to_refresh
       return unless block = table_section.class.pull_to_refresh_block
       table_section.add_pull_to_refresh do
@@ -20,11 +15,16 @@ module MotionPrime
       end
     end
 
-    def numberOfSectionsInTableView(table)
-      table_section.number_of_groups
+    # def dealloc
+    #   pp 'Deallocating collection_delegate for ', @section_instance
+    #   super
+    # end
+
+    def numberOfSectionsInCollectionView(table)
+      (table_section.fixed_table_data.count / 3).ceil
     end
 
-    def tableView(table, cellForRowAtIndexPath: index)
+    def collectionView(table, cellForItemAtIndexPath: index)
       cur_call_time = Time.now.to_f
       cur_call_offset = table.contentOffset.y
       if @prev_call_time
@@ -38,24 +38,16 @@ module MotionPrime
       table_section.cell_for_index(index)
     end
 
-    def tableView(table, numberOfRowsInSection: group)
-      table_section.cell_sections_for_group(group).try(:count).to_i
+    def collectionView(table, numberOfItemsInSection: group)
+      3
     end
 
-    def tableView(table, heightForRowAtIndexPath: index)
+    def collectionView(table, heightForItemAtIndexPath: index)
       table_section.height_for_index(index)
     end
 
-    def tableView(table, didSelectRowAtIndexPath:index)
+    def collectionView(table, didSelectItemAtIndexPath:index)
       table_section.on_click(index)
-    end
-
-    def tableView(table, viewForHeaderInSection: group)
-      table_section.header_cell_in_group(group)
-    end
-
-    def tableView(table, heightForHeaderInSection: group)
-      table_section.height_for_header_in_group(group)
     end
 
     def scrollViewDidScroll(scroll)

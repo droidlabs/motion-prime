@@ -188,8 +188,12 @@ module MotionPrime
       end
     end
 
+    def table_styles_base
+      :base_table
+    end
+
     def table_styles
-      type = self.is_a?(FormSection) ? :base_form : :base_table
+      type = table_styles_base
 
       base_styles = [type]
       base_styles << :"#{type}_with_sections" unless flat_data?

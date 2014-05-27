@@ -51,8 +51,9 @@ module MotionPrime
       base.class_eval do
         [::UIActionSheet, ::UIActivityIndicatorView, ::MPButton, ::UIDatePicker, ::UIImageView, ::MPLabel,
           ::UIPageControl, ::UIPickerView, ::UIProgressView, ::UIScrollView, ::UISearchBar, ::UISegmentedControl,
-          ::UISlider, ::UIStepper, ::UISwitch, ::UITabBar, ::UITableView, ::UITableViewCell, ::MPTextField, ::MPTextView,
-          ::UIToolbar, ::UIWebView, ::UINavigationBar, ::MPCellWithSection, ::MBProgressHUD, ::MPSpinner].each do |klass|
+          ::UISlider, ::UIStepper, ::UISwitch, ::UITabBar, ::UICollectionView, ::UITableView, ::UITableViewCell,
+          ::MPTextField, ::MPTextView, ::UIToolbar, ::UIWebView, ::UINavigationBar, ::MPCellWithSection,
+          ::MBProgressHUD, ::MPSpinner].each do |klass|
 
           shorthand = "#{klass}"[2..-1].underscore.to_sym
 

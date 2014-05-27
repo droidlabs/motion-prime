@@ -136,6 +136,10 @@ module MotionPrime
       @table_delegate ||= FormDelegate.new(section: self)
     end
 
+    def table_styles_base
+      :base_form
+    end
+
     # ALIASES
     def on_input_change(text_field); end
     def on_input_edit_begin(text_field); end

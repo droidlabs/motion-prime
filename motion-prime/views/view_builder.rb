@@ -86,6 +86,11 @@ module MotionPrime
             view.tableFooterView = UIView.new
             view
           },
+          'UICollectionView' => Proc.new{|klass, options|
+            layout = options.delete(:layout) || UICollectionViewFlowLayout.alloc.init
+            view = klass.alloc.initWithFrame CGRectZero, collectionViewLayout: layout
+            view
+          },
           'UITableViewCell' => Proc.new{|klass, options|
             style = options.delete(:style) || UITableViewCellStyleDefault
             if options[:has_drawn_content]
