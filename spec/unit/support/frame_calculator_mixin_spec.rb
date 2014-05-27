@@ -35,4 +35,9 @@ describe MotionPrime::FrameCalculatorMixin do
     result = @subject.calculate_frame_for(@parent_bounds, {bottom: 10, height: 100})
     result.origin.y.should == 90 #300 - 200 - 10
   end
+
+  it "should use width as more priority than right" do
+    result = @subject.calculate_frame_for(@parent_bounds, {width: 100, left: 10, right: 10})
+    result.size.width.should == 100
+  end
 end

@@ -1,3 +1,6 @@
+=== 0.9.9.1.beta
+* BREAKING CHANGE: width/height value have more priority than right/bottom
+
 === 0.9.9
 * BREAKING CHANGE: table delegate methods in table section does not accept table_view as first param.
   See https://github.com/droidlabs/motion-prime/commit/c8f7b2e4fd1665a45309585484ac211381854f62
