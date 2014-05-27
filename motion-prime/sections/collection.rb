@@ -170,18 +170,18 @@ module MotionPrime
     end
 
     def number_of_cells_in_group(group)
-      result = fixed_collection_data.count - (group * grid_size)
+      result = data.count - (group * grid_size)
       result > grid_size ? grid_size : result
     end
 
     def number_of_groups
-      (fixed_collection_data.count.to_f / grid_size).ceil
+      (data.count.to_f / grid_size).ceil
     end
 
     def cell_for_index(index)
       cell = render_cell(index)
       # run collection view is appeared callback if needed
-      if !@did_appear && index.row == fixed_collection_data.size - 1
+      if !@did_appear && index.row == data.size - 1
         on_appear
         @did_appear = true
       end
