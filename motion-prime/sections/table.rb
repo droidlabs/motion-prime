@@ -275,7 +275,7 @@ module MotionPrime
     end
 
     def render_cell(index)
-      section = cell_sections_for_group(index.section)[index.row]
+      section = cell_section_by_index(index)
       element = section.container_element || section.init_container_element(container_element_options_for(index))
 
       view = element.render do

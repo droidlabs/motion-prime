@@ -1,4 +1,4 @@
-class MPCellWithSection < UITableViewCell
+class MPTableCellWithSection < UITableViewCell
   attr_reader :section
   attr_accessor :scroll_view, :content_view
 

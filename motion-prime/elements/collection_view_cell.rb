@@ -1,7 +1,7 @@
 module MotionPrime
   class TableViewCellElement < BaseElement
     def view_class
-      "MPTableCellWithSection"
+      "MPCollectionCellWithSection"
     end
   end
 end

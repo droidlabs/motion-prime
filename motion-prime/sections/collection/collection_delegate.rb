@@ -1,18 +1,11 @@
 module MotionPrime
   class CollectionDelegate
     include DelegateMixin
-    attr_accessor :table_section
+    attr_accessor :collection_section
 
     def initialize(options)
-      self.table_section = options[:section].try(:weak_ref)
-      @section_instance = table_section.to_s
-    end
-
-    def init_pull_to_refresh
-      return unless block = table_section.class.pull_to_refresh_block
-      table_section.add_pull_to_refresh do
-        table_section.instance_eval(&block)
-      end
+      self.collection_section = options[:section].try(:weak_ref)
+      @section_instance = collection_section.to_s
     end
 
     # def dealloc
@@ -21,7 +14,7 @@ module MotionPrime
     # end
 
     def numberOfSectionsInCollectionView(table)
-      (table_section.fixed_table_data.count / 3).ceil
+      collection_section.number_of_groups
     end
 
     def collectionView(table, cellForItemAtIndexPath: index)
@@ -35,35 +28,35 @@ module MotionPrime
       @prev_call_time = cur_call_time
       @prev_call_offset = cur_call_offset
 
-      table_section.cell_for_index(index)
+      collection_section.cell_for_index(index)
     end
 
     def collectionView(table, numberOfItemsInSection: group)
-      3
+      collection_section.number_of_cells_in_group(group)
     end
 
     def collectionView(table, heightForItemAtIndexPath: index)
-      table_section.height_for_index(index)
+      collection_section.height_for_index(index)
     end
 
     def collectionView(table, didSelectItemAtIndexPath:index)
-      table_section.on_click(index)
+      collection_section.on_click(index)
     end
 
     def scrollViewDidScroll(scroll)
-      table_section.scroll_view_did_scroll(scroll)
+      collection_section.scroll_view_did_scroll(scroll)
     end
 
     def scrollViewWillBeginDragging(scroll)
-      table_section.scroll_view_will_begin_dragging(scroll)
+      collection_section.scroll_view_will_begin_dragging(scroll)
     end
 
     def scrollViewDidEndDecelerating(scroll)
-      table_section.scroll_view_did_end_decelerating(scroll)
+      collection_section.scroll_view_did_end_decelerating(scroll)
     end
 
     def scrollViewDidEndDragging(scroll, willDecelerate: will_decelerate)
-      table_section.scroll_view_did_end_dragging(scroll, willDecelerate: will_decelerate)
+      collection_section.scroll_view_did_end_dragging(scroll, willDecelerate: will_decelerate)
     end
   end
 end

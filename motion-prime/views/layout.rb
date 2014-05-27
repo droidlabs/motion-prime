@@ -1,5 +1,6 @@
 # TODO: make it part of Sections
-motion_require '../support/mp_cell_with_section'
+motion_require '../support/mp_table_cell_with_section'
+motion_require '../support/mp_collection_cell_with_section'
 motion_require '../support/mp_spinner'
 motion_require '../support/mp_button'
 motion_require '../support/mp_label'
@@ -52,8 +53,8 @@ module MotionPrime
         [::UIActionSheet, ::UIActivityIndicatorView, ::MPButton, ::UIDatePicker, ::UIImageView, ::MPLabel,
           ::UIPageControl, ::UIPickerView, ::UIProgressView, ::UIScrollView, ::UISearchBar, ::UISegmentedControl,
           ::UISlider, ::UIStepper, ::UISwitch, ::UITabBar, ::UICollectionView, ::UITableView, ::UITableViewCell,
-          ::MPTextField, ::MPTextView, ::UIToolbar, ::UIWebView, ::UINavigationBar, ::MPCellWithSection,
-          ::MBProgressHUD, ::MPSpinner].each do |klass|
+          ::MPTextField, ::MPTextView, ::UIToolbar, ::UIWebView, ::UINavigationBar,
+          ::MPTableCellWithSection, ::MPCollectionCellWithSection, ::MBProgressHUD, ::MPSpinner].each do |klass|
 
           shorthand = "#{klass}"[2..-1].underscore.to_sym
 

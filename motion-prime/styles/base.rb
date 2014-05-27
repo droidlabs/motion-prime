@@ -9,14 +9,14 @@ MotionPrime::Styles.define :base do
   style :table,
     top: 0,
     left: 0,
-    width: 320,
+    right: 0,
     bottom: 0,
     separator_inset: 0
 
   style :collection,
     top: 0,
     left: 0,
-    width: 320,
+    right: 0,
     bottom: 0
 
   style :table_cell,
@@ -25,7 +25,7 @@ MotionPrime::Styles.define :base do
   # basic form styles
   # ----------
   style :form,
-    width: 320,
+    right: 0,
     left: 0,
     top: 0,
     right: 0,
@@ -47,14 +47,22 @@ MotionPrime::Styles.define :base do
     height: 44
 
   style :segmented_control,
-    height: 40, width: 320, top: 0
+    height: 40,
+    left: 0,
+    right: 0,
+    top: 0
 
   style :google_map,
-    top: 0, left: 0, right: 0, bottom: 0
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
 
   style :spinner,
     annular: true,
-    center: proc { screen.view.center }, width: 37, height: 37,
+    center: proc { screen.view.center },
+    width: 37,
+    height: 37,
     progress_tint_color: :app_base.uicolor,
     background_tint_color: :black.uicolor(0.05),
     progress: 0.25
