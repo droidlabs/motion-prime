@@ -113,7 +113,8 @@ module MotionPrime
         section: self.weak_ref,
         styles: collection_styles.values.flatten,
         delegate: collection_delegate,
-        data_source: collection_delegate
+        data_source: collection_delegate,
+        grid_size: grid_size
       })
     end
 
@@ -139,9 +140,7 @@ module MotionPrime
       unless view.section
         section = cell_section_by_index(index)
         view.section = section
-        screen.set_options_for view, styles: [:base_collection_cell],
-                                     parent_bounds: collection_view.bounds,
-                                     calculate_frame: true do
+        screen.set_options_for view, styles: [:base_collection_cell] do
           section.render
         end
 
@@ -155,7 +154,7 @@ module MotionPrime
     def on_click(index); end
 
     def cell_section_by_index(index)
-      data[index.row]
+      data[index.section * grid_size + index.row]
     end
 
     def cell_name(index)
@@ -166,20 +165,17 @@ module MotionPrime
     # Table View Delegate
     # ---------------------
 
-    def count_of_cells_in_group
+    def grid_size
       3
     end
 
     def number_of_cells_in_group(group)
-      if (group + 1) * count_of_cells_in_group >= fixed_collection_data.count
-        fixed_collection_data.count % count_of_cells_in_group
-      else
-        count_of_cells_in_group
-      end
+      result = fixed_collection_data.count - (group * grid_size)
+      result > grid_size ? grid_size : result
     end
 
     def number_of_groups
-      (fixed_collection_data.count.to_f / count_of_cells_in_group).ceil
+      (fixed_collection_data.count.to_f / grid_size).ceil
     end
 
     def cell_for_index(index)
@@ -187,6 +183,7 @@ module MotionPrime
       # run collection view is appeared callback if needed
       if !@did_appear && index.row == fixed_collection_data.size - 1
         on_appear
+        @did_appear = true
       end
       cell.is_a?(UIView) ? cell : cell.view
     end
@@ -198,30 +195,19 @@ module MotionPrime
     end
 
     def scroll_view_will_begin_dragging(scroll)
-      @decelerating = true
     end
 
     def scroll_view_did_end_decelerating(scroll)
-      @decelerating = false
-      display_pending_cells
     end
 
     def scroll_view_did_scroll(scroll)
     end
 
     def scroll_view_did_end_dragging(scroll, willDecelerate: will_decelerate)
-      display_pending_cells unless @decelerating = will_decelerate
+
     end
 
     private
-      def display_pending_cells
-        collection_view.visibleCells.each do |cell_view|
-          if cell_view.section && cell_view.section.pending_display
-            cell_view.section.display
-          end
-        end
-      end
-
       def set_collection_data
         sections = fixed_collection_data
         prepare_collection_cell_sections(sections)
@@ -266,12 +252,5 @@ module MotionPrime
       def create_section_elements
         data.each(&:create_elements)
       end
-
-    class << self
-      def async_collection_data(options = {})
-        self.send :include, Prime::AsyncTableMixin
-        self.set_async_data_options options
-      end
-    end
   end
 end

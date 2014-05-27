@@ -87,7 +87,12 @@ module MotionPrime
             view
           },
           'UICollectionView' => Proc.new{|klass, options|
-            layout = options.delete(:layout) || UICollectionViewFlowLayout.alloc.init
+            unless layout = options.delete(:layout)
+              layout = UICollectionViewFlowLayout.alloc.init
+              total_width = options[:parent_bounds].size.width / (options.delete(:grid_size) || 4)
+              width = total_width - layout.minimumInteritemSpacing
+              layout.setItemSize CGSizeMake(width, options.delete(:item_height) || 100)
+            end
             view = klass.alloc.initWithFrame CGRectZero, collectionViewLayout: layout
             view
           },
