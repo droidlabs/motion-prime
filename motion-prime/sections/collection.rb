@@ -139,7 +139,11 @@ module MotionPrime
       unless view.section
         section = cell_section_by_index(index)
         view.section = section
-        section.render
+        screen.set_options_for view, styles: [:base_collection_cell],
+                                     parent_bounds: collection_view.bounds,
+                                     calculate_frame: true do
+          section.render
+        end
 
         on_cell_render(view, index)
       end
