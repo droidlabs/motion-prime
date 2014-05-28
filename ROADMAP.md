@@ -4,7 +4,7 @@
 * bug: if mp label do not have text and was set as hidden, it should unhide after setting text.
 * bug: size_to_fit works incorrect with relative width.
 * bug: bind_keyboard_close breaks bind_guesture
-* bug: dealloc of Prime::Section will not be called for cell created in table_data using #map.
+* bug: dealloc of Prime::Section will not be called for cell created in collection_data using #map.
 * bug: images does not render after reload table if using draw_with_layer (prerender not enabled).
 * add dsl for push notifications
 * add some extensions/middleware system, at least for networking.

@@ -24,9 +24,9 @@ module Prime
     # Reset async loaded table data and preloader queue.
     #
     # @return [Boolean] true
-    def reset_table_data
-      super # must be before to update fixed_table_data
-      @async_loaded_data = async_data? ? fixed_table_data : nil
+    def reset_collection_data
+      super # must be before to update fixed_collection_data
+      @async_loaded_data = async_data? ? fixed_collection_data : nil
       Array.wrap(@preloader_queue).each { |queue| queue[:state] = :cancelled }
       @preloader_next_starts_from = nil
     end
@@ -151,9 +151,9 @@ module Prime
     end
 
     private
-      def set_table_data
+      def set_collection_data
         sections = load_sections_async
-        prepare_table_cell_sections(sections)
+        prepare_collection_cell_sections(sections)
         @data = sections
         reset_data_stamps
         @data
@@ -163,9 +163,9 @@ module Prime
         @async_loaded_data || begin
           ref_key = allocate_strong_references
           BW::Reactor.schedule_on_main do
-            @async_loaded_data = fixed_table_data
+            @async_loaded_data = fixed_collection_data
             @data = nil
-            reload_table_data
+            reload_collection_data
             on_async_data_loaded
             release_strong_references(ref_key)
           end

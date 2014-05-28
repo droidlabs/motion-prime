@@ -48,7 +48,7 @@ module MotionPrime
       if element?
         [self.class.name, self.name, section.try(:name)]
       elsif self.is_a?(Section)
-        [self.class.name, self.name, @table.try(:class).try(:name)]
+        [self.class.name, self.name, @collection_section.try(:class).try(:name)]
       else
         [self.class.name]
       end

@@ -1,5 +1,5 @@
 class <%= @p_class_name %>IndexTableSection < Prime::TableSection
-  def table_data
+  def collection_data
     <%= @s_class_name %>.all.map do |model|
       <%= @p_class_name %>IndexCellSection.new(model: model)
     end

@@ -46,7 +46,7 @@ module MotionPrime
     def prepare_options!
       if options[:size_to_fit]
         options[:line_break_mode] ||= :word_wrap
-        options[:number_of_lines] ||= 0
+        options[:number_of_lines] ||= 0 if view.is_a?(UILabel)
       end
 
       if options.slice(:html, :line_spacing, :line_height, :underline, :fragment_color).any?

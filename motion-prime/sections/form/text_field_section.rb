@@ -3,7 +3,7 @@ module MotionPrime
     element :label, type: :label do
       default_label_options
     end
-    element :input, type: :text_view, delegate: proc { table_delegate } do
+    element :input, type: :text_view, delegate: proc { collection_delegate } do
       {editable: true}.merge(options[:input] || {})
     end
 

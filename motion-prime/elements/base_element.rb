@@ -178,7 +178,7 @@ module MotionPrime
 
         # custom style (from options or block options), using for TableViews as well
         @styles += custom_styles
-        # puts @view_class.to_s + @styles.inspect, ''
+        # pp @view_class.to_s + @styles.inspect
         @styles
       end
 
@@ -213,6 +213,7 @@ module MotionPrime
           build_styles_chain(base_styles[:common], suffixes.values.flatten)
         elsif suffixes[:specific].any?
           build_styles_chain(base_styles[:common], suffixes[:specific])
+        # TODO: add collectionView
         elsif @view_name == 'table_view_cell'
           base_styles[:common]
         end

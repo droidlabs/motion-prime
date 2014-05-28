@@ -3,7 +3,7 @@ module MotionPrime
     include CellSectionMixin
 
     def form
-      table
+      collection_section
     end
 
     protected

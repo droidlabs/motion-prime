@@ -1,11 +1,11 @@
-# This Mixin will be included only to sections, which added as cell to table section.
+# This Mixin will be included only to sections, which added as cell to collection section.
 module MotionPrime
   module CellSectionMixin
     extend ::MotionSupport::Concern
 
     # include SectionWithContainerMixin # already included in draw_section_mixin
 
-    attr_writer :table
+    attr_writer :collection_section
     attr_reader :pending_display
 
     included do
@@ -13,12 +13,17 @@ module MotionPrime
       container_element type: :table_view_cell
     end
 
+    def collection_section
+      @collection_section ||= options[:collection_section].try(:weak_ref)
+    end
+
     def table
-      @table ||= options[:table].try(:weak_ref)
+      Prime.logger.info "Section#table is deprecated: #{caller[0]}"
+      collection_section
     end
 
     def section_styles
-      @section_styles ||= table.try(:cell_section_styles, self) || {}
+      @section_styles ||= collection_section.try(:cell_section_styles, self) || {}
     end
 
     def cell_type
@@ -29,31 +34,31 @@ module MotionPrime
 
     def cell_section_name
       self.class.custom_cell_section_name || begin
-        return name unless table
-        table_name = table.name.gsub('_table', '')
+        return name unless collection_section
+        table_name = collection_section.name.gsub('_table', '')
         name.gsub("#{table_name}_", '')
       end
     end
 
     def container_bounds
-      @container_bounds ||= CGRectMake(0, 0, table.table_view.bounds.size.width, container_height)
+      @container_bounds ||= CGRectMake(0, 0, collection_section.collection_view.bounds.size.width, container_height)
     end
 
-    # should do nothing, because table section will care about it.
+    # should do nothing, because collection section will care about it.
     def render_container(options = {}, &block)
       block.call
     end
 
     def init_container_element(options = {})
       options[:styles] ||= []
-      options[:styles] = [:"#{table.name}_first_cell"] if table.data.first == self
-      options[:styles] = [:"#{table.name}_last_cell"] if table.data.last == self
+      options[:styles] = [:"#{collection_section.name}_first_cell"] if collection_section.data.first == self
+      options[:styles] = [:"#{collection_section.name}_last_cell"] if collection_section.data.last == self
       super(options)
     end
 
     def pending_display!
       @pending_display = true
-      display unless table.decelerating
+      display unless collection_section.decelerating
     end
 
     def display

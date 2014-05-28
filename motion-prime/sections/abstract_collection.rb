@@ -1,13 +1,32 @@
-motion_require './collection/collection_delegate'
-
+motion_require './base_section.rb'
 module MotionPrime
-  class CollectionSection < Section
+  class AbstractCollectionSection < Section
     include HasStyleChainBuilder
 
     attr_accessor :collection_element, :did_appear
     attr_reader :decelerating
+
     before_render :render_collection
+
     delegate :set_options, :update_options, to: :collection_element, allow_nil: true
+
+    %w[table_data
+      fixed_table_data
+      table_view
+      reset_table_data
+      async_table_data
+      reload_table_data
+      table_delegate
+      table_styles
+      table_styles_base
+      prepare_table_cell_sections
+      table_element_options
+      render_table].each do |table_method|
+      define_method table_method do |*args|
+        Prime.logger.info "##{table_method} is deprecated: #{caller[0]}"
+        send(table_method.gsub('table', 'collection'), *args)
+      end
+    end
 
     # Return sections which will be used to render as collection cells.
     #
@@ -81,31 +100,59 @@ module MotionPrime
       true
     end
 
-    # Get index path for cell section
-    #
-    # @param section [Prime::Section] cell section.
-    # @return index [NSIndexPath] index of cell section.
-    def index_for_cell_section(section)
-      row = @data.try(:index, section)
-      NSIndexPath.indexPathForRow(row, inSection: 0) if row
-    end
-
     def collection_styles_base
-      :base_collection
+      raise "Implement #collection_styles_base"
     end
 
     def collection_styles
       type = collection_styles_base
 
-      base_styles = [type]
-      base_styles << :"#{type}_with_sections"
+      base_styles = Array.wrap(type)
       item_styles = [name.to_sym]
       item_styles += Array.wrap(@styles) if @styles.present?
       {common: base_styles, specific: item_styles}
     end
 
-    def collection_delegate
-      @collection_delegate ||= CollectionDelegate.new(section: self)
+    def cell_section_styles(section)
+      # type = [`cell`, `header`, `field`]
+
+      # UserFormSection example: field :email, type: :string
+      # form_name = `user`
+      # type = `field`
+      # field_name = `email`
+      # field_type = `string_field`
+
+      # CategoriesTableSection example: table is a `CategoryTableSection`, cell is a `CategoryTitleSection`, element :icon, type: :image
+      # table_name = `categories`
+      # type = `cell` (always true)
+      # table_cell_section_name = `title`
+      type = section.respond_to?(:cell_type) ? section.cell_type : 'cell'
+      suffixes = [type]
+      if section.is_a?(BaseFieldSection)
+        suffixes << section.default_name
+      end
+
+      styles = {}
+      # table: base_table_<type>
+      # form: base_form_<type>, base_form_<field_type>
+      styles[:common] = build_styles_chain(collection_styles[:common], suffixes)
+      if section.is_a?(BaseFieldSection)
+        # form cell: _<type>_<field_name> = `_field_email`
+        suffixes << :"#{type}_#{section.name}" if section.name
+      elsif section.respond_to?(:cell_section_name) # cell section came from table
+        # table cell: _<table_cell_section_name> = `_title`
+        suffixes << section.cell_section_name
+      end
+      # table: <table_name>_table_<type>, <table_name>_table_<table_cell_section_name> = `categories_table_cell`, `categories_table_title`
+      # form: <form_name>_form_<type>, <form_name>_form_<field_type>, user_form_<type>_email = `user_form_field`, `user_form_string_field`, `user_form_field_email`
+      styles[:specific] = build_styles_chain(collection_styles[:specific], suffixes)
+
+      container_options_styles = section.container_options[:styles]
+      if container_options_styles.present?
+        styles[:specific] += Array.wrap(container_options_styles)
+      end
+
+      styles
     end
 
     def collection_element_options
@@ -113,13 +160,12 @@ module MotionPrime
         section: self.weak_ref,
         styles: collection_styles.values.flatten,
         delegate: collection_delegate,
-        data_source: collection_delegate,
-        grid_size: grid_size
+        data_source: collection_delegate
       })
     end
 
     def render_collection
-      self.collection_element = screen.collection_view(collection_element_options)
+      raise "Implement #render_collection"
     end
 
     def collection_view
@@ -135,55 +181,31 @@ module MotionPrime
     end
 
     def render_cell(index)
-      collection_view.registerClass(MPCollectionCellWithSection, forCellWithReuseIdentifier: cell_name(index))
-      view = collection_view.dequeueReusableCellWithReuseIdentifier(cell_name(index), forIndexPath: index)
-      unless view.section
-        section = cell_section_by_index(index)
-        view.section = section
-        screen.set_options_for view, styles: [:base_collection_cell] do
-          section.render
-        end
-
-        on_cell_render(view, index)
-      end
-      view
+      raise "Implement #render_cell"
     end
 
     def on_cell_render(cell, index); end
     def on_appear; end
     def on_click(index); end
 
-    def cell_section_by_index(index)
-      data[index.section * grid_size + index.row]
-    end
-
     def cell_name(index)
       record = cell_section_by_index(index)
       "cell_#{record.object_id}_#{@data_stamp[record.object_id]}"
     end
 
-    # Table View Delegate
-    # ---------------------
-
-    def grid_size
-      3
+    def cell_sections_for_group(section)
+      raise "Implement #cell_sections_for_group"
     end
 
-    def number_of_cells_in_group(group)
-      result = data.count - (group * grid_size)
-      result > grid_size ? grid_size : result
-    end
-
-    def number_of_groups
-      (data.count.to_f / grid_size).ceil
+    def cell_section_by_index(index)
+      cell_sections_for_group(index.section)[index.row]
     end
 
     def cell_for_index(index)
-      cell = render_cell(index)
-      # run collection view is appeared callback if needed
-      if !@did_appear && index.row == data.size - 1
+      cell = cached_cell(index) || render_cell(index)
+      # run table view is appeared callback if needed
+      if !@did_appear && index.row == cell_sections_for_group(index.section).size - 1
         on_appear
-        @did_appear = true
       end
       cell.is_a?(UIView) ? cell : cell.view
     end
@@ -195,19 +217,33 @@ module MotionPrime
     end
 
     def scroll_view_will_begin_dragging(scroll)
+      @decelerating = true
     end
 
     def scroll_view_did_end_decelerating(scroll)
+      @decelerating = false
+      display_pending_cells
     end
 
     def scroll_view_did_scroll(scroll)
     end
 
     def scroll_view_did_end_dragging(scroll, willDecelerate: will_decelerate)
-
+      display_pending_cells unless @decelerating = will_decelerate
     end
 
     private
+      def cached_cell(index)
+      end
+
+      def display_pending_cells
+        collection_view.visibleCells.each do |cell_view|
+          if cell_view.section && cell_view.section.pending_display
+            cell_view.section.display
+          end
+        end
+      end
+
       def set_collection_data
         sections = fixed_collection_data
         prepare_collection_cell_sections(sections)
@@ -218,12 +254,12 @@ module MotionPrime
       end
 
       def prepare_collection_cell_sections(cells)
-        Array.wrap(cells).each do |cell|
-          # Prime::Config.prime.cell_section.mixins.each do |mixin|
-          #   cell.class.send(:include, mixin) unless (class << cell; self; end).included_modules.include?(mixin)
-          # end
+        Array.wrap(cells.flatten).each do |cell|
+          Prime::Config.prime.cell_section.mixins.each do |mixin|
+            cell.class.send(:include, mixin) unless (class << cell; self; end).included_modules.include?(mixin)
+          end
           cell.screen ||= screen
-          cell.collection ||= self.weak_ref if cell.respond_to?(:collection=)
+          cell.collection_section ||= self.weak_ref if cell.respond_to?(:collection_section=)
         end
       end
 
@@ -232,8 +268,7 @@ module MotionPrime
         {
           reuse_identifier: cell_name(index),
           parent_view: collection_view,
-          bounds: {height: cell_section.container_height},
-          type: :collection_view_cell
+          bounds: {height: cell_section.container_height}
         }
       end
 
@@ -250,7 +285,7 @@ module MotionPrime
       end
 
       def create_section_elements
-        data.each(&:create_elements)
+        data.flatten.each(&:create_elements)
       end
   end
 end

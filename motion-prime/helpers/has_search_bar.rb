@@ -11,7 +11,7 @@ module MotionPrime
       if target
         target.addSubview @_search_bar
       elsif is_a?(TableSection)
-        self.table_view.tableHeaderView = @_search_bar
+        self.collection_view.tableHeaderView = @_search_bar
       end
 
       @search_callback = block

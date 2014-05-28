@@ -3,13 +3,13 @@ module MotionPrime
     def add_pull_to_refresh(options = {}, &block)
       screen.automaticallyAdjustsScrollViewInsets = false
 
-      table_view.addPullToRefreshWithActionHandler(block) # block must be a variable
-      screen.set_options_for table_view.pullToRefreshView, styles: [:base_pull_to_refresh]
+      collection_view.addPullToRefreshWithActionHandler(block) # block must be a variable
+      screen.set_options_for collection_view.pullToRefreshView, styles: [:base_pull_to_refresh]
     end
 
     def finish_pull_to_refresh
       reload_data
-      table_view.pullToRefreshView.stopAnimating
+      collection_view.pullToRefreshView.stopAnimating
     end
   end
 end
