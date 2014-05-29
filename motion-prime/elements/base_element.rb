@@ -134,8 +134,12 @@ module MotionPrime
       view.setUserInteractionEnabled true
     end
 
-    def is_cell_element?
+    def cell_section?
       section.respond_to?(:cell_section_name)
+    end
+
+    def cell_element?
+      @view_class == 'UICollectionViewCell' || @view_class == 'UITableViewCell'
     end
 
     protected
@@ -156,7 +160,7 @@ module MotionPrime
         has_errors = section.respond_to?(:observing_errors?) && observing_errors? && has_errors?
 
         @styles = []
-        if is_cell_element?
+        if cell_section?
           @styles += compute_cell_style_options(style_sources, has_errors)
         end
 
@@ -196,7 +200,7 @@ module MotionPrime
         if section.section_styles
           section.section_styles.each { |type, values| base_styles[type] += values }
         end
-        if @view_name != 'base' && !is_cell_element?
+        if @view_name != 'base' && !cell_element?
           # form element: _input
           # table element: _image
           suffixes[:common] << @view_name.to_sym
@@ -216,7 +220,7 @@ module MotionPrime
           build_styles_chain(base_styles[:common], suffixes.values.flatten)
         elsif suffixes[:specific].any?
           build_styles_chain(base_styles[:common], suffixes[:specific])
-        elsif is_cell_element?
+        elsif cell_element?
           base_styles[:common]
         end
         all_styles += Array.wrap(common_styles)
@@ -226,7 +230,7 @@ module MotionPrime
         # table element: categories_table_cell_image, categories_table_title_image
         specific_base_common_suffix_styles = if suffixes[:common].any?
           build_styles_chain(base_styles[:specific], suffixes[:common])
-        elsif suffixes[:specific].empty? && is_cell_element?
+        elsif suffixes[:specific].empty? && cell_element?
           base_styles[:specific]
         end
         all_styles += Array.wrap(specific_base_common_suffix_styles)
