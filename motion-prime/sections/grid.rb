@@ -4,7 +4,7 @@ module MotionPrime
   class GridSection < AbstractCollectionSection
     DEFAULT_GRID_SIZE = 3
 
-    class_attribute :grid_size
+    class_attribute :grid_size_value
 
     before_render :render_collection
 
@@ -81,8 +81,12 @@ module MotionPrime
         })
       end
 
-    def self.grid_size(value)
-      self.grid_size = value
+    def self.grid_size(value = nil)
+      if value
+        self.grid_size_value = value
+      else
+        self.grid_size_value
+      end
     end
   end
 end
