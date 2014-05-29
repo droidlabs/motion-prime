@@ -1,3 +1,6 @@
+=== 1.0.0
+* Stable release
+
 === 0.9.9.2
 * bug fixes
 
