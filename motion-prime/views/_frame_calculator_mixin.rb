@@ -23,31 +23,41 @@ module MotionPrime
       temp_height = height || 0.0
 
       if left && left > 0 && left <= 1 && value_type != 'absolute' && left.is_a?(Float)
-        left = max_width * left
+        left = (max_width * left).round(2)
       end
 
       if right && right > 0 && right <= 1 && value_type != 'absolute' && right.is_a?(Float)
-        right = max_width * right
+        right = (max_width * right).round(2)
+      end
+
+      if top && top > 0 && top <= 1 && value_type != 'absolute' && top.is_a?(Float)
+        top = (max_height * top).round(2)
+      end
+
+      if bottom && bottom > 0 && bottom <= 1 && value_type != 'absolute' && bottom.is_a?(Float)
+        bottom = (max_height * bottom).round(2)
       end
 
       # calculate left and right if width is relative, e.g 0.7
       if width && width > 0 && width <= 1 && value_type != 'absolute' && width.is_a?(Float)
         if right.nil?
           left ||= 0
-          right = max_width - max_width * width - left
+          right = (max_width - max_width * width - left).round(2)
         else
-          left = max_width - max_width * width - right
+          left = (max_width - max_width * width - right).round(2)
         end
+        width = (max_width * width).round(2)
       end
 
       # calculate top and bottom if height is relative, e.g 0.7
       if height && height > 0 && height <= 1 && value_type != 'absolute' && height.is_a?(Float)
         if bottom.nil?
           top ||= 0
-          bottom = max_height - max_height * height
+          bottom = (max_height - max_height * height - top).round(2)
         else
-          top = max_height - max_height * height
+          top = (max_height - max_height * height - bottom).round(2)
         end
+        height = (max_height * height).round(2)
       end
 
       if !left.nil? && !right.nil?
