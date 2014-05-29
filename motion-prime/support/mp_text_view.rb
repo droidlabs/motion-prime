@@ -6,6 +6,7 @@ motion_require '../support/_padding_attribute'
 class MPTextView < UITextView
   include MotionPrime::SupportKeyValueStore
   include MotionPrime::SupportPaddingAttribute
+
   attr_accessor :placeholderColor, :placeholderFont, :placeholder
 
   def self.default_padding_left

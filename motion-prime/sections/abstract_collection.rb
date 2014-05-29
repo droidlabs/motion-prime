@@ -1,4 +1,4 @@
-motion_require './base_section.rb'
+motion_require 'base_section'
 module MotionPrime
   class AbstractCollectionSection < Section
     include HasStyleChainBuilder

@@ -1,4 +1,4 @@
-motion_require '../table/table_delegate.rb'
+motion_require '../table/table_delegate'
 module MotionPrime
   class FormDelegate < TableDelegate
     def textFieldShouldReturn(text_field)

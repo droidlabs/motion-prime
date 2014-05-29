@@ -1,4 +1,4 @@
-motion_require './table.rb'
+motion_require 'table.rb'
 motion_require '../helpers/has_style_chain_builder'
 module MotionPrime
   class FormSection < TableSection

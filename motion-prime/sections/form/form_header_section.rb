@@ -1,4 +1,4 @@
-motion_require '../header.rb'
+motion_require '../header'
 module MotionPrime
   class FormHeaderSection < HeaderSection
     DEFAULT_HEADER_HEIGHT = 20

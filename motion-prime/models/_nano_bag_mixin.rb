@@ -1,4 +1,4 @@
-motion_require './_finder_mixin.rb'
+motion_require './_finder_mixin'
 module MotionPrime
   module NanoBagMixin
     include FilterMixin

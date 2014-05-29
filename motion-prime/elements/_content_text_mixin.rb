@@ -1,4 +1,4 @@
-motion_require './_text_mixin.rb'
+motion_require './_text_mixin'
 module MotionPrime
   module ElementContentTextMixin
     include ElementTextMixin

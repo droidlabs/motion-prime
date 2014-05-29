@@ -5,6 +5,8 @@ module MotionPrime
     include HasClassFactory
     include ElementTextMixin
 
+    ORDER = %w[font placeholder_font text]
+
     attr_reader :view, :options
 
     def initialize(view, parent_bounds = CGRectZero, options = {})
@@ -63,6 +65,8 @@ module MotionPrime
       end
       extract_font_options(options)
       extract_font_options(options, 'placeholder')
+
+      @options = Hash[options.sort_by { |k,v| ORDER.index(k.to_s).to_i }]
     end
 
     def extract_font_options(options, prefix = nil)

@@ -1,4 +1,4 @@
-motion_require './_section_with_container_mixin.rb'
+motion_require '_section_with_container_mixin'
 module MotionPrime
   module DrawSectionMixin
     extend ::MotionSupport::Concern

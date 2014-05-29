@@ -1,4 +1,4 @@
-motion_require '../views/styles.rb'
+motion_require '../views/styles'
 MotionPrime::Styles.define :base do
   # basic screen styles
   style :screen,

@@ -1,4 +1,4 @@
-motion_require '../config/base.rb'
+motion_require '../config/base'
 module MotionPrime
   class Store
     def self.create(type = nil, path = nil)
