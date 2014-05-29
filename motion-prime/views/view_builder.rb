@@ -89,9 +89,19 @@ module MotionPrime
           'UICollectionView' => Proc.new{|klass, options|
             unless layout = options.delete(:layout)
               layout = UICollectionViewFlowLayout.alloc.init
-              total_width = options[:parent_bounds].size.width / (options.delete(:grid_size) || 4)
+              total_width = options[:parent_bounds].size.width / (options.delete(:grid_size) || 3)
               if horizontal_spacing = options.delete(:horizontal_spacing)
                 layout.setMinimumInteritemSpacing horizontal_spacing
+              end
+              if vertical_spacing = options.delete(:vertical_spacing)
+                layout.setMinimumLineSpacing vertical_spacing
+              end
+              if scroll_direction = options.delete(:scroll_direction)
+                if scroll_direction == :horizontal
+                 layout.setScrollDirection UICollectionViewScrollDirectionHorizontal
+                else
+                  layout.setScrollDirection UICollectionViewScrollDirectionVertical
+                end
               end
               width = total_width - layout.minimumInteritemSpacing
               layout.setItemSize CGSizeMake(width, options.delete(:item_height) || 100)
