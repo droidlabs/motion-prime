@@ -20,7 +20,8 @@ module MotionPrime
         padding_top.to_i
       else # center label
         padding_top_offset = padding_top.to_i - (self.paddingBottom || self.padding).to_i
-        (bounds_height - line_height)/2 + 1 + padding_top_offset
+        (bounds_height - line_height)/2 + padding_top_offset
+        # TODO: check in which cases we should add `1` here
       end
     end
 
