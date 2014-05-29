@@ -1,5 +1,6 @@
 === 0.9.9.1.beta
 * BREAKING CHANGE: width/height value have more priority than right/bottom
+* BREAKING CHANGE: all methods starting with "table" in table section renamed to start with "collection"
 * bug: content_vertical_alignment conflicts with padding.
 * bug: content_vertical_alignment has not ideal centering.
 
