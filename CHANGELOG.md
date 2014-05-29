@@ -1,5 +1,7 @@
 === 0.9.9.1.beta
 * BREAKING CHANGE: width/height value have more priority than right/bottom
+* bug: content_vertical_alignment conflicts with padding.
+* bug: content_vertical_alignment has not ideal centering.
 
 === 0.9.9
 * BREAKING CHANGE: table delegate methods in table section does not accept collection_view as first param.
