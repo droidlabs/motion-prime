@@ -15,8 +15,7 @@ module MotionPrime
     def draw_in(rect)
       return if computed_options[:hidden]
       draw_background_in_context(UIGraphicsGetCurrentContext())
-      # bug - when it's a CollectionView we get invalid frame when drawing in a layer
-      if computed_options[:draw_in_rect] || view.is_a?(MPCollectionCellWithSection)
+      if computed_options[:draw_in_rect]
         draw_in_context(UIGraphicsGetCurrentContext())
       else
         draw_with_layer

@@ -55,7 +55,7 @@ module MotionPrime
     end
 
     def cell_sections_for_group(section)
-      data[section, grid_size]
+      data[section*grid_size, grid_size]
     end
 
     # Table View Delegate
