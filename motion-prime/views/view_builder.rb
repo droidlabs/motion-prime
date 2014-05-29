@@ -90,6 +90,9 @@ module MotionPrime
             unless layout = options.delete(:layout)
               layout = UICollectionViewFlowLayout.alloc.init
               total_width = options[:parent_bounds].size.width / (options.delete(:grid_size) || 4)
+              if horizontal_spacing = options.delete(:horizontal_spacing)
+                layout.setMinimumInteritemSpacing horizontal_spacing
+              end
               width = total_width - layout.minimumInteritemSpacing
               layout.setItemSize CGSizeMake(width, options.delete(:item_height) || 100)
             end
