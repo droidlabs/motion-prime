@@ -85,7 +85,7 @@ module MotionPrime
       raw_options = Styles.for(styles).merge(raw_options)
       @computed_options = raw_options
       normalize_options(@computed_options, section.try(:elements_eval_object), %w[
-        text placeholder font title_label
+        font text placeholder title_label
         padding padding_left padding_right padding_top padding_bottom
         left right min_width min_outer_width max_width max_outer_width width
         top bottom min_height min_outer_height max_height max_outer_height height])
@@ -134,6 +134,14 @@ module MotionPrime
       view.setUserInteractionEnabled true
     end
 
+    def cell_section?
+      section.respond_to?(:cell_section_name)
+    end
+
+    def cell_element?
+      @view_class == 'UICollectionViewCell' || @view_class == 'UITableViewCell'
+    end
+
     protected
       def reset_computed_values
         @content_height = nil
@@ -150,10 +158,9 @@ module MotionPrime
 
       def compute_style_options(*style_sources)
         has_errors = section.respond_to?(:observing_errors?) && observing_errors? && has_errors?
-        is_cell_section = section.respond_to?(:cell_section_name)
 
         @styles = []
-        if is_cell_section
+        if cell_section?
           @styles += compute_cell_style_options(style_sources, has_errors)
         end
 
@@ -178,7 +185,7 @@ module MotionPrime
 
         # custom style (from options or block options), using for TableViews as well
         @styles += custom_styles
-        # puts @view_class.to_s + @styles.inspect, ''
+        # pp @view_class.to_s + @styles.inspect; puts()
         @styles
       end
 
@@ -193,7 +200,7 @@ module MotionPrime
         if section.section_styles
           section.section_styles.each { |type, values| base_styles[type] += values }
         end
-        if @view_name != 'base' && @view_name != 'table_view_cell'
+        if @view_name != 'base' && !cell_element?
           # form element: _input
           # table element: _image
           suffixes[:common] << @view_name.to_sym
@@ -213,7 +220,7 @@ module MotionPrime
           build_styles_chain(base_styles[:common], suffixes.values.flatten)
         elsif suffixes[:specific].any?
           build_styles_chain(base_styles[:common], suffixes[:specific])
-        elsif @view_name == 'table_view_cell'
+        elsif cell_element?
           base_styles[:common]
         end
         all_styles += Array.wrap(common_styles)
@@ -223,7 +230,7 @@ module MotionPrime
         # table element: categories_table_cell_image, categories_table_title_image
         specific_base_common_suffix_styles = if suffixes[:common].any?
           build_styles_chain(base_styles[:specific], suffixes[:common])
-        elsif suffixes[:specific].empty? && @view_name == 'table_view_cell'
+        elsif suffixes[:specific].empty? && cell_element?
           base_styles[:specific]
         end
         all_styles += Array.wrap(specific_base_common_suffix_styles)

@@ -1,12 +1,12 @@
 motion_require '../helpers/has_authorization'
-motion_require './_nano_bag_mixin.rb'
-motion_require './_finder_mixin.rb'
-motion_require './_base_mixin.rb'
-motion_require './_sync_mixin.rb'
-motion_require './_association_mixin.rb'
-motion_require './_dirty_mixin.rb'
-motion_require './store.rb'
-motion_require './store_extension.rb'
+motion_require './_nano_bag_mixin'
+motion_require './_finder_mixin'
+motion_require './_base_mixin'
+motion_require './_sync_mixin'
+motion_require './_association_mixin'
+motion_require './_dirty_mixin'
+motion_require './store'
+motion_require './store_extension'
 module MotionPrime
   class Model < NSFNanoObject
     include MotionPrime::HasAuthorization

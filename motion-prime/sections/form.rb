@@ -1,4 +1,4 @@
-motion_require './table.rb'
+motion_require 'table.rb'
 motion_require '../helpers/has_style_chain_builder'
 module MotionPrime
   class FormSection < TableSection
@@ -21,7 +21,7 @@ module MotionPrime
     class_attribute :fields_options, :text_field_limits, :text_view_limits, :fields_callbacks
     attr_accessor :fields, :field_indexes, :keyboard_visible, :rendered_views, :grouped_data
 
-    def table_data
+    def collection_data
       if has_many_sections?
         grouped_data.reject(&:nil?)
       else
@@ -109,34 +109,34 @@ module MotionPrime
 
     def set_height_with_keyboard
       return if keyboard_visible
-      self.table_view.height -= KEYBOARD_HEIGHT_PORTRAIT
+      self.collection_view.height -= KEYBOARD_HEIGHT_PORTRAIT
       self.keyboard_visible = true
     end
 
     def set_height_without_keyboard
       return unless keyboard_visible
-      self.table_view.height += KEYBOARD_HEIGHT_PORTRAIT
+      self.collection_view.height += KEYBOARD_HEIGHT_PORTRAIT
       self.keyboard_visible = false
     end
 
     def keyboard_will_show
-      return if table_view.contentSize.height + table_view.top <= UIScreen.mainScreen.bounds.size.height - KEYBOARD_HEIGHT_PORTRAIT
-      current_inset = table_view.contentInset
-      current_inset.bottom = KEYBOARD_HEIGHT_PORTRAIT + (self.table_element.computed_options[:bottom_content_inset] || 0)
-      table_view.contentInset = current_inset
+      return if collection_view.contentSize.height + collection_view.top <= UIScreen.mainScreen.bounds.size.height - KEYBOARD_HEIGHT_PORTRAIT
+      current_inset = collection_view.contentInset
+      current_inset.bottom = KEYBOARD_HEIGHT_PORTRAIT + (self.collection_element.computed_options[:bottom_content_inset] || 0)
+      collection_view.contentInset = current_inset
     end
 
     def keyboard_will_hide
-      current_inset = table_view.contentInset
-      current_inset.bottom = self.table_element.computed_options[:bottom_content_inset] || 0
-      table_view.contentInset = current_inset
+      current_inset = collection_view.contentInset
+      current_inset.bottom = self.collection_element.computed_options[:bottom_content_inset] || 0
+      collection_view.contentInset = current_inset
     end
 
-    def table_delegate
-      @table_delegate ||= FormDelegate.new(section: self)
+    def collection_delegate
+      @collection_delegate ||= FormDelegate.new(section: self)
     end
 
-    def table_styles_base
+    def collection_styles_base
       :base_form
     end
 
@@ -158,7 +158,7 @@ module MotionPrime
 
     def load_field(field)
       field_class = class_factory("#{field[:type]}_field_section", true)
-      field_class.new(field.merge(screen: screen, table: self.weak_ref))
+      field_class.new(field.merge(screen: screen, collection_section: self.weak_ref))
     end
 
     def render_field?(name, options)
@@ -173,15 +173,15 @@ module MotionPrime
     def reload_data
       @groups_count = nil
       init_form_fields # must be before resetting to reflect changes on @data
-      reset_table_data
-      reload_table_data
+      reset_collection_data
+      reload_collection_data
     end
 
     def has_many_sections?
       group_header_options.present? || grouped_data.count > 1
     end
 
-    def render_table
+    def render_collection
       init_form_fields unless self.fields.present?
       super
     end
@@ -217,7 +217,7 @@ module MotionPrime
         subclass.text_view_limits = self.text_view_limits.try(:clone)
       end
 
-      def async_table_data(options = {})
+      def async_collection_data(options = {})
         super
         self.send :include, Prime::AsyncFormMixin
       end

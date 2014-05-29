@@ -1,4 +1,4 @@
-motion_require './config.rb'
+motion_require './config'
 MotionPrime::Config.configure do |config|
   # MODELS
   if MotionPrime.env.test?
@@ -32,7 +32,7 @@ MotionPrime::Config.configure do |config|
     colors.dark = 0x333333
     colors.error = 0xef471f
   end
-  
+
   # SECTIONS
   config.prime.cell_section.mixins = [Prime::CellSectionMixin]
 

@@ -1,4 +1,4 @@
-motion_require '../views/styles.rb'
+motion_require '../views/styles'
 MotionPrime::Styles.define :_mixin do
   style :label_reset,
     top: nil, left: nil, height: nil, right: nil, bottom: nil, top: nil,

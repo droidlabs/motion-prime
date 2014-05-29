@@ -151,9 +151,9 @@ module MotionPrime
       # reload Draw Elements
       elements_to_draw.values.each(&:update)
 
-      if @table && !self.is_a?(BaseFieldSection)
+      if @collection_section && !self.is_a?(BaseFieldSection)
         cell.setNeedsDisplay
-        @table.reload_table_data
+        @collection_section.reload_collection_data
       end
       true
     end

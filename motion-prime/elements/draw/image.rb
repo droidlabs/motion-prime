@@ -15,7 +15,12 @@ module MotionPrime
     def draw_in(rect)
       return if computed_options[:hidden]
       draw_background_in_context(UIGraphicsGetCurrentContext())
-      computed_options[:draw_in_rect] ? draw_in_context(UIGraphicsGetCurrentContext()) : draw_with_layer
+      # bug - when it's a CollectionView we get invalid frame when drawing in a layer
+      if computed_options[:draw_in_rect] || view.is_a?(MPCollectionCellWithSection)
+        draw_in_context(UIGraphicsGetCurrentContext())
+      else
+        draw_with_layer
+      end
       load_image
     end
 
@@ -64,7 +69,7 @@ module MotionPrime
     end
 
     def strong_references
-      [section, (section.table if section.respond_to?(:cell_section_name))].compact
+      [section, (section.collection_section if section.respond_to?(:cell_section_name))].compact
     end
 
     def load_image

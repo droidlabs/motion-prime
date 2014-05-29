@@ -5,6 +5,8 @@ module MotionPrime
     include HasClassFactory
     include ElementTextMixin
 
+    ORDER = %w[font placeholder_font text]
+
     attr_reader :view, :options
 
     def initialize(view, parent_bounds = CGRectZero, options = {})
@@ -46,7 +48,7 @@ module MotionPrime
     def prepare_options!
       if options[:size_to_fit]
         options[:line_break_mode] ||= :word_wrap
-        options[:number_of_lines] ||= 0
+        options[:number_of_lines] ||= 0 if view.is_a?(UILabel)
       end
 
       if options.slice(:html, :line_spacing, :line_height, :underline, :fragment_color).any?
@@ -63,6 +65,8 @@ module MotionPrime
       end
       extract_font_options(options)
       extract_font_options(options, 'placeholder')
+
+      @options = Hash[options.sort_by { |k,v| ORDER.index(k.to_s).to_i }]
     end
 
     def extract_font_options(options, prefix = nil)

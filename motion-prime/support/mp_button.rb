@@ -1,8 +1,11 @@
-motion_require '../support/_key_value_store'
-motion_require '../support/_padding_attribute'
+motion_require '_key_value_store'
+motion_require '_padding_attribute'
+motion_require '_control_content_alignment'
 class MPButton < UIButton
   include MotionPrime::SupportKeyValueStore
   include MotionPrime::SupportPaddingAttribute
+  include MotionPrime::SupportControlContentAlignment
+
   attr_accessor :sizeToFit
 
   def setTitle(value)
@@ -24,17 +27,6 @@ class MPButton < UIButton
 
   def self.default_padding_right
     5
-  end
-
-  def padding_top # to center title label
-    self.paddingTop || self.padding || begin
-      single_line_height = self.font.pointSize
-      (self.bounds.size.height - single_line_height)/2 + 1
-    end
-  end
-
-  def padding_bottom
-    self.bounds.size.height - (self.font.pointSize + padding_top)
   end
 
   def apply_padding!(rect)

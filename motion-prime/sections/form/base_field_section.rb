@@ -9,7 +9,7 @@ module MotionPrime
     after_initialize :observe_model_errors
 
     def prepare_table_data
-      @form = @options[:table]
+      @form = @options[:collection_section]
       if options[:observe_errors]
         # Do not remove clone() after delete()
         @errors_observer_options = normalize_options(options.delete(:observe_errors).clone, elements_eval_object)
@@ -46,7 +46,7 @@ module MotionPrime
             reload_section
           else
             create_elements!
-            form.reload_table_data
+            form.reload_collection_data
           end
         end
       }.weak!
@@ -72,21 +72,21 @@ module MotionPrime
       end if begin_editing
 
       # scroll to cell
-      # path = form.table_view.indexPathForCell(cell)
-      # form.table_view.scrollToRowAtIndexPath path,
+      # path = form.collection_view.indexPathForCell(cell)
+      # form.collection_view.scrollToRowAtIndexPath path,
       #   atScrollPosition: UITableViewScrollPositionTop, animated: true
       return self unless input_view = element(:input).try(:view)
       origin = input_view.frame.origin
-      point = container_view.convertPoint(origin, toView: form.table_view)
+      point = container_view.convertPoint(origin, toView: form.collection_view)
 
       nav_bar_height = screen.navigationController ? screen.navigationController.navigationBar.frame.size.height : 0
       nav_bar_height += 20 # status bar height
 
-      offset = form.table_view.contentOffset
+      offset = form.collection_view.contentOffset
       new_top_offset = point.y - nav_bar_height
       unless new_top_offset == offset.y
         offset.y = new_top_offset
-        form.table_view.setContentOffset(offset, animated: true)
+        form.collection_view.setContentOffset(offset, animated: true)
       end
 
       self

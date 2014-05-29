@@ -4,7 +4,7 @@ module MotionPrime
       default_label_options
     end
 
-    element :input, type: :text_field, delegate: proc { table_delegate } do
+    element :input, type: :text_field, delegate: proc { collection_delegate } do
       options[:input] || {}
     end
 

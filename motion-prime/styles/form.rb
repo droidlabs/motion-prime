@@ -1,4 +1,4 @@
-motion_require '../views/styles.rb'
+motion_require '../views/styles'
 MotionPrime::Styles.define :base_form do
   style :header, container: {height: 25}
   style :header_label, mixins: [:multiline],

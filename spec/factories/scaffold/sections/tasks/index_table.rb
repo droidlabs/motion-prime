@@ -1,5 +1,5 @@
 class TasksIndexTableSection < Prime::TableSection
-  def table_data
+  def collection_data
     Task.all.map do |model|
       TasksIndexCellSection.new(model: model)
     end

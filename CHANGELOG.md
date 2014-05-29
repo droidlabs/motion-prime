@@ -1,8 +1,10 @@
 === 0.9.9.1.beta
 * BREAKING CHANGE: width/height value have more priority than right/bottom
+* bug: content_vertical_alignment conflicts with padding.
+* bug: content_vertical_alignment has not ideal centering.
 
 === 0.9.9
-* BREAKING CHANGE: table delegate methods in table section does not accept table_view as first param.
+* BREAKING CHANGE: table delegate methods in table section does not accept collection_view as first param.
   See https://github.com/droidlabs/motion-prime/commit/c8f7b2e4fd1665a45309585484ac211381854f62
 * Bug fixes
 
@@ -14,7 +16,7 @@
 * BREAKING CHANGE: screen#set_options renamed to screen#set_options_for.
 * BREAKING CHANGE: section#reload_section renamed to section#hard_reload_section. in common cases use section#reload.
 * BREAKING CHANGE: form#reload_cell_section renamed to form#hard_reload_cell_section. in common cases use form#reload_cell_sections.
-* BREAKING CHANGE: table#reset_data renamed to table#reset_table_data
+* BREAKING CHANGE: table#reset_data renamed to table#reset_collection_data
 
 === 0.9.6
 * BREAKING CHANGE: proc for form field option will be executed in context of form, not field.
