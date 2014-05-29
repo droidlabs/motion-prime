@@ -1,3 +1,6 @@
+=== 0.9.9.2
+* bug fixes
+
 === 0.9.9.1
 * BREAKING CHANGE: width/height value have more priority than right/bottom
 * BREAKING CHANGE: all methods starting with "table" in table section renamed to start with "collection"
