@@ -6,7 +6,7 @@ module MotionPrime
     include TableSectionRefreshMixin
     include HasSearchBar
 
-    class_attribute :group_header_options, :pull_to_refresh_block
+    class_attribute :group_header_options, :pull_to_refresh_block, :pull_to_refresh_options
 
     attr_accessor :group_header_sections, :group_header_options
     after_render :init_pull_to_refresh
@@ -253,7 +253,8 @@ module MotionPrime
         self.group_header_options[section] = options
       end
 
-      def pull_to_refresh(&block)
+      def pull_to_refresh(options = {}, &block)
+        self.pull_to_refresh_options = options
         self.pull_to_refresh_block = block
       end
     end

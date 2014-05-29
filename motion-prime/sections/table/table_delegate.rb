@@ -15,7 +15,7 @@ module MotionPrime
 
     def init_pull_to_refresh
       return unless block = table_section.class.pull_to_refresh_block
-      table_section.add_pull_to_refresh do
+      table_section.add_pull_to_refresh(table_section.class.pull_to_refresh_options || {}) do
         table_section.instance_eval(&block)
       end
     end

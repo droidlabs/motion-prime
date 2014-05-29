@@ -226,6 +226,15 @@ module MotionPrime
     end
 
     def scroll_view_did_scroll(scroll)
+      return unless refresh_view = collection_view.try(:pullToRefreshView)
+      return refresh_view.alpha = 1 if refresh_view.state == SVPullToRefreshStateLoading
+
+      current_offset = scroll.contentOffset.y
+      table_inset = collection_view.contentInset.top
+      refresh_offset = refresh_view.yOrigin
+      alpha = [[-(current_offset + table_inset)/refresh_view.size.height, 0].max, 1].min
+
+      refresh_view.alpha = alpha
     end
 
     def scroll_view_did_end_dragging(scroll, willDecelerate: will_decelerate)
