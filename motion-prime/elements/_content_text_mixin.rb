@@ -41,7 +41,7 @@ module MotionPrime
 
     def width_for_attributed_text(attributed_text)
       min, max = computed_options[:min_width].to_f, computed_options[:max_width]
-      return min if attributed_text.blank?
+      return min if attributed_text.to_s.blank?
 
       rect = get_content_rect(attributed_text, Float::MAX)
       [[rect.size.width.ceil, max].compact.min, min].max.ceil
@@ -61,8 +61,7 @@ module MotionPrime
 
     def height_for_attributed_text(attributed_text)
       min, max = computed_options[:min_height].to_f, computed_options[:max_height]
-      return min if attributed_text.blank?
-
+      return min if attributed_text.to_s.blank?
       rect = get_content_rect(attributed_text, computed_options[:width] - content_padding_width)
       [[rect.size.height.ceil, max].compact.min, min].max.ceil
     end

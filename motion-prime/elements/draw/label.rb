@@ -94,6 +94,12 @@ module MotionPrime
         computed_options[:width] ||= cached_content_outer_width
         computed_options[:height] ||= cached_content_outer_height
         reset_computed_values
+      elsif computed_options.slice(:width, :left, :right).values.none?
+        computed_options[:width] ||= cached_content_outer_width
+        reset_computed_values
+      elsif computed_options.slice(:height, :top, :bottom).values.none?
+        computed_options[:height] ||= cached_content_outer_height
+        reset_computed_values
       end
     end
 
