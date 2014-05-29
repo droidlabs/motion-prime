@@ -178,7 +178,7 @@ module MotionPrime
 
         # custom style (from options or block options), using for TableViews as well
         @styles += custom_styles
-        # pp @view_class.to_s + @styles.inspect
+        # pp @view_class.to_s + @styles.inspect; puts()
         @styles
       end
 
@@ -186,6 +186,7 @@ module MotionPrime
         base_styles = {common: [], specific: []}
         suffixes = {common: [], specific: []}
         all_styles = []
+        is_cell_section = @view_name == 'table_view_cell' || @view_class == 'UICollectionViewCell'
 
         # following example in Prime::TableSection#cell_section_styles
         # form element/cell: <base|user>_form_field, <base|user>_form_string_field, user_form_field_email
@@ -193,7 +194,7 @@ module MotionPrime
         if section.section_styles
           section.section_styles.each { |type, values| base_styles[type] += values }
         end
-        if @view_name != 'base' && @view_name != 'table_view_cell'
+        if @view_name != 'base' && !is_cell_section
           # form element: _input
           # table element: _image
           suffixes[:common] << @view_name.to_sym
@@ -213,8 +214,7 @@ module MotionPrime
           build_styles_chain(base_styles[:common], suffixes.values.flatten)
         elsif suffixes[:specific].any?
           build_styles_chain(base_styles[:common], suffixes[:specific])
-        # TODO: add collectionView
-        elsif @view_name == 'table_view_cell'
+        elsif is_cell_section
           base_styles[:common]
         end
         all_styles += Array.wrap(common_styles)
@@ -224,7 +224,7 @@ module MotionPrime
         # table element: categories_table_cell_image, categories_table_title_image
         specific_base_common_suffix_styles = if suffixes[:common].any?
           build_styles_chain(base_styles[:specific], suffixes[:common])
-        elsif suffixes[:specific].empty? && @view_name == 'table_view_cell'
+        elsif suffixes[:specific].empty? && is_cell_section
           base_styles[:specific]
         end
         all_styles += Array.wrap(specific_base_common_suffix_styles)

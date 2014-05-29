@@ -44,9 +44,8 @@ module MotionPrime
       section = cell_section_by_index(index)
       element = section.container_element || section.init_container_element(container_element_options_for(index))
       unless view.section
-        view.section = section
         element.view = view
-        screen.set_options_for view, styles: [:base_collection_cell] do
+        screen.set_options_for view, element.computed_options.except(:parent_view) do
           section.render
         end
 
