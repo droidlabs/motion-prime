@@ -51,7 +51,7 @@ module MotionPrime
       rerender!
     end
 
-    def rerender!
+    def rerender!(changed_options = [])
       section.cached_draw_image = nil
       view.try(:setNeedsDisplay)
     end

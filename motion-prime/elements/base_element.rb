@@ -96,17 +96,21 @@ module MotionPrime
       compute_options!
     end
 
-    def rerender!
+    def rerender!(changed_options = [])
       render_target = view.try(:superview)
       view.try(:removeFromSuperview)
       render(render_target: render_target)
+
+      if (changed_options & [:text, :size_to_fit]).any? && respond_to?(:size_to_fit)
+        size_to_fit
+      end
       section.try(:on_element_render, self)
     end
 
     def update_with_options(new_options = {})
       options.merge!(new_options)
       reload!
-      rerender!
+      rerender!(new_options.keys)
     end
 
     def update_options(new_options)
