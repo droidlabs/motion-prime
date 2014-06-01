@@ -1,4 +1,6 @@
-=== 1.0.0
+=== 1.1.0
+* grid item width should be calculated based on uicollectionview with
+* ability to change access token param name
 * bug: if mp label do not have text and was set as hidden, it should unhide after setting text.
 * bug: size_to_fit works incorrect with relative width.
 * bug: bind_keyboard_close breaks bind_guesture
@@ -10,12 +12,12 @@
 * add different templates. some templates should be more like final app.
 * add size_to_fit support for images.
 
-=== 1.1.0
+=== 1.2.0
 * Move api_client and model sync mixin to prime_model_sync gem.
 * Move models to prime_model gem.
 * Move bind keyboard events to forms.
 
-=== 1.2.0
+=== 1.3.0
 * add cell preload for reverse scrolling table.
 * add computed_options.get(), this will allow to make sure that options is computed.
 * add testing framework

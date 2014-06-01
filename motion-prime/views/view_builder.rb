@@ -80,6 +80,10 @@ module MotionPrime
             items = options.delete(:items) || []
             klass.alloc.initWithItems items
           },
+          'UIPageViewController' => Proc.new{|klass, options|
+            klass.alloc.initWithTransitionStyle(UIPageViewControllerTransitionStylePageCurl,
+               navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal, options:nil)
+          },
           'UITableView' => Proc.new{|klass, options|
             style = options.delete(:style) || UITableViewStylePlain
             view = klass.alloc.initWithFrame CGRectZero, style: style

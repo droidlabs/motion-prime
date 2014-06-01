@@ -15,6 +15,10 @@ module MotionPrime
       @main_section || all_sections.first
     end
 
+    def main_section=(value)
+      @main_section = value
+    end
+
     def all_sections
       Array.wrap(@sections.try(:values))
     end
@@ -49,7 +53,11 @@ module MotionPrime
         return unless section_options
         @sections = {}
         section_options.map do |name, options|
-          section = create_section(name, options.clone)
+          if options[:instance]
+            section = options[:instance]
+          else
+            section = create_section(name, options.clone)
+          end
           @sections[name] = section if section
         end
       end
