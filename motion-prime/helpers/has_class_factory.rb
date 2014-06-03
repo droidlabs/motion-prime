@@ -24,6 +24,12 @@ module MotionPrime
       Prime.camelize_factory_cache[name] = name.camelize
     end
 
+    def underscore_factory(name)
+      value = Prime.underscore_factory_cache[name]
+      return value if value
+      Prime.underscore_factory_cache[name] = name.underscore
+    end
+
     def low_camelize_factory(name)
       value = Prime.low_camelize_factory_cache[name]
       return value if value

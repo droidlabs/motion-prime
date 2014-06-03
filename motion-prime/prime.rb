@@ -11,6 +11,10 @@ module MotionPrime
     @low_camelize_factory_cache ||= {}
   end
 
+  def self.underscore_factory_cache
+    @underscore_factory_cache ||= {}
+  end
+
   def self.env
     @env ||= MotionPrime::Env.new
   end

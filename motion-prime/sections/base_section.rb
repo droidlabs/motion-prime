@@ -104,7 +104,7 @@ module MotionPrime
     #
     # @return name [String] section default name
     def default_name
-      self.class_name_without_kvo.demodulize.underscore.gsub(/\_section$/, '')
+      underscore_factory(self.class_name_without_kvo.demodulize).gsub(/\_section$/, '')
     end
 
     # Get section elements options, where the key is element name.

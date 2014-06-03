@@ -26,7 +26,7 @@ module MotionPrime
       @view_class = options[:view_class] || 'UIView'
       @name = options[:name]
       @block = options[:block]
-      @view_name = self.class_name_without_kvo.demodulize.underscore.gsub(/(_draw)?_element/, '')
+      @view_name = underscore_factory(self.class_name_without_kvo.demodulize).gsub(/(_draw)?_element/, '')
 
       if Prime.env.development?
         info = []
