@@ -1,4 +1,20 @@
 class Kernel
+  def benchmark(key, &block)
+    if Prime.env.development?
+      t = Time.now
+      result = block.call
+      time = Time.now - t
+      MotionPrime.benchmark_data[key] ||= {}
+      MotionPrime.benchmark_data[key][:count] ||= 0
+      MotionPrime.benchmark_data[key][:total] ||= 0
+      MotionPrime.benchmark_data[key][:count] += 1
+      MotionPrime.benchmark_data[key][:total] += time
+      result
+    else
+      block.call
+    end
+  end
+
   def pp(*attrs)
     NSLog([*attrs].map(&:inspect).join(' '))
     attrs

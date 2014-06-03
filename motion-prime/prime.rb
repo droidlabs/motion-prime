@@ -15,6 +15,10 @@ module MotionPrime
     @underscore_factory_cache ||= {}
   end
 
+  def self.benchmark_data
+    @benchmark_data ||= {}
+  end
+
   def self.env
     @env ||= MotionPrime::Env.new
   end

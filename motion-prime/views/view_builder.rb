@@ -30,6 +30,7 @@ module MotionPrime
 
       def default_views_map
         {
+          'MPLabel' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
           'UIView' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
           'UIControl' => Proc.new {|klass, options| klass.alloc.init },
           'UISwitch' => Proc.new {|klass, options|
