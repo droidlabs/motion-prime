@@ -18,7 +18,7 @@ module MotionPrime
     element :control, type: :segmented_control,
       styles: [:base_segmented_control], items: proc { tab_control_items }
 
-    after_render :render_tab_pages
+    before_render :render_tab_pages
     after_render :render_tab_controls
 
     def tab_options

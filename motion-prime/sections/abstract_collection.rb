@@ -92,7 +92,7 @@ module MotionPrime
     # @return [Boolean] true
     def reset_collection_data
       @did_appear = false
-      Array.wrap(@data).each do |section|
+      Array.wrap(@data).flatten.each do |section|
         section.container_element.try(:update_options, reuse_identifier: nil)
       end
       @data = nil

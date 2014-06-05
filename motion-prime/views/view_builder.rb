@@ -30,7 +30,6 @@ module MotionPrime
 
       def default_views_map
         {
-          'MPLabel' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
           'UIView' => Proc.new {|klass, options| klass.alloc.initWithFrame CGRectZero },
           'UIControl' => Proc.new {|klass, options| klass.alloc.init },
           'UISwitch' => Proc.new {|klass, options|
@@ -170,6 +169,12 @@ module MotionPrime
             web_view
           }
         }
+      end
+    end
+
+    %w[MPLabel MPTextField MPTextView MPButton].each do |default_view|
+      register default_view do |klass, options|
+        klass.alloc.initWithFrame CGRectZero
       end
     end
   end

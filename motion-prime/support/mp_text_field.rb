@@ -21,7 +21,7 @@ class MPTextField < UITextField
 
   # placeholder position
   def textRectForBounds(bounds)
-    @_line_height = placeholder_font.pointSize
+    @_line_height = font.pointSize
     rect = calculate_rect_for(bounds)
     @_line_height = nil
     rect
@@ -36,6 +36,8 @@ class MPTextField < UITextField
   end
 
   def drawPlaceholderInRect(rect)
+    font_diff = self.font.pointSize - placeholder_font.pointSize
+    rect.origin.y += font_diff/2.0
     color = self.placeholderColor || :gray.uicolor
     color.setFill
 

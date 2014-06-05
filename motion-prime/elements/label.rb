@@ -19,7 +19,7 @@ module MotionPrime
           view.sizeToFit
           # we should re-set values, because sizeToFit do not use padding
           view.setWidth(view.bounds.size.width + content_padding_width)
-          view.setHeight(view.bounds.size.height + content_padding_height)
+          view.setHeight(computed_options[:height] || (view.bounds.size.height + content_padding_height))
         end
       end
     end

@@ -5,12 +5,12 @@ module MotionPrime
     include HasClassFactory
     include ElementTextMixin
 
-    ORDER = %w[font placeholder_font text]
+    ORDER = %w[frame font placeholder_font text title_label title]
 
     attr_reader :view, :options
 
     def initialize(view, parent_bounds = CGRectZero, options = {})
-      @options = Styles.extend_and_normalize_options options
+      @options = Styles.extend_and_normalize_options(options)
       @view = view
       prepare_frame_for(parent_bounds) if @options.delete(:calculate_frame)
       prepare_options!
@@ -39,8 +39,8 @@ module MotionPrime
         mask |= UIViewAutoresizingFlexibleLeftMargin if options[:left].nil?
         mask |= UIViewAutoresizingFlexibleBottomMargin if options[:bottom].nil?
         mask |= UIViewAutoresizingFlexibleRightMargin if options[:right].nil?
-        mask |= UIViewAutoresizingFlexibleWidth if !options[:left].nil? && !options[:right].nil?
-        mask |= UIViewAutoresizingFlexibleHeight if options[:height_to_fit].nil? && (!options[:top].nil? && !options[:bottom].nil?)
+        mask |= UIViewAutoresizingFlexibleWidth if options[:width].nil? && (!options[:left].nil? && !options[:right].nil?)
+        mask |= UIViewAutoresizingFlexibleHeight if options[:height].nil? && options[:height_to_fit].nil? && (!options[:top].nil? && !options[:bottom].nil?)
         options[:autoresizingMask] = mask
       end
     end
@@ -66,7 +66,11 @@ module MotionPrime
       extract_font_options(options)
       extract_font_options(options, 'placeholder')
 
-      @options = Hash[options.sort_by { |k,v| ORDER.index(k.to_s).to_i }]
+      @options = Hash[
+        options.sort_by do |k,v|
+          index = ORDER.index(k.to_s) || -1
+        end.reverse
+      ]
     end
 
     def extract_font_options(options, prefix = nil)
