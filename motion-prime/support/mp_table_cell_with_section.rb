@@ -14,7 +14,13 @@ class MPTableCellWithSection < UITableViewCell
 
   def initialize_content
     self.scroll_view = self.subviews.first
-    self.scroll_view.subviews.first.removeFromSuperview
+    # iOS 8
+    if self.scroll_view.is_a?(UITableViewCellContentView)
+      self.scroll_view.removeFromSuperview
+      self.scroll_view = self
+    else
+      self.scroll_view.subviews.first.removeFromSuperview
+    end
     self.content_view = MPTableViewCellContentView.alloc.initWithFrame(self.bounds)
     self.content_view.setBackgroundColor(:clear.uicolor)
     self.content_view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight

@@ -212,6 +212,7 @@ module MotionPrime
       def cached_cell(index)
         collection_view.dequeueReusableCellWithIdentifier(cell_name(index)) || begin
           section = cell_section_by_index(index)
+          section.create_elements
           cell = section.try(:cell)
           if cell.try(:superview)
             Prime.logger.error "cell already exists: #{section.name}: #{cell}"
