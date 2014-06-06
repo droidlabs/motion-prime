@@ -1,3 +1,8 @@
+=== 1.0.1
+* bug fixes
+* support iOS 8
+* start adding PageView support
+
 === 1.0.0
 * Stable release
 
