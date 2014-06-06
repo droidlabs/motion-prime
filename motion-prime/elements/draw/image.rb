@@ -68,7 +68,9 @@ module MotionPrime
     end
 
     def strong_references
-      [section, (section.collection_section if section.respond_to?(:cell_section_name))].compact
+      refs = [section, (section.collection_section if section.respond_to?(:cell_section_name))]
+      refs += section.try(:strong_references)
+      refs.compact
     end
 
     def load_image
