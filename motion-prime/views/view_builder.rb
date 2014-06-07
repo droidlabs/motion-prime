@@ -54,7 +54,7 @@ module MotionPrime
             style = options.delete(:style) || :large.uiactivityindicatorstyle
             klass.alloc.initWithActivityIndicatorStyle style
           },
-          'UIButton' => Proc.new{|klass, options|
+          'MPButton' => Proc.new{|klass, options|
             is_custom_button = options[:background_image] || options[:title_color]
             default_button_type = is_custom_button ? :custom : :rounded
             button_type = (options.delete(:button_type) || default_button_type).uibuttontype
@@ -84,7 +84,7 @@ module MotionPrime
             klass.alloc.initWithTransitionStyle(UIPageViewControllerTransitionStylePageCurl,
                navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal, options:nil)
           },
-          'UITableView' => Proc.new{|klass, options|
+          'MPTableView' => Proc.new{|klass, options|
             style = options.delete(:style) || UITableViewStylePlain
             view = klass.alloc.initWithFrame CGRectZero, style: style
             view.tableFooterView = UIView.new
@@ -172,7 +172,7 @@ module MotionPrime
       end
     end
 
-    %w[MPLabel MPTextField MPTextView MPButton].each do |default_view|
+    %w[MPLabel MPTextField MPTextView].each do |default_view|
       register default_view do |klass, options|
         klass.alloc.initWithFrame CGRectZero
       end
