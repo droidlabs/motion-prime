@@ -1,3 +1,6 @@
+=== 1.0.2
+* Fix regression for UIButton builder
+
 === 1.0.1
 * bug fixes
 * support iOS 8
