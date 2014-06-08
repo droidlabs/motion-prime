@@ -63,6 +63,10 @@ module MotionPrime
           options[:number_of_lines] = 0
         end
       end
+      # Fix issue overriding background color
+      if options[:background_image].present?
+        options.delete(:background_color)
+      end
       extract_font_options(options)
       extract_font_options(options, 'placeholder')
 
