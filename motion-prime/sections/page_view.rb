@@ -12,12 +12,12 @@ module MotionPrime
       @collection_delegate ||= PageViewDelegate.new(section: self)
     end
 
-    def grid_element_options
+    def page_element_options
       collection_element_options
     end
 
     def render_collection
-      self.collection_element = screen.page_view_controller(grid_element_options)
+      self.collection_element = screen.page_view_controller(page_element_options)
     end
 
     def create_section_elements

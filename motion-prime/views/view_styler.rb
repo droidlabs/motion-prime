@@ -5,7 +5,11 @@ module MotionPrime
     include HasClassFactory
     include ElementTextMixin
 
-    ORDER = %w[frame font placeholder_font text title_label title]
+    ORDER = %w[
+      frame
+      font placeholder_font text title_label title
+      minimum_value maximum_value value
+      ]
 
     attr_reader :view, :options
 
@@ -70,11 +74,7 @@ module MotionPrime
       extract_font_options(options)
       extract_font_options(options, 'placeholder')
 
-      @options = Hash[
-        options.sort_by do |k,v|
-          index = ORDER.index(k.to_s) || -1
-        end.reverse
-      ]
+      @options = Hash[options.sort_by {|k,v| ORDER.index(k.to_s) || ORDER.count }]
     end
 
     def extract_font_options(options, prefix = nil)

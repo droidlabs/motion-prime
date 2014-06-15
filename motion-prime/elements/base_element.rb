@@ -124,11 +124,11 @@ module MotionPrime
     end
 
     def hide
-      view.hidden = true
+      view.hidden = true if view # TODO: should we update computed options in opposite case?
     end
 
     def show
-      view.hidden = false
+      view.hidden = false if view
     end
 
     def bind_gesture(action, receiver = nil)

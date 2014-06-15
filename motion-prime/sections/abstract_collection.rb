@@ -156,7 +156,7 @@ module MotionPrime
     end
 
     def collection_element_options
-      container_options.slice(:render_target).merge({
+      container_options.except(:styles, :height, :hidden).merge({
         section: self.weak_ref,
         styles: collection_styles.values.flatten,
         delegate: collection_delegate,

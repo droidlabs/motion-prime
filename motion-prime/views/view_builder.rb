@@ -81,7 +81,7 @@ module MotionPrime
             klass.alloc.initWithItems items
           },
           'UIPageViewController' => Proc.new{|klass, options|
-            klass.alloc.initWithTransitionStyle(UIPageViewControllerTransitionStylePageCurl,
+            klass.alloc.initWithTransitionStyle(options.delete(:transition_style) || UIPageViewControllerTransitionStyleScroll,
                navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal, options:nil)
           },
           'MPTableView' => Proc.new{|klass, options|
