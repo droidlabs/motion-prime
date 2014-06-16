@@ -16,7 +16,8 @@ module MotionPrime
         masks_to_bounds: options[:layer].try(:[], :masks_to_bounds) || options[:clips_to_bounds],
         corner_radius: options[:layer].try(:[], :corner_radius).to_f,
         border_width: options[:layer].try(:[], :border_width).to_f,
-        border_color: options[:layer].try(:[], :border_color).try(:uicolor) || background_color
+        border_color: options[:layer].try(:[], :border_color).try(:uicolor) || background_color,
+        dashes: options[:layer].try(:[], :dashes),
       }
     end
 

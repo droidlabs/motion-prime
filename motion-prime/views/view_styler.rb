@@ -232,6 +232,8 @@ module MotionPrime
             stroke_layer.strokeColor = value[:border_color].uicolor.cgcolor
             stroke_layer.lineWidth = value[:border_width].to_f*2 # another half is hidden by the mask
 
+            stroke_layer.lineDashPattern = value[:dashes] if value[:dashes].present?
+
             container_view = view.delegate
             stroke_view = UIView.alloc.initWithFrame(layer_bounds)
             stroke_view.userInteractionEnabled = false
