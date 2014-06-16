@@ -6,7 +6,7 @@ module MotionPrime
     end
 
     def clear_delegated
-      Array.wrap(@delegated_views).each { |view| view.setDelegate(nil) }
+      Array.wrap(@delegated_views).each { |view| view.try(:setDelegate, nil) }
     end
   end
 end

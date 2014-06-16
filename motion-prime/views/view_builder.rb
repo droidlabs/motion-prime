@@ -81,8 +81,20 @@ module MotionPrime
             klass.alloc.initWithItems items
           },
           'UIPageViewController' => Proc.new{|klass, options|
-            klass.alloc.initWithTransitionStyle(options.delete(:transition_style) || UIPageViewControllerTransitionStyleScroll,
+            controller = klass.alloc.initWithTransitionStyle(options.delete(:transition_style) || UIPageViewControllerTransitionStyleScroll,
                navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal, options:nil)
+
+            controller.setDelegate(options.delete(:delegate))
+            controller.setDataSource(options.delete(:data_source))
+            section = options[:section]
+            section.page_controller = controller
+            if screen = section.screen
+              screen.addChildViewController(controller)
+              screen.view.gestureRecognizers = controller.gestureRecognizers
+              controller.didMoveToParentViewController(screen)
+            end
+
+            controller.view
           },
           'MPTableView' => Proc.new{|klass, options|
             style = options.delete(:style) || UITableViewStylePlain

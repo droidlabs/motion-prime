@@ -66,7 +66,7 @@ module MotionPrime
         block.try(:call, view, self)
       end
 
-      if computed_options.has_key?(:delegate) && computed_options[:delegate].respond_to?(:delegated_by)
+      if computed_options.has_key?(:delegate) && computed_options[:delegate].respond_to?(:delegated_by) && view.respond_to?(:setDelegate)
         computed_options[:delegate].delegated_by(view)
       end
       view

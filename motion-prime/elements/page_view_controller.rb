@@ -1,23 +1,14 @@
 module MotionPrime
   class PageViewControllerElement < BaseElement
+    after_render :set_delegated
     def view_class
       "UIPageViewController"
     end
 
-    def render!(options = {}, &block)
-      builder = ViewBuilder.new(class_factory(view_class),  computed_options.merge(options))
-      controller = builder.view
-      ViewStyler.new(controller, CGRectZero, builder.options).apply
-
-      first = section.collection_delegate.fetch_item(0)
-      controller.setViewControllers([first], direction:UIPageViewControllerNavigationDirectionForward,
-                                    animated:false, completion:lambda{|a|}) # completion:nil blows up!
-
-      screen.addChildViewController(controller)
-      screen.view.addSubview(controller.view)
-      controller.didMoveToParentViewController(screen)
-      screen.view.gestureRecognizers = controller.gestureRecognizers
-      self.view = controller
+    def set_delegated
+      if computed_options.has_key?(:delegate) && computed_options[:delegate].respond_to?(:delegated_by) && section.respond_to?(:page_controller)
+        computed_options[:delegate].delegated_by(section.page_controller)
+      end
     end
   end
 end
