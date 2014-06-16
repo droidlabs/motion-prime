@@ -106,7 +106,7 @@ module MotionPrime
       inspection = self.info.keys.map { |name|
         "#{name}: #{attribute_for_inspect(name)}"
       }.compact.join(", ")
-      "#<#{self.class}:0x#{self.object_id.to_s(16)}> #{inspection}>"
+      "#<#{self.class}:0x#{self.object_id.to_s(16)} #{inspection}>"
     end
 
     # Returns a clone of the record with empty bags

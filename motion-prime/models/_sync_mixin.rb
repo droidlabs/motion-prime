@@ -236,6 +236,9 @@ module MotionPrime
       api_client.get association_sync_url(key, options, sync_options), params do |response, status_code|
         data = options[:sync_key] && response ? response[options[:sync_key]] : response
         if data
+          unless data.is_a?(Array)
+            raise MotionPrime::SyncError, "Expected Array for sync '#{key}', but received object"
+          end
           NSLog("SYNC: finished sync for #{key} in #{self.class_name_without_kvo}")
           fetch_has_many_with_attributes(key, data, sync_options)
           block.call(data, status_code, response) if use_callback
