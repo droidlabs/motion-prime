@@ -16,8 +16,34 @@ class Kernel
   end
 
   def pp(*attrs)
-    NSLog([*attrs].map(&:inspect).join(' '))
+    attrs = [*attrs]
+    results = attrs.map.with_index do |entity, i|
+      if entity.is_a?(Hash)
+        "#{"\n" unless attrs[i-1].is_a?(Hash)}#{inspect_hash(entity)}\n"
+      else
+        entity.inspect
+      end
+    end
+    NSLog(results.compact.join(' '))
     attrs
+  end
+
+  def inspect_hash(hash, depth = 0)
+    return '{}' if hash.blank?
+    res = hash.map.with_index do |(key, value), i|
+      k = "#{'  '*depth}#{i.zero? ? '{' : ' '}#{key.inspect}=>"
+      pair = if value.is_a?(Hash)
+        "#{k}\n#{inspect_hash(value, depth + 1)}"
+      else
+        [k, value.inspect].join
+      end
+      if i == hash.count-1
+        pair + '}'
+      else
+        pair + ",\n"
+      end
+    end
+    res.join
   end
 
   def class_name_without_kvo

@@ -51,9 +51,9 @@ module MotionPrime
     end
 
     def dealloc
-      Prime.logger.dealloc_message :collection, self, self.collection_element.try(:view).to_s
-      collection_delegate.clear_delegated
-      collection_view.setDataSource nil
+      Prime.logger.dealloc_message :collection, self, @collection_element.try(:view).to_s
+      @collection_delegate.try(:clear_delegated)
+      @collection_element.try(:view).try(:setDataSource, nil)
       super
     end
 
