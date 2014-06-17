@@ -58,7 +58,7 @@ module MotionPrime
         next Prime.logger.debug("Reload section: `#{section.name}` is not in the list") unless index
         paths << index
         block.call(section, index, counter)
-        deque_cell(section, at: path) # deque cached
+        deque_cell(section, at: index) # deque cached
         section.reload
       end
       self.performSelectorOnMainThread(:reload_cells, withObject: paths, waitUntilDone: false)
