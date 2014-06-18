@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    motion-prime (1.0.2)
+    motion-prime (1.0.3)
       activesupport
       afmotion (~> 2.1.0)
       bubble-wrap (~> 1.6.0)

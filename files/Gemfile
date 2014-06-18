@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'motion-cocoapods', '~> 1.4.1'
-gem 'motion-prime', '1.0.2'
+gem 'motion-prime', '1.0.3'
 
 # add reside menu for sidebar support
 # gem 'prime_reside_menu', '~> 0.1.4'

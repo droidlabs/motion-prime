@@ -1,3 +1,7 @@
+=== 1.0.3
+* Fixed issue with overriding background color
+* Improved support for UIPageViewController
+
 === 1.0.2
 * Fix regression for UIButton builder
 
