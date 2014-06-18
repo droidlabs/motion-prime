@@ -6,7 +6,7 @@ module MotionPrime
       base.class_attribute :_timestamp_attributes
     end
 
-    def save
+    def save!
       time = Time.now
       trigger_timestamp(:save, time)
       trigger_timestamp(:create, time) if new_record?

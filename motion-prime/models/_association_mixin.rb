@@ -13,7 +13,7 @@ module MotionPrime
     # Saves model and all associations to store.
     #
     # @return [Prime::Model] model
-    def save
+    def save!
       _bags.values.each do |bag|
         bag.store = self.store
         bag.save

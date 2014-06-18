@@ -47,7 +47,7 @@ module MotionPrime
       end
     end
 
-    def save
+    def save!
       super
       reset_changed_attributes
       self

@@ -248,7 +248,7 @@ module MotionPrime
         end
       end
     end
-
+    
     def update_storage(bags_options, sync_options = {})
       should_save = sync_options[:save]
       if should_save

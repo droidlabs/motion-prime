@@ -117,6 +117,10 @@ module MotionPrime
     end
 
     def save
+      self.performSelectorOnMainThread :save!, withObject: nil, waitUntilDone: true
+    end
+
+    def save!
       self.store ||= MotionPrime::Store.shared_store
       error_ptr = Pointer.new(:id)
       result = self.saveAndReturnError(error_ptr)

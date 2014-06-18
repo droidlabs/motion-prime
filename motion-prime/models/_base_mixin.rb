@@ -6,10 +6,14 @@ module MotionPrime
       base.class_attribute :default_sort_options
     end
 
+    def save
+      self.performSelectorOnMainThread :save!, withObject: nil, waitUntilDone: true
+    end
+
     # Saves model to default store.
     #
     # @return [Prime::Model] model
-    def save
+    def save!
       set_default_id_if_needed
       raise StoreError, 'No store provided' unless self.store
       error_ptr = Pointer.new(:id)
