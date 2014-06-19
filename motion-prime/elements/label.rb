@@ -31,7 +31,7 @@ module MotionPrime
     end
 
     def set_text(value)
-      computed_options[:text] = value
+      options[:text] = computed_options[:text] = value
       styler = ViewStyler.new(view, CGRectZero, computed_options)
       if styler.options[:attributed_text]
         view.attributedText = styler.options[:attributed_text]

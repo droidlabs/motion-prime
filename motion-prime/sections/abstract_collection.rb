@@ -93,7 +93,9 @@ module MotionPrime
     def reset_collection_data
       @did_appear = false
       Array.wrap(@data).flatten.each do |section|
-        section.container_element.try(:update_options, reuse_identifier: nil)
+        next unless element = section.container_element
+        element.update_options(reuse_identifier: nil)
+        element.view.try(:removeFromSuperview)
       end
       @data = nil
       @data_stamp = nil

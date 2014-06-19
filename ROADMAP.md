@@ -8,6 +8,7 @@
 * bug: dealloc of Prime::Section will not be called for cell created in collection_data using #map.
 * bug: images does not render after reload table if using draw_with_layer (prerender not enabled).
 * bug: incorrect height (cropped) for draw label with lineSpacing in cases when there is just one line.
+* use one style to set rounded corners for view/draw elements (remove :rounded_corners option)
 * add dsl for push notifications.
 * add some extensions/middleware system, at least for networking.
 * create "display_network_error" extension.

@@ -58,6 +58,7 @@ module MotionPrime
         @view_controllers[index]
       else
         controller = MotionPrime::Screen.new
+        controller.parent_screen = self.screen
         section = data[index]
         section.screen = controller.weak_ref
         controller.set_section :main, instance: section

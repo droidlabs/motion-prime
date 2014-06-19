@@ -54,6 +54,14 @@ module MotionPrime
       self.view.addTarget(target || section, action: action, forControlEvents: event.uicontrolevent)
     end
 
+    def notify_section_before_render
+      section.try(:before_element_render, self)
+    end
+
+    def notify_section_after_render
+      section.try(:after_element_render, self)
+    end
+
     def render(options = {}, &block)
       run_callbacks :render do
         render!(options, &block)
@@ -104,7 +112,6 @@ module MotionPrime
       if (changed_options & [:text, :size_to_fit]).any? && respond_to?(:size_to_fit)
         size_to_fit
       end
-      section.try(:on_element_render, self)
     end
 
     def update_with_options(new_options = {})
@@ -116,6 +123,15 @@ module MotionPrime
     def update_options(new_options)
       options.merge!(new_options)
       return unless view
+      if new_options.slice(:width, :height, :top, :left)
+        origin = view.frame.origin
+        size = view.frame.size
+        size.width = new_options.delete(:width) if new_options[:width]
+        size.height = new_options.delete(:height) if new_options[:height]
+        origin.x = new_options.delete(:left) if new_options[:left]
+        origin.y = new_options.delete(:top) if new_options[:top]
+        new_options[:frame] = CGRectMake(*(origin.to_a + size.to_a))
+      end
       ViewStyler.new(view, view.superview.try(:bounds), new_options).apply
     end
 
@@ -259,5 +275,8 @@ module MotionPrime
         set_callback :render, :after, method_name
       end
     end
+
+    before_render :notify_section_before_render
+    after_render :notify_section_after_render
   end
 end

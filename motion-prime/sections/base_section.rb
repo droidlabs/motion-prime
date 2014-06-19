@@ -209,12 +209,12 @@ module MotionPrime
       render_container(container_options) do
         elements_to_render.each do |key, element|
           element.render
-          on_element_render(element)
         end
       end
     end
 
-    def on_element_render(element)
+    def after_element_render(element)
+      super
       return unless callbacks = elements_callbacks.try(:[], element.name)
       callbacks.each do |options|
         options[:method].to_proc.call(options[:target] || self)

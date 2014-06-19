@@ -23,6 +23,11 @@ module MotionPrime
 
     def render!; end
 
+    def on_container_render
+      @view = nil
+      @computed_frame = nil
+    end
+
     def view
       @view ||= section.container_view
     end

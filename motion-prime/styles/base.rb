@@ -11,7 +11,7 @@ MotionPrime::Styles.define :base do
     left: 0,
     right: 0,
     bottom: 0,
-    separator_inset: 0
+    separator_inset: [0,0]
 
   style :collection,
     top: 0,

@@ -104,7 +104,7 @@ module MotionPrime
     def set_option(key, value)
       # return if value.nil?
       # ignore options
-      return if ignore_option?(key)
+      return if ignore_option?(key) || value.nil?
 
       # apply options
       result ||= set_color_options(key, value)

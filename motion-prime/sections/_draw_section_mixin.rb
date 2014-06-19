@@ -28,6 +28,14 @@ module MotionPrime
       end
     end
 
+    def before_element_render(element)
+      return unless element == container_element
+      self.container_gesture_recognizers = nil
+      elements_to_draw.values.each(&:on_container_render)
+    end
+
+    def after_element_render(element); end
+
     def bind_gesture_on_container_for(element, action, receiver = nil)
       self.container_gesture_recognizers ||= begin
         set_container_gesture_recognizer
@@ -87,7 +95,11 @@ module MotionPrime
           end
           CGRectContainsPoint(element.computed_frame, point)
         end
-        (target[:receiver] || self).send(target[:action], recognizer, target[:element]) if target
+        stop_propagation = false
+        if target
+          stop_propagation = !(target[:receiver] || self).send(target[:action], recognizer, target[:element])
+        end
+        recognizer.cancelsTouchesInView = stop_propagation
       end
 
       def draw_elements(rect)

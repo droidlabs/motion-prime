@@ -106,8 +106,8 @@ module MotionPrime
     end
 
     def update_with_options(new_options = {})
-      super
       self.image_data = nil if new_options.slice(:url, :image).any?
+      super
     end
   end
 end
