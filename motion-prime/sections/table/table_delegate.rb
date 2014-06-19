@@ -60,6 +60,7 @@ module MotionPrime
 
     def scrollViewDidScroll(scroll)
       table_section.scroll_view_did_scroll(scroll)
+      collection_section.update_pull_to_refresh_after_scroll(scroll)
     end
 
     def scrollViewWillBeginDragging(scroll)

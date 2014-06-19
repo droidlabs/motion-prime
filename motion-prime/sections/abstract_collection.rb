@@ -227,7 +227,9 @@ module MotionPrime
       display_pending_cells
     end
 
-    def scroll_view_did_scroll(scroll)
+    def scroll_view_did_scroll(scroll); end
+
+    def update_pull_to_refresh_after_scroll(scroll)
       return unless refresh_view = collection_view.try(:pullToRefreshView)
       return refresh_view.alpha = 1 if refresh_view.state == SVPullToRefreshStateLoading
 
