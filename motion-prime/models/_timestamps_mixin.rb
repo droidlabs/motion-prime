@@ -18,13 +18,13 @@ module MotionPrime
       return unless field
       self.send(:"#{field}=", time)
     end
-    
+
     module ClassMethods
       def timestamp_attributes(actions = nil)
         self._timestamp_attributes ||= {}
         actions ||= {save: :saved_at, create: :created_at}
         actions.each do |action_name, field|
-          _timestamp_attributes[action_name.to_sym] = field
+          self._timestamp_attributes[action_name.to_sym] = field
           self.attribute field, type: :time
         end
       end

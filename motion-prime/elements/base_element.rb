@@ -1,6 +1,7 @@
 motion_require '../helpers/has_normalizer'
 motion_require '../helpers/has_style_chain_builder'
 motion_require '../helpers/has_class_factory'
+motion_require '../helpers/has_style_options'
 module MotionPrime
   class BaseElement
     # MotionPrime::BaseElement is container for UIView class elements with options.
@@ -10,6 +11,7 @@ module MotionPrime
     include HasNormalizer
     include HasStyleChainBuilder
     include HasClassFactory
+    include HasStyleOptions
     extend HasClassFactory
 
     attr_accessor :options, :section, :name,
@@ -90,10 +92,10 @@ module MotionPrime
       block_options = compute_block_options || {}
       raw_options = self.options.except(:screen, :name, :block, :view_class).merge(block_options)
       compute_style_options(raw_options)
-      raw_options = Styles.for(styles).merge(raw_options)
+      raw_options = Styles.for(styles).deep_merge(raw_options)
       @computed_options = raw_options
       normalize_options(@computed_options, section.try(:elements_eval_object), %w[
-        font text placeholder title_label
+        font font_name font_size text placeholder title_label
         padding padding_left padding_right padding_top padding_bottom
         left right min_width min_outer_width max_width max_outer_width width
         top bottom min_height min_outer_height max_height max_outer_height height])
@@ -115,23 +117,24 @@ module MotionPrime
     end
 
     def update_with_options(new_options = {})
-      options.merge!(new_options)
+      options.deep_merge!(new_options)
       reload!
+      computed_options.deep_merge!(new_options)
       rerender!(new_options.keys)
     end
 
     def update_options(new_options)
-      options.merge!(new_options)
+      options.deep_merge!(new_options)
       return unless view
-      if new_options.slice(:width, :height, :top, :left)
-        origin = view.frame.origin
-        size = view.frame.size
-        size.width = new_options.delete(:width) if new_options[:width]
-        size.height = new_options.delete(:height) if new_options[:height]
-        origin.x = new_options.delete(:left) if new_options[:left]
-        origin.y = new_options.delete(:top) if new_options[:top]
-        new_options[:frame] = CGRectMake(*(origin.to_a + size.to_a))
+
+      required_options = if new_options.slice(:width, :height, :top, :left, :right, :bottom).any?
+        new_options[:calculate_frame] = true
+        [:width, :height, :top, :left, :right, :bottom]
+      elsif new_options.slice(:text, :title).any?
+        [:line_spacing, :line_height, :underline, :fragment_color, :text_alignment, :font, :font_name, :font_size, :line_break_mode, :number_of_lines]
       end
+      new_options = computed_options.slice(*Array.wrap(required_options)).merge(new_options)
+
       ViewStyler.new(view, view.superview.try(:bounds), new_options).apply
     end
 
@@ -177,11 +180,10 @@ module MotionPrime
       end
 
       def compute_style_options(*style_sources)
-        has_errors = section.respond_to?(:observing_errors?) && observing_errors? && has_errors?
-
         @styles = []
         if cell_section?
-          @styles += compute_cell_style_options(style_sources, has_errors)
+          suffixes = section.style_suffixes if section.respond_to?(:style_suffixes)
+          @styles += compute_cell_style_options(style_sources, Array.wrap(suffixes))
         end
 
         mixins = []
@@ -205,11 +207,11 @@ module MotionPrime
 
         # custom style (from options or block options), using for TableViews as well
         @styles += custom_styles
-        # pp @view_class.to_s + @styles.inspect; puts()
+        # pp(@view_class.to_s + @styles.inspect); puts()
         @styles
       end
 
-      def compute_cell_style_options(style_sources, has_errors)
+      def compute_cell_style_options(style_sources, additional_suffixes)
         base_styles = {common: [], specific: []}
         suffixes = {common: [], specific: []}
         all_styles = []
@@ -224,13 +226,17 @@ module MotionPrime
           # form element: _input
           # table element: _image
           suffixes[:common] << @view_name.to_sym
-          suffixes[:common] << :"#{@view_name}_with_errors" if has_errors
+          additional_suffixes.each do |additional_suffix|
+            suffixes[:common] << [@view_name, additional_suffix].join('_').to_sym
+          end
         end
         if name && name.to_s != @view_name
           # form element: _input
           # table element: _icon
           suffixes[:specific] << name.to_sym
-          suffixes[:specific] << :"#{name}_with_errors" if has_errors
+          additional_suffixes.each do |additional_suffix|
+            suffixes[:specific] << [name, additional_suffix].join('_').to_sym
+          end
         end
         # form cell: base_form_field, base_form_string_field
         # form element: base_form_field_string_field, base_form_string_field_text_field, base_form_string_field_input

@@ -5,13 +5,14 @@ module MotionPrime
 
     def initialize(options)
       self.collection_section = options[:section].try(:weak_ref)
+      @_section_info = collection_section.to_s
       @section_instance = collection_section.to_s
     end
 
-    # def dealloc
-    #   pp 'Deallocating collection_delegate for ', @section_instance
-    #   super
-    # end
+    def dealloc
+      Prime.logger.dealloc_message :collection_delegate, @_section_info
+      super
+    end
 
     def numberOfSectionsInCollectionView(table)
       collection_section.number_of_groups

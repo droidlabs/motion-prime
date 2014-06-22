@@ -115,8 +115,13 @@ module MotionPrime
         background_color = options[:background_color].try(:uicolor)
 
         if gradient_options = options[:gradient]
-          start_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMinY(rect))
-          end_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect))
+          if gradient_options[:type].to_s == 'horizontal'
+            start_point = CGPointMake(0, 0.5)
+            end_point = CGPointMake(1.0, 0.5)
+          else
+            start_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMinY(rect))
+            end_point = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect))
+          end
 
           # CGContextSaveGState(context)
           CGContextAddRect(context, rect)

@@ -5,13 +5,14 @@ module MotionPrime
 
     def initialize(options)
       self.collection_section = options[:section].try(:weak_ref)
+      @_section_info = collection_section.to_s
       @section_instance = collection_section.to_s
     end
 
-    # def dealloc
-    #   pp 'Deallocating page_view_delegate for ', @section_instance
-    #   super
-    # end
+    def dealloc
+      Prime.logger.dealloc_message :collection_delegate, @_section_info
+      super
+    end
 
     def viewControllerAtIndex(index, storyboard:storyboard)
       collection_section.page_for_index(index)
@@ -39,7 +40,7 @@ module MotionPrime
                     UIDevice.currentDevice.orientation == UIDeviceOrientationPortraitUpsideDown ||
                     UIDevice.currentDevice.orientation == UIDeviceOrientationUnknown
       if is_portrait
-        page_view_controller.setViewControllers([current], direction:UIPageViewControllerNavigationDirectionForward, animated:true, completion:lambda{|a|})
+        collection_section.reload_collection_data
         page_view_controller.doubleSided = false
         return UIPageViewControllerSpineLocationMin
       else
@@ -51,9 +52,16 @@ module MotionPrime
           prev_vc = pageViewController(page_view_controller, viewControllerBeforeViewController: current)
           viewControllers = [prev_vc, current]
         end
-        page_view_controller.setViewControllers(viewControllers, direction:UIPageViewControllerNavigationDirectionForward, animated:true, completion:lambda{|a|})
+        collection_section.set_view_controllers(viewControllers, true)
         page_view_controller.doubleSided = true
         return UIPageViewControllerSpineLocationMid
+      end
+    end
+
+    def pageViewController(pvc, didFinishAnimating: finished, previousViewControllers: previous_view_controllers, transitionCompleted: completed)
+      if completed
+        index = collection_section.index_for_page(collection_section.page_controller.viewControllers.last)
+        collection_section.on_page_set(index)
       end
     end
   end

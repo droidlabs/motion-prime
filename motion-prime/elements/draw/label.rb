@@ -9,7 +9,7 @@ module MotionPrime
       options = computed_options
       text = (options[:html] || options[:text]).to_s.gsub(/\A[\n\r]+/, '')
       text_color = (options[:text_color] || :black).uicolor
-      font = (options[:font] || :system).uifont
+      font = (extract_font_from(options) || :system).uifont
 
       text_alignment_name = options.fetch(:text_alignment, :left)
       text_alignment = text_alignment_name.nstextalignment

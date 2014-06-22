@@ -9,3 +9,6 @@ UIControlContentVerticalAlignmentCenter
 UIControlContentVerticalAlignmentTop
 UIControlContentVerticalAlignmentBottom
 UIControlContentVerticalAlignmentFill
+
+ALAuthorizationStatusNotDetermined
+ALAssetsGroupAll

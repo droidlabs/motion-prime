@@ -14,7 +14,7 @@ module MotionPrime
         custom_offset_threshold: - collection_view.contentInset.top - refresh_view.size.height,
         original_top_inset: collection_view.contentInset.top
       }
-      screen.set_options_for refresh_view, base_options.merge(options)
+      screen.set_options_for refresh_view, base_options.deep_merge(options)
     end
 
     def finish_pull_to_refresh

@@ -4,10 +4,11 @@ module MotionPrime
     include HasStyles
     include HasClassFactory
     include ElementTextMixin
+    include HasStyleOptions
 
     ORDER = %w[
       frame
-      font placeholder_font text title_label title
+      font text title_label title
       minimum_value maximum_value value
       ]
 
@@ -57,13 +58,12 @@ module MotionPrime
 
       if options.slice(:html, :line_spacing, :line_height, :underline, :fragment_color).any?
         text_options = extract_attributed_text_options(options)
-
         html = text_options.delete(:html)
         text_options[:text] = html if html
         options[:attributed_text] = html ? html_string(text_options) : attributed_string(text_options)
 
         # ios 7 bug fix when text is invisible
-        if text_options.slice(:line_height, :line_spacing, :text_alignment, :line_break_mode).any? && options.fetch(:number_of_lines, 1) == 1
+        if view.is_a?(UILabel) && text_options.slice(:line_height, :line_spacing, :text_alignment, :line_break_mode).any? && options.fetch(:number_of_lines, 1) == 1
           options[:number_of_lines] = 0
         end
       end
@@ -79,25 +79,22 @@ module MotionPrime
 
     def extract_font_options(options, prefix = nil)
       key = [prefix, 'font'].compact.join('_').to_sym
-      name_key = [prefix, 'font_name'].compact.join('_').to_sym
-      size_key = [prefix, 'font_size'].compact.join('_').to_sym
-      if options.slice(size_key, name_key).any?
-        font_name = options.delete(name_key) || :system
-        font_size = options.delete(size_key) || 14
-        options[key] ||= font_name.uifont(font_size)
-      end
+      options[key] = extract_font_from(options, prefix)
     end
 
     def extract_attributed_text_options(options)
       text_attributes = [
         :text, :html, :line_spacing, :line_height, :underline, :fragment_color,
-        :text_alignment, :font, :line_break_mode, :number_of_lines
+        :text_alignment, :font, :font_name, :font_size, :line_break_mode, :number_of_lines, :text_color
       ]
       attributed_text_options = options.slice(*text_attributes)
+      exclude_attributes = text_attributes
       if view.is_a?(UIButton)
+        attributed_text_options[:text_color] ||= options[:title_color]
         attributed_text_options[:text] ||= options[:title]
+        exclude_attributes.delete(:line_break_mode)
       end
-      options.except!(*text_attributes)
+      options.except!(*exclude_attributes)
       attributed_text_options
     end
 
@@ -277,6 +274,7 @@ module MotionPrime
           width height top right bottom left
           max_width max_outer_width min_width min_outer_width
           max_height max_outer_height min_height min_outer_width
+          font_name font_size placeholder_font_name placeholder_font_size placeholder_font
           bounds
         ].include?(key.to_s)
       end

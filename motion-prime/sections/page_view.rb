@@ -27,16 +27,24 @@ module MotionPrime
     end
 
     def set_page(index, animated = false, &block)
-      block ||= proc{|a|}
       page = page_for_index(index)
-      current_index = index_for_page(page_controller.viewControllers.last).to_i
-      direction = current_index <= index ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse
-      page_controller.setViewControllers([page], direction: direction, animated: animated, completion: block)
+      set_view_controllers([page], animated, &block)
     end
 
     def reload_collection_data
-      page_controller.setViewControllers(page_controller.viewControllers, direction: UIPageViewControllerNavigationDirectionForward, animated: false, completion: proc{|a|})
+      set_view_controllers(page_controller.viewControllers, false)
     end
+
+    def set_view_controllers(controllers, animated = false, &completion)
+      completion ||= proc{|a|}
+      index = index_for_page(controllers.last)
+      current_index = index_for_page(page_controller.viewControllers.last).to_i
+      direction = current_index <= index ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse
+      page_controller.setViewControllers(controllers, direction: direction, animated: animated, completion: completion)
+      on_page_set(index)
+    end
+
+    def on_page_set(index); end
 
     def add_pages(sections, follow = false)
       @data += Array.wrap(sections)
@@ -48,6 +56,10 @@ module MotionPrime
       else
         reload_collection_data
       end
+    end
+
+    def current_page_id
+      index_for_page(page_controller.viewControllers.last)
     end
 
     # Delegate

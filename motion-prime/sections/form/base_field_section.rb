@@ -156,6 +156,12 @@ module MotionPrime
       observing_errors_for.errors.info.slice(*errors_observer_fields).values.flatten
     end
 
+    def style_suffixes
+      suffixes = Array.wrap(@options[:style_suffixes]).clone
+      suffixes << 'with_errors' if has_errors?
+      suffixes
+    end
+
     def reload_section
       clear_observers
       form.hard_reload_cell_section(self)

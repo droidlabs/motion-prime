@@ -35,15 +35,22 @@ module MotionPrime
       @content_width = width_for_attributed_text(current_attributed_text)
     end
 
+    def multiline_content_width
+      unless computed_options[:width]
+        Prime.logger.error "Please set element width for multiline content width calculation (`#{self.name}` in section `#{section.try(:name)}`)"
+      end
+      width_for_attributed_text(current_attributed_text, computed_options[:width] - content_padding_width)
+    end
+
     def width_for_text(text)
       width_for_attributed_text(attributed_text_for_text(text))
     end
 
-    def width_for_attributed_text(attributed_text)
+    def width_for_attributed_text(attributed_text, width = Float::MAX)
       min, max = computed_options[:min_width].to_f, computed_options[:max_width]
       return min if attributed_text.to_s.blank?
 
-      rect = get_content_rect(attributed_text, Float::MAX)
+      rect = get_content_rect(attributed_text, width)
       [[rect.size.width.ceil, max].compact.min, min].max.ceil
     end
 
@@ -61,6 +68,9 @@ module MotionPrime
 
     def height_for_attributed_text(attributed_text)
       min, max = computed_options[:min_height].to_f, computed_options[:max_height]
+      unless computed_options[:width]
+        Prime.logger.error "Please set element width for content height calculation (`#{self.name}` in section `#{section.try(:name)}`)"
+      end
       return min if attributed_text.to_s.blank?
       rect = get_content_rect(attributed_text, computed_options[:width] - content_padding_width)
       [[rect.size.height.ceil, max].compact.min, min].max.ceil
@@ -92,7 +102,7 @@ module MotionPrime
       end
 
       def button_content_font
-        computed_options[:title_label].try(:[], :font)
+        extract_font_from(computed_options[:title_label])
       end
 
       def input_content_text
@@ -101,7 +111,7 @@ module MotionPrime
 
       # TODO: normalize_object will not be required after refactoring computed options.
       def input_content_font
-        font = input_value_text.blank? ? computed_options[:placeholder_font] : computed_options[:font]
+        font = input_value_text.blank? ? extract_font_from(computed_options, 'placeholder') : extract_font_from(computed_options)
         normalize_object(font, section || self)
       end
 

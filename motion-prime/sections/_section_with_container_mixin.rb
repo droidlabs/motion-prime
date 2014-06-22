@@ -18,7 +18,7 @@ module MotionPrime
           has_drawn_content: true
         })
         container_element_options = self.class.container_element_options.clone
-        options = (container_element_options || {}).merge(options)
+        options = (container_element_options || {}).deep_merge(options)
         type = options.delete(:type)
         MotionPrime::BaseElement.factory(type, options)
       end

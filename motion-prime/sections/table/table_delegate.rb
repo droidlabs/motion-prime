@@ -5,13 +5,14 @@ module MotionPrime
 
     def initialize(options)
       self.table_section = options[:section].try(:weak_ref)
+      @_section_info = table_section.to_s
       @section_instance = table_section.to_s
     end
 
-    # def dealloc
-    #   pp 'Deallocating table_delegate for ', @section_instance
-    #   super
-    # end
+    def dealloc
+      Prime.logger.dealloc_message :collection_delegate, @_section_info
+      super
+    end
 
     def init_pull_to_refresh
       return unless block = table_section.class.pull_to_refresh_block

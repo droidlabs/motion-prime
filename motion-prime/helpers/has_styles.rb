@@ -3,10 +3,14 @@ module MotionPrime
     def prepare_gradient(options)
       colors = options[:colors].map(&:uicolor).map(&:cgcolor)
       locations = options[:locations] if options[:locations]
+      type = options[:type].to_s
 
       if self.is_a?(ViewStyler)
         gradient = CAGradientLayer.layer
-
+        if type == 'horizontal'
+          gradient.startPoint = CGPointMake(0, 0.5)
+          gradient.endPoint = CGPointMake(1.0, 0.5)
+        end
         gradient.frame = if options[:frame_width]
           CGRectMake(options[:frame_x].to_f, options[:frame_y].to_f, options[:frame_width].to_f, options[:frame_height].to_f)
         else

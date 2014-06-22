@@ -199,7 +199,7 @@ module MotionPrime
 
     def render(container_options = {}, force = false)
       force ? create_elements! : create_elements
-      self.container_options.merge!(container_options)
+      self.container_options.deep_merge!(container_options)
       run_callbacks :render do
         render!
       end
@@ -375,15 +375,15 @@ module MotionPrime
 
       def compute_container_options!
         raw_options = {}
-        raw_options.merge!(self.class.container_options.try(:clone) || {})
-        raw_options.merge!(options[:container] || {})
+        raw_options.deep_merge!(self.class.container_options.try(:clone) || {})
+        raw_options.deep_merge!(options[:container] || {})
         # allow to pass styles as proc
         normalize_options(raw_options, elements_eval_object, nil, [:styles])
         @container_options = raw_options # must be here because section_styles may use container_options for custom styles
 
         container_options_from_styles = Styles.for(section_styles.values.flatten)[:container] if section_styles
         if container_options_from_styles.present?
-          @container_options = container_options_from_styles.merge(@container_options)
+          @container_options = container_options_from_styles.deep_merge(@container_options)
         end
         normalize_options(@container_options, elements_eval_object)
       end

@@ -17,6 +17,7 @@ module MotionPrime
         corner_radius: options[:layer].try(:[], :corner_radius).to_f,
         border_width: options[:layer].try(:[], :border_width).to_f,
         border_color: options[:layer].try(:[], :border_color).try(:uicolor) || background_color,
+        border_sides: options[:layer].try(:[], :border_sides),
         dashes: options[:layer].try(:[], :dashes),
       }
     end

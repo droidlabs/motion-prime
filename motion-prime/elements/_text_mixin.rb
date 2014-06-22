@@ -71,8 +71,12 @@ module MotionPrime
         end
         attributes[NSParagraphStyleAttributeName] = paragrah_style
       end
-      attributes[NSForegroundColorAttributeName] = options[:text_color].uicolor if options[:text_color]
-      attributes[NSFontAttributeName] = options[:font].uifont if options[:font]
+      if color = options[:text_color] || options[:title_color]
+        attributes[NSForegroundColorAttributeName] = color.uicolor
+      end
+      if font = extract_font_from(options)
+        attributes[NSFontAttributeName] = font.uifont
+      end
       [attributes, paragrah_style]
     end
   end

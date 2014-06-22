@@ -22,7 +22,7 @@ module MotionPrime
     end
 
     def font
-      computed_options[:title_label].try(:[], :font) || :system.uifont
+      extract_font_from(computed_options[:title_label]) || :system.uifont
     end
   end
 end
