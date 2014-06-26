@@ -34,8 +34,9 @@ module MotionPrime
     # @return self [Prime::Model]
     def add(object_or_array, options = {})
       error_ptr = Pointer.new(:id)
-      options[:existed_ids] ||= []
-      options[:existed_ids] += filter_array(self.to_a, bag_key: self.key).map(&:id)
+      options[:existed_ids] ||= filter_array(self.to_a, bag_key: self.key).inject({}) do |result, item|
+        result.merge(item.id => item)
+      end
       prepared = prepare_for_store(object_or_array, options)
 
       if object_or_array.is_a?(Array)
@@ -54,9 +55,17 @@ module MotionPrime
         object.map { |entity| prepare_for_store(entity, options) }.compact
       else
         object.bag_key = self.key
-        if object.id.present? && Array.wrap(options[:existed_ids]).include?(object.id)
-          return if options[:silent_validation]
-          raise StoreError, "duplicated item added `#{object.class_name_without_kvo}` with `id` = #{object.id}"
+        if object.id.present? && options[:existed_ids].include?(object.id)
+          if options[:silent_validation]
+            return
+          elsif options[:replace]
+            replace = options[:existed_ids][object.id]
+            replace.delete
+            delete_key(replace.key)
+            object
+          else
+            raise StoreError, "duplicated item added `#{object.class_name_without_kvo}` with `id` = #{object.id}"
+          end
         end
         object
       end

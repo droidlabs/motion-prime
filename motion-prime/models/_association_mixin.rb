@@ -7,10 +7,10 @@ module MotionPrime
     end
 
     def bags_attributes
-      # retrieving has_one/has_many bags
+      # retrieving has_one/has_many bag keys
       self.class._associations.keys.inject({}) do |result, association_name|
         key = :"#{association_name.pluralize}_bag"
-        result[key] = self.send(key) if self.respond_to?(key)
+        result[key] = self.info[key] if self.info[key].present?
         result
       end
     end
@@ -89,8 +89,8 @@ module MotionPrime
         define_method("#{association_name}_attributes=") do |value|
           bags_attributes = self.send(association_name).try(:bags_attributes) || {}
           self.send(bag_name).clear
-
-          association = association_name.classify.constantize.new(bags_attributes)
+          association = association_name.classify.constantize.new
+          association.info.merge!(bags_attributes)
           association.fetch_with_attributes(value)
           self.send(:"#{bag_name}") << association
           association
@@ -120,7 +120,8 @@ module MotionPrime
 
           pending_save_counter = 0
           collection = value.inject({}) do |result, attrs|
-            model = association_name.classify.constantize.new(bags_attributes.fetch(attrs[:id], {}))
+            model = association_name.classify.constantize.new
+            model.info.merge!(bags_attributes.fetch(attrs[:id], {}))
             model.fetch_with_attributes(attrs)
             unique_key = model.id || "pending_#{pending_save_counter+=1}"
             result.merge(unique_key => model)
