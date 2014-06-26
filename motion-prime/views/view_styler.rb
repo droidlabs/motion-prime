@@ -217,14 +217,17 @@ module MotionPrime
           mask_path = UIBezierPath.bezierPathWithRoundedRect(layer_bounds, byRoundingCorners: corners, cornerRadii: CGSizeMake(radius, radius))
           mask_layer = CAShapeLayer.layer
 
-
           mask_layer.frame = layer_bounds
           mask_layer.path = mask_path.CGPath
           view.mask = mask_layer
 
           if value[:border_color] && value[:border_width]
             stroke_layer = CAShapeLayer.layer
-            stroke_layer.path = mask_path.CGPath
+            unless value[:sides]
+              stroke_layer.path = mask_path.CGPath
+            else # suuport sides
+              stroke_layer.path = mask_path.CGPath
+            end
             stroke_layer.fillColor = :clear.uicolor.cgcolor
             stroke_layer.strokeColor = value[:border_color].uicolor.cgcolor
             stroke_layer.lineWidth = value[:border_width].to_f*2 # another half is hidden by the mask

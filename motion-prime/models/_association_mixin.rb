@@ -6,6 +6,15 @@ module MotionPrime
       @_bags ||= {}
     end
 
+    def bags_attributes
+      # retrieving has_one/has_many bags
+      self.class._associations.keys.inject({}) do |result, association_name|
+        key = :"#{association_name.pluralize}_bag"
+        result[key] = self.send(key) if self.respond_to?(key)
+        result
+      end
+    end
+
     def bag_key_for(bag_name)
       self.info[bag_name]
     end
@@ -78,9 +87,10 @@ module MotionPrime
           value
         end
         define_method("#{association_name}_attributes=") do |value|
+          bags_attributes = self.send(association_name).try(:bags_attributes) || {}
           self.send(bag_name).clear
 
-          association = association_name.classify.constantize.new
+          association = association_name.classify.constantize.new(bags_attributes)
           association.fetch_with_attributes(value)
           self.send(:"#{bag_name}") << association
           association
@@ -102,11 +112,15 @@ module MotionPrime
         self._associations[association_name] = options.merge(type: :many)
 
         define_method("#{association_name}_attributes=") do |value|
+          bags_attributes = self.send(bag_name).to_a.inject({}) do |result, item|
+            result[item.id] = item.bags_attributes if item.id
+            result
+          end
           self.send(bag_name).clear
 
           pending_save_counter = 0
           collection = value.inject({}) do |result, attrs|
-            model = association_name.classify.constantize.new
+            model = association_name.classify.constantize.new(bags_attributes.fetch(attrs[:id], {}))
             model.fetch_with_attributes(attrs)
             unique_key = model.id || "pending_#{pending_save_counter+=1}"
             result.merge(unique_key => model)

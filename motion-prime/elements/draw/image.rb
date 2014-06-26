@@ -9,7 +9,10 @@ module MotionPrime
       image ||= computed_options[:default] if computed_options[:url]
 
       # already initialized image or image from resources or default image
-      super.merge({image: image.try(:uiimage)})
+      super.merge({
+        image: image.try(:uiimage),
+        inner_rect: CGRectMake(frame_inner_left, frame_inner_top, frame_width, frame_height)
+      })
     end
 
     def draw_in(rect)
@@ -32,7 +35,7 @@ module MotionPrime
 
       border_width = options[:border_width]
       inset = border_width > 0 ? (border_width - 1 ).abs*0.5 : 0
-      rect = CGRectInset(options[:rect], inset, inset)
+      rect = CGRectInset(options[:inner_rect], inset, inset)
       radius = options[:corner_radius].to_f if options[:corner_radius] && options[:masks_to_bounds]
 
       UIGraphicsPushContext(context)
@@ -52,9 +55,9 @@ module MotionPrime
 
     def draw_with_layer
       options = draw_options
-      @layer.removeFromSuperlayer if @layer
+      @layer.try(:removeFromSuperlayer)
       return unless image = options[:image]
-      rect = options[:rect]
+      rect = options[:inner_rect]
       radius = options[:corner_radius].to_f if options[:corner_radius] && options[:masks_to_bounds]
 
       @layer = CALayer.layer
@@ -106,7 +109,8 @@ module MotionPrime
     end
 
     def update_with_options(new_options = {})
-      self.image_data = nil if new_options.slice(:url, :image).any?
+      self.image_data = nil if new_options.slice(:url, :image).any? || new_options.blank?
+      @layer.try(:removeFromSuperlayer)
       super
     end
   end

@@ -41,10 +41,11 @@ module MotionPrime
       current_index = index_for_page(page_controller.viewControllers.last).to_i
       direction = current_index <= index ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse
       page_controller.setViewControllers(controllers, direction: direction, animated: animated, completion: completion)
-      on_page_set(index)
+      page_did_set(index)
     end
 
-    def on_page_set(index); end
+    def page_did_set(index); end
+    def page_will_set(index); end
 
     def add_pages(sections, follow = false)
       @data += Array.wrap(sections)

@@ -157,7 +157,9 @@ module MotionPrime
     end
 
     def style_suffixes
-      suffixes = Array.wrap(@options[:style_suffixes]).clone
+      suffixes = @options[:style_suffixes]
+      suffixes = normalize_value(suffixes, collection_section) if suffixes.is_a?(Proc)
+      suffixes = Array.wrap(suffixes).clone
       suffixes << 'with_errors' if has_errors?
       suffixes
     end

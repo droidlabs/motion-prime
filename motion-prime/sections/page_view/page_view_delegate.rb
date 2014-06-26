@@ -61,8 +61,13 @@ module MotionPrime
     def pageViewController(pvc, didFinishAnimating: finished, previousViewControllers: previous_view_controllers, transitionCompleted: completed)
       if completed
         index = collection_section.index_for_page(collection_section.page_controller.viewControllers.last)
-        collection_section.on_page_set(index)
+        collection_section.page_did_set(index)
       end
+    end
+
+    def pageViewController(pvc, willTransitionToViewControllers: pending_view_controllers)
+      index = collection_section.index_for_page(pending_view_controllers.last)
+      collection_section.page_will_set(index)
     end
   end
 end

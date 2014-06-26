@@ -29,7 +29,8 @@ module MotionPrime
       end
     end
 
-    def normalize_value(object, receiver)
+    def normalize_value(object, receiver = nil)
+      receiver ||= self
       if element?
         receiver.send(:instance_exec, section || screen, self, &object)
       else
