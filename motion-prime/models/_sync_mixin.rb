@@ -124,10 +124,10 @@ module MotionPrime
 
       method = options[:method] || (persisted? ? :put : :post)
       api_client.send(method, url, post_data, options) do |data, status_code|
-        save_response = !options.has_key?(:save_response) || options[:save_response]
-        if save_response && status_code.to_s =~ /20\d/ && data.is_a?(Hash)
+        assign_response_data = options.fetch(:save_response, true)
+        if assign_response_data && status_code.to_s =~ /20\d/ && data.is_a?(Hash)
           set_attributes_from_response(data)
-          save
+          save if options[:save_response]
         end
         block.call(data, status_code, data) if use_callback
       end
