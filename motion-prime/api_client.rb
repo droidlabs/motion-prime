@@ -43,13 +43,12 @@ class ApiClient
   end
 
   def page_url(path)
-    "#{config.base}#{path}"
+    path_with_base(path, config.base)
   end
 
   def resource_url(path)
-    # return if path.blank?
     base = config.resource_base? ? config.resource_base : config.base
-    "#{base}#{path}"
+    path_with_base(path, base)
   end
 
   def request(method, path, params = {}, options = {}, &block)
@@ -73,7 +72,7 @@ class ApiClient
 
   def request!(method, path, data, files = nil, options = {}, &block)
     use_callback = block_given?
-    path = "#{config.api_namespace}#{path}" unless path.starts_with?('http')
+    path = path_with_base(path, config.api_namespace)
     client_method = files.present? ? :"multipart_#{method}" : method
     AFMotion::Client.shared.send client_method, path, data do |response, form_data, progress|
       if form_data && files.present?
@@ -131,7 +130,6 @@ class ApiClient
 
   # TODO: temporary solution, add real caching system here
   def read_cache(key)
-    puts "read cache #{key}"
     @cache ||= {}
     @cache[key]
   end
@@ -143,6 +141,10 @@ class ApiClient
   end
 
   protected
+    def path_with_base(path, base)
+      path.starts_with?('http') ? path : "#{base}#{path}"
+    end
+
     def allow_queue?(method, path, options)
       options[:allow_queue] && config.allow_queue?
     end
