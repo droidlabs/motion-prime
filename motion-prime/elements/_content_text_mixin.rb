@@ -115,6 +115,7 @@ module MotionPrime
         normalize_object(font, section || self)
       end
 
+      # FIXME: does not work when #update_with_options is called
       def input_value_text
         view && !is_a?(DrawElement) ? view.text : (computed_options[:html] || computed_options[:text])
       end

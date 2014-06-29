@@ -57,7 +57,7 @@ module MotionPrime
         index = index_for_cell_section(section)
         next Prime.logger.debug("Reload section: `#{section.name}` is not in the list") unless index
         paths << index
-        block.call(section, index, counter)
+        block.call(section, index, counter) if block_given?
         deque_cell(section, at: index) # deque cached
         section.reload
       end

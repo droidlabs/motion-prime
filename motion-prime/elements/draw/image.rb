@@ -17,6 +17,7 @@ module MotionPrime
 
     def draw_in(rect)
       return if computed_options[:hidden]
+      super
       draw_background_in_context(UIGraphicsGetCurrentContext())
       if computed_options[:draw_in_rect]
         draw_in_context(UIGraphicsGetCurrentContext())
@@ -37,7 +38,6 @@ module MotionPrime
       inset = border_width > 0 ? (border_width - 1 ).abs*0.5 : 0
       rect = CGRectInset(options[:inner_rect], inset, inset)
       radius = options[:corner_radius].to_f if options[:corner_radius] && options[:masks_to_bounds]
-
       UIGraphicsPushContext(context)
       if radius
         CGContextBeginPath(context)
@@ -58,6 +58,7 @@ module MotionPrime
       @layer.try(:removeFromSuperlayer)
       return unless image = options[:image]
       rect = options[:inner_rect]
+
       radius = options[:corner_radius].to_f if options[:corner_radius] && options[:masks_to_bounds]
 
       @layer = CALayer.layer
@@ -94,7 +95,6 @@ module MotionPrime
             end
 
             self.image_data = image
-
             section.cached_draw_image = nil
             if section.respond_to?(:cell_section_name)
               section.pending_display!

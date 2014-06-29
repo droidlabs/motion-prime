@@ -23,7 +23,7 @@ module MotionPrime
 
     # @return screen [Prime::Screen] screen appearing after close
     def close_screen(args = {})
-      args[:animated] = args.has_key?(:animated) ? args[:animated] : true
+      args[:animated] = args.fetch(:animated, true)
       # Pop current view, maybe with arguments, if in navigation controller
       if modal?
         close_screen_modal(args)

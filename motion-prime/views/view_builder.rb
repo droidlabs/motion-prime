@@ -109,7 +109,9 @@ module MotionPrime
           'UICollectionView' => Proc.new{|klass, options|
             unless layout = options.delete(:layout)
               layout = UICollectionViewFlowLayout.alloc.init
-              total_width = options[:parent_bounds].size.width / (options.delete(:grid_size) || 3)
+
+              width = options[:width] || options[:parent_bounds].size.width
+              total_width = width / (options.delete(:grid_size) || 3)
               if horizontal_spacing = options.delete(:horizontal_spacing)
                 layout.setMinimumInteritemSpacing horizontal_spacing
               end

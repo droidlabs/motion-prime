@@ -40,6 +40,7 @@ module MotionPrime
     end
 
     def draw_in(rect)
+      super
       draw_in_context(UIGraphicsGetCurrentContext())
     end
 
@@ -90,27 +91,32 @@ module MotionPrime
     end
 
     def size_to_fit_if_needed
-      if computed_options[:size_to_fit]
-        computed_options[:width] ||= cached_content_outer_width
-        computed_options[:height] ||= cached_content_outer_height
+      if original_options[:size_to_fit]
+        computed_options[:width] = cached_content_outer_width unless original_options[:width]
+        computed_options[:height] = cached_content_outer_height unless original_options[:height]
         reset_computed_values
-      elsif computed_options.slice(:width, :left, :right).values.none?
-        computed_options[:width] ||= cached_content_outer_width
+      elsif original_options.slice(:width, :left, :right).values.none?
+        computed_options[:width] = cached_content_outer_width unless original_options[:width]
         reset_computed_values
-      elsif computed_options.slice(:height, :top, :bottom).values.none?
-        computed_options[:height] ||= cached_content_outer_height
+      elsif original_options.slice(:height, :top, :bottom).values.none?
+        computed_options[:height] = cached_content_outer_height unless original_options[:height]
         reset_computed_values
       end
     end
 
     def set_text_position
-      if computed_options.slice(:padding_top, :padding_bottom, :padding).values.none?
+      if original_options.slice(:padding_top, :padding_bottom, :padding).values.none?
         computed_options[:width] ||= frame_width
+        frame_height = computed_options[:height] || frame_outer_height
         content_height = cached_content_height
-        content_height = frame_outer_height if content_height > frame_outer_height
-        @padding_top = (frame_outer_height - content_height)/2
+        content_height = frame_height if content_height > frame_height
+        @padding_top = (frame_height - content_height)/2
         # @padding_top += 1 unless @padding_top.zero?
       end
+    end
+
+    def original_options
+      @_original_options ||= computed_options.clone
     end
   end
 end

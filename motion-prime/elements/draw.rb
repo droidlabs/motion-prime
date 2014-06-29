@@ -10,16 +10,29 @@ module MotionPrime
     def draw_options
       options = computed_options
       background_color = options[:background_color].try(:uicolor)
+      layer_options = options[:layer] || {}
+      corner_radius = layer_options[:corner_radius].to_f
+
+      layer_options.delete(:masks_to_bounds) if layer_options[:masks_to_bounds].nil?
+      options.delete(:clips_to_bounds) if options[:clips_to_bounds].nil?
+      masks_to_bounds = layer_options.fetch(:masks_to_bounds, options.fetch(:clips_to_bounds, corner_radius > 0))
       {
         rect: CGRectMake(frame_left, frame_top, frame_outer_width, frame_outer_height),
         background_color: background_color,
-        masks_to_bounds: options[:layer].try(:[], :masks_to_bounds) || options[:clips_to_bounds],
-        corner_radius: options[:layer].try(:[], :corner_radius).to_f,
-        border_width: options[:layer].try(:[], :border_width).to_f,
-        border_color: options[:layer].try(:[], :border_color).try(:uicolor) || background_color,
-        border_sides: options[:layer].try(:[], :border_sides),
-        dashes: options[:layer].try(:[], :dashes),
+        masks_to_bounds: masks_to_bounds,
+        corner_radius: corner_radius,
+        border_width: layer_options[:border_width].to_f,
+        border_color: layer_options[:border_color].try(:uicolor) || background_color,
+        border_sides: layer_options[:border_sides],
+        dashes: layer_options[:dashes]
       }
+    end
+
+    def draw_in(rect)
+      if @_prev_rect_size && @_prev_rect_size != rect.size
+        reset_computed_values
+      end
+      @_prev_rect_size = rect.size
     end
 
     def render!; end

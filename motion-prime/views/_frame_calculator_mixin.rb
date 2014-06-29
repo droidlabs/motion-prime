@@ -7,7 +7,6 @@ module MotionPrime
       right   = options[:right]
       bottom  = options[:bottom]
       left    = options[:left]
-
       value_type = options[:value_type].to_s # absolute/relative
 
       if options[:height_to_fit].present? && height.nil? && (top.nil? || bottom.nil?)

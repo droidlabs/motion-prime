@@ -4,6 +4,7 @@ module MotionPrime
     include DrawBackgroundMixin
 
     def draw_in(rect)
+      super
       draw_in_context(UIGraphicsGetCurrentContext())
     end
 
