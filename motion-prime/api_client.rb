@@ -142,7 +142,7 @@ class ApiClient
 
   protected
     def path_with_base(path, base)
-      path.starts_with?('http') ? path : "#{base}#{path}"
+      path.to_s.starts_with?('http') ? path : "#{base}#{path}"
     end
 
     def allow_queue?(method, path, options)
