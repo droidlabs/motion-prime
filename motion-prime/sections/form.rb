@@ -140,14 +140,6 @@ module MotionPrime
       :base_form
     end
 
-    # ALIASES
-    def on_input_change(text_field); end
-    def on_input_edit_begin(text_field); end
-    def on_input_edit_end(text_field); end
-    def on_input_return(text_field)
-      text_field.resignFirstResponder
-    end
-
     def allow_string_replacement?(target, limit, range, string)
       if string.length.zero? || (range.length + limit - target.text.length) >= string.length
         true

@@ -130,7 +130,7 @@ module MotionPrime
     end
 
     def observing_errors?
-      @errors_observer_options.present?
+      @errors_observer_options.present? && observing_errors_for.present?
     end
 
     def has_errors?

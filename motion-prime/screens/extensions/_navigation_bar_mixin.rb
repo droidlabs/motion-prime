@@ -16,6 +16,12 @@ module MotionPrime
       navigationItem.rightBarButtonItem = create_navigation_button(title, args, &block)
     end
 
+    def set_navigation_right_buttons(options)
+      navigationItem.rightBarButtonItems = options.map do |button_options|
+        create_navigation_button(button_options.delete(:title), button_options)
+      end
+    end
+
     def set_navigation_left_button(title, args = {}, &block)
       navigationItem.leftBarButtonItem = create_navigation_button(title, args, &block)
     end
@@ -80,9 +86,12 @@ module MotionPrime
 
     def create_navigation_button_with_image(title, args)
       image = args[:image].uiimage
+      image = image.imageWithRenderingMode(2) if image && args[:tint_color].present?
       face = UIButton.buttonWithType UIButtonTypeCustom
       face.bounds = CGRectMake(0, 0, image.size.width, image.size.height)
       face.setImage image, forState: UIControlStateNormal
+      face.setTintColor(args[:tint_color].uicolor) if args[:tint_color]
+      face.setImageEdgeInsets(UIEdgeInsetsMake(0, args[:offset_x], 0, -args[:offset_x])) if args[:offset_x]
       face.on :touch do
         args[:action].to_proc.call(args[:target] || self)
       end if args[:action]

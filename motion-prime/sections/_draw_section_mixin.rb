@@ -86,7 +86,7 @@ module MotionPrime
 
       def on_container_tap_gesture(recognizer)
         target = Array.wrap(container_gesture_recognizers).detect do |gesture_data|
-          point = recognizer.locationInView(container_view)
+          point = recognizer.locationInView(container_view.respond_to?(:content_view) ? container_view.content_view : container_view)
           element = gesture_data[:element]
           section = element.section
           if section.has_container_bounds?

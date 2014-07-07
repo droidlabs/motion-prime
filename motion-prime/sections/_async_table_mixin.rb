@@ -55,10 +55,10 @@ module Prime
     #
     # @param from_index [NSIndexPath] Value of first index to load if current sheduled index not exists.
     # @return [NSIndexPath, Boolean] Index of next sheduled index.
-    def preload_sections_after(from_index)
+    def preload_sections_after(from_index, load_limit = nil)
       return unless async_data?
       service = preloader_index_service
-      load_limit = self.class.async_data_options.try(:[], :preload_cells_count)
+      load_limit ||= self.class.async_data_options.try(:[], :preload_cells_count)
 
       if @preloader_next_starts_from
         index_to_start_preloading = service.sum_index(@preloader_next_starts_from, load_limit ? -load_limit/2 : 0)
@@ -70,6 +70,7 @@ module Prime
       current_group = from_index.section
       left_to_load_in_group = cell_sections_for_group(current_group).count - from_index.row
       load_count = [left_to_load_in_group, load_limit].compact.min
+
       to_index = service.sum_index(from_index, load_count - 1)
       @preloader_next_starts_from = to_index
 
@@ -90,6 +91,11 @@ module Prime
 
       load_count = to_index.row - from_index.row + 1
       preload_sections_schedule_from(from_index, load_count) if load_count > 0
+
+      # quota_left = (load_limit || 0) - load_count
+      # if quota_left > 0 && cell_sections_for_group(current_group + 1).any?
+      #   preload_sections_after(NSIndexPath.indexPathForRow(0, inSection: current_group + 1), quota_left)
+      # end
     end
 
     # Schedules preloading sections starting with given index with given limit.

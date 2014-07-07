@@ -26,6 +26,7 @@ module MotionPrime
 
     def load_container_with_elements(options = {})
       init_container_element(options[:container] || {})
+      # FIXME: does not work for grid sections
       @container_element.compute_options! unless @container_element.computed_options
       compute_element_options(options[:elements] || {})
 

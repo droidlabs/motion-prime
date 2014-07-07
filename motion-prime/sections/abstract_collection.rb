@@ -245,6 +245,13 @@ module MotionPrime
       display_pending_cells unless @decelerating = will_decelerate
     end
 
+    def on_input_change(text_field); end
+    def on_input_edit_begin(text_field); end
+    def on_input_edit_end(text_field); end
+    def on_input_return(text_field)
+      text_field.resignFirstResponder
+    end
+
     private
       def cached_cell(index)
       end
