@@ -1,3 +1,8 @@
+=== 1.0.4
+* Multiple bug fixes
+* Model#save will be performed on main thread (now you can fetch models in thread)
+* Improved support for UIPageViewController
+
 === 1.0.3
 * Fixed issue with overriding background color
 * Improved support for UIPageViewController

@@ -10,5 +10,7 @@ UIControlContentVerticalAlignmentTop
 UIControlContentVerticalAlignmentBottom
 UIControlContentVerticalAlignmentFill
 
-ALAuthorizationStatusNotDetermined
-ALAssetsGroupAll
+if defined?(ALAssetsLibrary)
+  ALAuthorizationStatusNotDetermined
+  ALAssetsGroupAll
+end
