@@ -3,7 +3,7 @@ module MotionPrime
     def draw_background_in_context(context = nil)
       context ||= UIGraphicsGetCurrentContext()
       options = draw_options
-      rect, background_color, border_width, border_color, border_sides, corner_radius, dashes_array = options.slice(:rect, :background_color, :border_width, :border_color, :border_sides, :corner_radius, :dashes).values
+      rect, background_color, border_width, border_color, border_sides, corner_radius, dashes_array, rounded_corners = options.slice(:rect, :background_color, :border_width, :border_color, :border_sides, :corner_radius, :dashes, :rounded_corners).values
 
       return unless background_color || border_width > 0
 
@@ -15,7 +15,7 @@ module MotionPrime
         dashes_array.each_with_index { |length, i| dashes[i] = length }
       end
 
-      if corner_radius > 0
+      if corner_radius > 0 && !rounded_corners
         bezier_path = UIBezierPath.bezierPathWithRoundedRect rect, cornerRadius: corner_radius
         UIGraphicsPushContext(context)
         bezier_path.setLineDash(dashes, count: dashes_array.count, phase: 0) if dashes
@@ -29,11 +29,24 @@ module MotionPrime
           bezier_path.fill
         end
         UIGraphicsPopContext()
+      elsif corner_radius > 0
+        CGContextSetLineDash(context, dashes_array.count, dashes, 0) if dashes
+        CGContextSetLineWidth(context, border_width) if border_width > 0
+        CGContextSetStrokeColorWithColor(context, border_color.uicolor.cgcolor) if border_color
+        draw_rect_in_context(context, rect: rect, radius: corner_radius, rounded_corners: rounded_corners)
+        CGContextSaveGState(context)
+        CGContextClip(context)
+        if background_color
+          CGContextSetFillColorWithColor(context, background_color.uicolor.cgcolor)
+          CGContextFillRect(context, rect)
+        end
+        CGContextRestoreGState(context)
       else
         if border_width > 0 && border_color
           CGContextSetLineDash(context, dashes_array.count, dashes, 0) if dashes
           CGContextSetLineWidth(context, border_width)
           CGContextSetStrokeColorWithColor(context, border_color.uicolor.cgcolor)
+
           if border_sides.present?
             points = [
               [rect.origin.x, rect.origin.y],
@@ -67,9 +80,60 @@ module MotionPrime
             CGContextStrokeRect(context, rect)
           end
         end
-        CGContextSetFillColorWithColor(context, background_color.uicolor.cgcolor) if background_color
-        CGContextFillRect(context, rect) if background_color
+
+        if background_color
+          CGContextSetFillColorWithColor(context, background_color.uicolor.cgcolor)
+          CGContextFillRect(context, rect)
+        end
       end
+    end
+
+    def draw_rect_in_context(context, options)
+      rect = options.fetch(:rect)
+      radius = options.fetch(:radius, 0)
+      rounded_corners = options[:rounded_corners] || [:top_left, :top_right, :bottom_right, :bottom_left]
+
+      CGContextBeginPath(context)
+
+      x_left = rect.origin.x
+      x_left_center = x_left + radius
+      x_right_center = x_left + rect.size.width - radius
+      x_right = x_left + rect.size.width
+      y_top = rect.origin.y
+      y_top_center = y_top + radius
+      y_bottom_center = y_top + rect.size.height - radius
+      y_bottom = y_top + rect.size.height
+      CGContextMoveToPoint(context, x_left, y_top_center)
+
+      if rounded_corners.include?(:top_left)
+        CGContextAddArcToPoint(context, x_left, y_top, x_left_center, y_top, radius)
+      else
+        CGContextAddLineToPoint(context, x_left, y_top)
+      end
+      CGContextAddLineToPoint(context, x_right_center, y_top)
+
+      if rounded_corners.include?(:top_right)
+        CGContextAddArcToPoint(context, x_right, y_top, x_right, y_top_center, radius)
+      else
+        CGContextAddLineToPoint(context, x_right, y_top)
+      end
+      CGContextAddLineToPoint(context, x_right, y_bottom_center)
+
+      if rounded_corners.include?(:bottom_right)
+        CGContextAddArcToPoint(context, x_right, y_bottom, x_right_center, y_bottom, radius)
+      else
+        CGContextAddLineToPoint(context, x_right, y_bottom)
+      end
+      CGContextAddLineToPoint(context, x_left_center, y_bottom)
+
+      if rounded_corners.include?(:bottom_left)
+        CGContextAddArcToPoint(context, x_left, y_bottom, x_left, y_bottom_center, radius)
+      else
+        CGContextAddLineToPoint(context, x_left, y_bottom)
+      end
+      CGContextAddLineToPoint(context, x_left, y_top_center)
+
+      CGContextClosePath(context)
     end
   end
 end

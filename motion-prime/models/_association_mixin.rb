@@ -89,7 +89,7 @@ module MotionPrime
         define_method("#{association_name}_attributes=") do |value|
           bags_attributes = self.send(association_name).try(:bags_attributes) || {}
           self.send(bag_name).clear
-          association = association_name.classify.constantize.new
+          association = options.fetch(:class_name, association_name.classify).constantize.new
           association.info.merge!(bags_attributes)
           association.fetch_with_attributes(value)
           self.send(:"#{bag_name}") << association
@@ -120,7 +120,7 @@ module MotionPrime
 
           pending_save_counter = 0
           collection = value.inject({}) do |result, attrs|
-            model = association_name.classify.constantize.new
+            model = options.fetch(:class_name, association_name.classify).constantize.new
             model.info.merge!(bags_attributes.fetch(attrs[:id], {}))
             model.fetch_with_attributes(attrs)
             unique_key = model.id || "pending_#{pending_save_counter+=1}"
@@ -138,6 +138,7 @@ module MotionPrime
           bag = self.send(:"#{bag_name}")
           collection_options = {
             association_name: association_name,
+            class_name: options.fetch(:class_name, association_name.classify),
             inverse_relation: {
               type: :has_one,
               name: self.class_name_without_kvo.demodulize.underscore,
@@ -152,7 +153,7 @@ module MotionPrime
         self._associations ||= {}
         self._associations[association_name] = {
           type: :belongs_to_one,
-          class_name: association_name.classify
+          class_name: options.fetch(:class_name, association_name.classify)
         }.merge(options)
 
         self.send(:attr_accessor, association_name)

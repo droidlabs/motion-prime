@@ -39,47 +39,7 @@ module MotionPrime
       radius = options[:corner_radius].to_f if options[:corner_radius] && options[:masks_to_bounds]
       UIGraphicsPushContext(context)
       if radius
-        sides = [:top_left, :top_right, :bottom_right, :bottom_left]
-
-        CGContextBeginPath(context)
-        CGContextMoveToPoint(context, rect.origin.x, rect.origin.y + radius)
-
-        CGContextAddLineToPoint(context, rect.origin.x, rect.origin.y + rect.size.height - radius)
-        if sides.include?(:top_left)
-          CGContextAddArc(context, rect.origin.x + radius, rect.origin.y + rect.size.height - radius, radius, Math::PI, Math::PI / 2, 1)
-        else
-          CGContextAddLineToPoint(context, rect.origin.x, rect.origin.y + rect.size.height)
-          CGContextAddLineToPoint(context, rect.origin.x + radius, rect.origin.y + rect.size.height)
-        end
-
-        CGContextAddLineToPoint(context, rect.origin.x + rect.size.width - radius, rect.origin.y + rect.size.height)
-
-        if sides.include?(:top_right)
-          CGContextAddArc(context, rect.origin.x + rect.size.width - radius, rect.origin.y + rect.size.height - radius, radius, Math::PI / 2, 0.0, 1)
-        else
-          CGContextAddLineToPoint(context, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height)
-          CGContextAddLineToPoint(context, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height - radius)
-        end
-
-        CGContextAddLineToPoint(context, rect.origin.x + rect.size.width, rect.origin.y + radius)
-
-        if sides.include?(:bottom_right)
-          CGContextAddArc(context, rect.origin.x + rect.size.width - radius, rect.origin.y + radius, radius, 0.0, -Math::PI / 2, 1)
-        else
-          CGContextAddLineToPoint(context, rect.origin.x + rect.size.width, rect.origin.y)
-          CGContextAddLineToPoint(context, rect.origin.x + rect.size.width - radius, rect.origin.y)
-        end
-
-        CGContextAddLineToPoint(context, rect.origin.x + radius, rect.origin.y)
-
-        if sides.include?(:bottom_left)
-          CGContextAddArc(context, rect.origin.x + radius, rect.origin.y + radius, radius, -Math::PI / 2, Math::PI, 1)
-        else
-          CGContextAddLineToPoint(context, rect.origin.x, rect.origin.y)
-          CGContextAddLineToPoint(context, rect.origin.x, rect.origin.y + radius)
-        end
-
-        CGContextClosePath(context)
+        draw_rect_in_context(context, rect: rect, radius: radius, rounded_corners: options[:rounded_corners])
         CGContextSaveGState(context)
         CGContextClip(context)
         image.drawInRect(rect)

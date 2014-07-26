@@ -2,12 +2,13 @@ module MotionPrime
   class AssociationCollection < ::Array
     include FilterMixin
 
-    attr_reader :bag, :association_name
+    attr_reader :bag, :association_name, :model_class
     attr_reader :inverse_relation_name, :inverse_relation_key, :model_inverse_relation_name
 
     def initialize(bag, options, *args)
       @bag = bag
       @association_name = options[:association_name]
+      @model_class = options[:class_name].constantize
       bag.bare_class = model_class
 
       inverse_relation_options = options[:inverse_relation]
@@ -89,10 +90,6 @@ module MotionPrime
 
       set_inverse_relation_for(data)
       data
-    end
-
-    def model_class
-      @model_class ||= @association_name.classify.constantize
     end
 
     # Remove all association records.

@@ -34,6 +34,8 @@ module MotionPrime
         line_spacing: options[:line_spacing],
         line_height: options[:line_height],
         underline: options[:underline],
+        fragment_color: options[:fragment_color],
+        fragment_font: options[:fragment_font],
         top_left_corner: top_left_corner,
         inner_rect: inner_rect
       })
@@ -55,8 +57,7 @@ module MotionPrime
 
       UIGraphicsPushContext(context)
       options = draw_options
-      if options[:is_html] || options[:line_spacing] ||
-        options[:line_height] || options[:underline] || options[:force_attributed]
+      if options.slice(:is_html, :line_spacing, :line_height, :underline, :force_attributed, :fragment_color, :fragment_font).any?
         prepared_text = options[:is_html] ? html_string(options) : attributed_string(options)
 
         CGContextSaveGState(context)
@@ -105,7 +106,8 @@ module MotionPrime
     end
 
     def set_text_position
-      if original_options.slice(:padding_top, :padding_bottom, :padding).values.none?
+      # FIXME: there is a bug when overriding this method for custom fonts (adjust @padding_top), you must set 'padding' to 0
+      if original_options.slice(:padding_top, :padding_bottom, :padding, :size_to_fit).values.none?
         computed_options[:width] ||= frame_width
         frame_height = computed_options[:height] || frame_outer_height
         content_height = cached_content_height

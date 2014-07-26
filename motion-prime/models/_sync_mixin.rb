@@ -284,7 +284,8 @@ module MotionPrime
 
       track_changed_attributes do
         old_collection = self.send(key)
-        model_class = key.classify.constantize
+        association_options = associations[key]
+        model_class = association_options.fetch(:class_name, key.classify).constantize
 
         data.each do |attributes|
           model = old_collection.detect{ |model| model.id == attributes[:id]}

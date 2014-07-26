@@ -21,6 +21,7 @@ module MotionPrime
         background_color: background_color,
         masks_to_bounds: masks_to_bounds,
         corner_radius: corner_radius,
+        rounded_corners: layer_options[:rounded_corners],
         border_width: layer_options[:border_width].to_f,
         border_color: layer_options[:border_color].try(:uicolor) || background_color,
         border_sides: layer_options[:border_sides],
@@ -72,6 +73,7 @@ module MotionPrime
     end
 
     def rerender!(changed_options = [])
+      @_original_options = nil
       section.cached_draw_image = nil
       view.try(:setNeedsDisplay)
     end

@@ -54,7 +54,7 @@ module MotionPrime
     end
 
     def strong_references
-      [screen, screen.main_controller]
+      [screen, screen.try(:main_controller)]
     end
 
     def container_bounds

@@ -33,6 +33,7 @@ module MotionPrime
       prepared_text = NSMutableAttributedString.alloc.initWithString(options[:text].to_s, attributes: attributes)
       underline_range = options[:underline]
       fragment_color = options[:fragment_color]
+      fragment_font = options[:fragment_font]
       if paragrah_style && (underline_range || fragment_color) && options.fetch(:number_of_lines, 1) == 1
         Prime.logger.debug "If attributed text has paragraph style and underline - you must set number of lines != 1"
       end
@@ -44,6 +45,10 @@ module MotionPrime
       if fragment_color
         prepared_text.addAttributes({NSForegroundColorAttributeName => fragment_color[:color].uicolor}, range: fragment_color[:range])
       end
+      if fragment_font
+        prepared_text.addAttributes({NSFontAttributeName => fragment_font[:font].uifont}, range: fragment_font[:range])
+      end
+
       prepared_text
     end
 
