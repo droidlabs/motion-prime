@@ -18,10 +18,10 @@ module MotionPrime
     def draw_in(rect)
       return if computed_options[:hidden]
       super
-      draw_background_in_context(UIGraphicsGetCurrentContext())
       if computed_options[:draw_in_rect]
         draw_in_context(UIGraphicsGetCurrentContext())
       else
+        draw_background_in_context(UIGraphicsGetCurrentContext())
         draw_with_layer
       end
       load_image
@@ -30,6 +30,7 @@ module MotionPrime
     def draw_in_context(context)
       return if computed_options[:hidden]
 
+      draw_background_in_context(context)
       options = draw_options
       return unless image = options[:image]
 

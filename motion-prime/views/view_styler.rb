@@ -152,7 +152,9 @@ module MotionPrime
           end
           true
         elsif key.end_with?('image')
-          view.setValue value.uiimage, forKey: camelize_factory(key)
+          image = value.uiimage
+          image = image.imageWithRenderingMode(2) if options[:tint_color]
+          view.setValue image, forKey: camelize_factory(key)
           true
         end
       end
