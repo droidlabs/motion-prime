@@ -64,16 +64,12 @@ module MotionPrime
             image = options.delete(:image)
             highlighted_image = options.delete(:highlighted_image)
 
-            if image.nil?
-              klass.alloc.initWithFrame CGRectZero
+           if !image.nil? && !highlighted_image.nil?
+              klass.alloc.initWithImage image.uiimage, highlightedImage: highlighted_image.uiimage
+            elsif !image.nil?
+              klass.alloc.initWithImage image.uiimage
             else
-              image = image.uiimage
-              image = image.imageWithRenderingMode(2) if options[:tint_color].present?
-              if highlighted_image.nil?
-                klass.alloc.initWithImage image.uiimage
-              else
-                klass.alloc.initWithImage image.uiimage, highlightedImage: highlighted_image.uiimage
-              end
+              klass.alloc.initWithFrame CGRectZero
             end
           },
           'UIProgressView' => Proc.new{|klass, options|
