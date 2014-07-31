@@ -135,11 +135,11 @@ module MotionPrime
       end
 
       def set_image_options(key, value)
-        if key.end_with?('background_image')
+        if key.end_with?('background_image') && ui_image = value.uiimage
           if view.is_a?(UIControl) || view.is_a?(UISearchBar)
-            view.send :"set#{camelize_factory(key)}:forState", value.uiimage, UIControlStateNormal
+            view.send :"set#{camelize_factory(key)}:forState", ui_image, UIControlStateNormal
           else
-            view.setBackgroundColor value.uiimage.uicolor
+            view.setBackgroundColor ui_image.uicolor
           end
           true
         elsif key.end_with?('background_view')
@@ -152,9 +152,10 @@ module MotionPrime
           end
           true
         elsif key.end_with?('image')
-          image = value.uiimage
-          image = image.imageWithRenderingMode(2) if options[:tint_color]
-          view.setValue image, forKey: camelize_factory(key)
+          if ui_image = value.uiimage
+            ui_image = ui_image.imageWithRenderingMode(2) if options[:tint_color]
+            view.setValue ui_image, forKey: camelize_factory(key)
+          end
           true
         end
       end
@@ -191,7 +192,7 @@ module MotionPrime
           current_inset.send("#{key.partition('_').first}=", value)
           view.contentInset = current_inset
           true
-        elsif key.end_with?('inset') || key.end_with?('indicator_insets')
+        elsif key.end_with?('inset') || key.end_with?('indicator_insets') || (key.end_with?('insets') && value.is_a?(Array))
           inset = if value.to_s == 'none'
             UIEdgeInsetsMake(0, 320, 0, 0)
           elsif value.is_a?(Array) && value.count == 2

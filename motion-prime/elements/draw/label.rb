@@ -96,7 +96,7 @@ module MotionPrime
         computed_options[:width] = cached_content_outer_width unless original_options[:width]
         computed_options[:height] = cached_content_outer_height unless original_options[:height]
         reset_computed_values
-      elsif original_options.slice(:width, :left, :right).values.none?
+      elsif !original_options[:width] && (!original_options[:left] || !original_options[:right])
         computed_options[:width] = cached_content_outer_width unless original_options[:width]
         reset_computed_values
       elsif original_options.slice(:height, :top, :bottom).values.none?

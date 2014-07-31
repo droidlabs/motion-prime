@@ -67,12 +67,12 @@ module MotionPrime
             if image.nil?
               klass.alloc.initWithFrame CGRectZero
             else
-              image = image.uiimage
-              image = image.imageWithRenderingMode(2) if options[:tint_color].present?
+              ui_image = image.uiimage
+              ui_image = ui_image.imageWithRenderingMode(2) if options[:tint_color].present?
               if highlighted_image.nil?
-                klass.alloc.initWithImage image.uiimage
+                klass.alloc.initWithImage ui_image
               else
-                klass.alloc.initWithImage image.uiimage, highlightedImage: highlighted_image.uiimage
+                klass.alloc.initWithImage ui_image, highlightedImage: highlighted_image.uiimage
               end
             end
           },

@@ -71,9 +71,9 @@ module MotionPrime
     end
 
     def create_navigation_button_with_title(title, args)
-      image = args[:icon].uiimage if args[:icon]
+      ui_image = args[:icon].uiimage if args[:icon]
       face = UIButton.buttonWithType UIButtonTypeCustom
-      face.setImage(image, forState: UIControlStateNormal) if args[:icon]
+      face.setImage(ui_image, forState: UIControlStateNormal) if ui_image
       face.setTitle(title, forState: UIControlStateNormal)
       face.setTitleColor((args[:title_color] || :app_navigation_base).uicolor, forState: UIControlStateNormal)
       face.setContentHorizontalAlignment UIControlContentHorizontalAlignmentLeft
@@ -85,11 +85,12 @@ module MotionPrime
     end
 
     def create_navigation_button_with_image(title, args)
-      image = args[:image].uiimage
-      image = image.imageWithRenderingMode(2) if image && args[:tint_color].present?
       face = UIButton.buttonWithType UIButtonTypeCustom
-      face.bounds = CGRectMake(0, 0, image.size.width, image.size.height)
-      face.setImage image, forState: UIControlStateNormal
+      if ui_image = args[:image].uiimage
+        ui_image = ui_image.imageWithRenderingMode(2) if args[:tint_color].present?
+        face.bounds = CGRectMake(0, 0, ui_image.size.width, ui_image.size.height)
+        face.setImage ui_image, forState: UIControlStateNormal
+      end
       face.setTintColor(args[:tint_color].uicolor) if args[:tint_color]
       face.setImageEdgeInsets(UIEdgeInsetsMake(0, args[:offset_x], 0, -args[:offset_x])) if args[:offset_x]
       face.on :touch do

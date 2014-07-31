@@ -53,11 +53,11 @@ module MotionPrime
       def self.extract_image_from_options(options, with_key: key)
         image = options.delete(key)
         return unless image
-        image = image.uiimage
-        if options[:translucent] === false
-          image = image.imageWithRenderingMode UIImageRenderingModeAlwaysOriginal
+        ui_image = image.uiimage
+        if ui_image && options[:translucent] === false
+          ui_image = ui_image.imageWithRenderingMode UIImageRenderingModeAlwaysOriginal
         end
-        image
+        ui_image
       end
   end
 end
