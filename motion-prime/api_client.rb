@@ -80,7 +80,7 @@ class ApiClient
       elsif progress
         # handle progress
       elsif !response.success? && allow_queue?(method, path, options)
-        queue(method: method, path: path, params: params)
+        queue(method: method, path: path, params: data)
       elsif response.operation.response.nil?
         block.call if use_callback
       else
@@ -123,9 +123,9 @@ class ApiClient
   end
 
   def queue(item)
-    queue_list = user_defaults['api_client_queue'].clone || []
+    queue_list = MotionPrime::JSON.parse(user_defaults['api_client_queue']) || []
     queue_list.push(item)
-    user_defaults['api_client_queue'] = queue_list
+    user_defaults['api_client_queue'] = MotionPrime::JSON.generate(queue_list)
   end
 
   # TODO: temporary solution, add real caching system here

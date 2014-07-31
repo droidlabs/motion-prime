@@ -15,6 +15,7 @@
 * create "display_network_error" extension.
 * add different templates. some templates should be more like final app.
 * add size_to_fit support for images.
+* simplify border radius for common case
 
 === 1.2.0
 * Move api_client and model sync mixin to prime_model_sync gem.
