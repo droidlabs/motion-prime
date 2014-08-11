@@ -1,3 +1,6 @@
+=== 1.0.5
+* Bug fixes
+
 === 1.0.4
 * Multiple bug fixes
 * Model#save will be performed on main thread (now you can fetch models in thread)

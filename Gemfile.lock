@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    motion-prime (1.0.4)
+    motion-prime (1.0.5)
       activesupport
       afmotion (~> 2.1.0)
       bubble-wrap (~> 1.6.0)
@@ -51,7 +51,7 @@ GEM
     fuzzy_match (2.0.4)
     i18n (0.6.9)
     json_pure (1.8.1)
-    methadone (1.4.0)
+    methadone (1.5.1)
       bundler
     motion-cocoapods (1.4.1)
       cocoapods (>= 0.32.1)
