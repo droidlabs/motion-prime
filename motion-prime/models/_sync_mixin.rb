@@ -162,7 +162,7 @@ module MotionPrime
           if respond_to?(:"fetch_#{key}")
             self.send(:"fetch_#{key}", value)
           elsif has_association?(key) && (value.is_a?(Hash) || value.is_a?(Array))
-            fetch_association_with_attributes(key, value, save: options[:save_associations])
+            fetch_association_with_attributes(key.to_sym, value, save: options[:save_associations])
           elsif respond_to?(:"#{key}=")
             self.send(:"#{key}=", value)
             # TODO: self.info[:"#{key}"] = value is much faster, maybe we could use it
