@@ -49,8 +49,16 @@ module MotionPrime
       collection_section.update_pull_to_refresh_after_scroll(scroll)
     end
 
+    def scrollViewDidEndScrollingAnimation(scroll)
+      collection_section.scroll_view_did_end_scrolling_animation(scroll)
+    end
+
     def scrollViewWillBeginDragging(scroll)
       collection_section.scroll_view_will_begin_dragging(scroll)
+    end
+
+    def scrollViewWillBeginDecelerating(scroll)
+      collection_section.scroll_view_will_begin_decelerating(scroll)
     end
 
     def scrollViewDidEndDecelerating(scroll)

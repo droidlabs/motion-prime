@@ -120,8 +120,8 @@ module MotionPrime
     end
 
     def keyboard_will_show
-      return if collection_view.contentSize.height + collection_view.top <= UIScreen.mainScreen.bounds.size.height - KEYBOARD_HEIGHT_PORTRAIT
       current_inset = collection_view.contentInset
+      return if collection_view.contentSize.height + collection_view.top + current_inset.top <= UIScreen.mainScreen.bounds.size.height - KEYBOARD_HEIGHT_PORTRAIT
       current_inset.bottom = KEYBOARD_HEIGHT_PORTRAIT + (self.collection_element.computed_options[:bottom_content_inset] || 0)
       collection_view.contentInset = current_inset
     end

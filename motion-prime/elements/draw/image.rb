@@ -92,12 +92,15 @@ module MotionPrime
               return
             end
 
+            if computed_options[:post_process].present?
+              image = computed_options[:post_process][:method].to_proc.call(computed_options[:post_process][:target], image)
+            end
             self.image_data = image
             section.cached_draw_image = nil
             if section.respond_to?(:cell_section_name)
               section.pending_display!
             else
-              self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: false
+              self.view.performSelectorOnMainThread :setNeedsDisplay, withObject: nil, waitUntilDone: true
             end
             @loading = false
             release_strong_references(ref_key)

@@ -31,7 +31,7 @@ module MotionPrime
       name = is_a?(TableSection) ? name : self.class_name_without_kvo.underscore
       screen = is_a?(TableSection) ? self.screen : self
       options[:styles] ||= []
-      options[:styles] += [:"base_search_bar", :"base_#{name}_search_bar"]
+      options[:styles] += [:"base_search_bar", :"base_#{name}_search_bar", :"#{name}_search_bar"]
 
       screen.search_bar(options).view
     end

@@ -222,6 +222,10 @@ module MotionPrime
       @decelerating = true
     end
 
+    def scroll_view_will_begin_decelerating(scroll); end
+
+    def scroll_view_did_end_scrolling_animation(scroll); end
+
     def scroll_view_did_end_decelerating(scroll)
       @decelerating = false
       display_pending_cells
