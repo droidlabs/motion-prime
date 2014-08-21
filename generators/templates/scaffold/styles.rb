@@ -5,6 +5,7 @@ Prime::Styles.define :<%= @p_name %> do
       left: 20,
       top: 10,
       width: 280,
+      height: 20,
       font: :app_base.uifont(16),
       height: 20
   end
@@ -13,6 +14,7 @@ Prime::Styles.define :<%= @p_name %> do
       top: 120,
       left: 0,
       right: 0,
+      height: 20,
       text_alignment: :center
   end
 end
