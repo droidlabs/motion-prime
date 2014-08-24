@@ -282,6 +282,7 @@ module MotionPrime
           Prime::Config.prime.cell_section.mixins.each do |mixin|
             cell.class.send(:include, mixin) unless (class << cell; self; end).included_modules.include?(mixin)
           end
+
           cell.screen ||= screen
           cell.collection_section ||= self.weak_ref if cell.respond_to?(:collection_section=)
         end

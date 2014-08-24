@@ -24,6 +24,7 @@ module MotionPrime
       }
 
       text = "#{options[:text]}<style>* { #{styles.join} }</style>"
+      # WARNING: there is a bug - it uses WebKit and can not be used in secondary threads
       NSAttributedString.alloc.initWithData(text.dataUsingEncoding(NSUTF8StringEncoding), options: html_options, documentAttributes: nil, error: nil)
     end
 

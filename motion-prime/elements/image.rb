@@ -39,9 +39,10 @@ module MotionPrime
     end
 
     def strong_references
-      refs = [section, (section.collection_section if section.respond_to?(:cell_section_name))]
-      refs += section.try(:strong_references)
-      refs.compact
+      # .compact() is required here, otherwise screen will not be released
+      refs = [section, (section.collection_section if section.respond_to?(:cell_section_name))].compact
+      refs += section.strong_references if section
+      refs
     end
   end
 end

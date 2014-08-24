@@ -91,7 +91,11 @@ class Kernel
       Prime.logger.debug "User must define `strong_references` in `#{self.class.name}`"
       return false
     end
-    @_strong_references.all? { |key, ref| @_strong_references.count; ref.retainCount == @_strong_references.count }
+    res = @_strong_references.all? { |key, refs|
+      refs.all? { |ref| ref.retainCount - 1 <= @_strong_references.count }
+    }
+    Prime.logger.debug "Released `#{self.class.name}`" if res
+    res
   end
 
   def clear_instance_variables(options = {})

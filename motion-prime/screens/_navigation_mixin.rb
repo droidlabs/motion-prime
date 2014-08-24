@@ -59,7 +59,7 @@ module MotionPrime
     end
 
     def has_navigation?
-      !navigation_controller.nil?
+      navigation_controller.weakref_alive? && !navigation_controller.nil?
     end
 
     def navigation_controller

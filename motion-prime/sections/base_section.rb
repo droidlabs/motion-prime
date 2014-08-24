@@ -54,7 +54,7 @@ module MotionPrime
     end
 
     def strong_references
-      [screen, screen.try(:main_controller)]
+      [screen, screen.try(:main_controller)].compact
     end
 
     def container_bounds

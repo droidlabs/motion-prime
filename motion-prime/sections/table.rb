@@ -234,6 +234,9 @@ module MotionPrime
       def reset_data_stamps
         super
         set_header_stamp
+      rescue # "undefined `super` method" bug fix
+        Prime.logger.debug "Undefined `super` in `table_section`"
+        []
       end
 
     class << self
