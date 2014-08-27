@@ -163,7 +163,6 @@ module MotionPrime
     end
 
     def reload_data
-      @groups_count = nil
       init_form_fields # must be before resetting to reflect changes on @data
       reset_collection_data
       reload_collection_data
@@ -250,32 +249,33 @@ module MotionPrime
         self.field_indexes = {}
         self.grouped_data = []
         section_indexes = []
-        (self.class.fields_options || {}).each do |key, field|
-          next unless render_field?(key, field)
-          section_id = field[:group].to_i
-          @groups_count = [@groups_count || 1, section_id + 1].max
 
-          grouped_data[section_id] ||= []
-          section_indexes[section_id] ||= 0
-
-          section = load_field(field)
-          if section.options[:after_render].present?
-            puts "DEPRECATION: form field's option :after_render is deprecated, please use Prime::Section#after_field_render instead"
-          end
-          self.fields[key] = section
-          self.field_indexes[key] = NSIndexPath.indexPathForRow(section_indexes[section_id], inSection: section_id)
-          grouped_data[section_id][section_indexes[section_id]] = section
-
-          section_indexes[section_id] += 1
+        grouped_fields = (self.class.fields_options || {}).inject([]) do |result, (key, field)|
+          next result unless render_field?(key, field)
+          group_id = field[:group].to_i
+          result[group_id] ||= {}
+          result[group_id][key] = field
+          result
         end
-        init_form_headers
-        reset_data_stamps
-      end
 
-      def init_form_headers
-        options = Array.wrap(self.class.group_header_options).map(&:clone)
-        options.compact.each { |opts| normalize_options(opts) }
-        self.group_header_options = options.delete_if.each_with_index { |opts, id| grouped_data[id].nil? }
+        header_options = Array.wrap(self.class.group_header_options).map(&:clone)
+        header_options.each { |opts| normalize_options(opts) if opts }
+        self.group_header_options = header_options.delete_if.each_with_index { |opts, id| grouped_fields[id].blank? }
+
+        grouped_fields.compact.each_with_index do |fields, group_id|
+          fields.each_with_index do |(key, field), row_id|
+            section = load_field(field)
+            if section.options[:after_render].present?
+              puts "DEPRECATION: form field's option :after_render is deprecated, please use Prime::Section#after_field_render instead"
+            end
+            self.fields[key] = section
+            self.field_indexes[key] = NSIndexPath.indexPathForRow(row_id, inSection: group_id)
+            grouped_data[group_id] ||= []
+            grouped_data[group_id][row_id] = section
+          end
+        end
+
+        reset_data_stamps
       end
   end
 end

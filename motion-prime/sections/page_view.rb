@@ -66,21 +66,27 @@ module MotionPrime
     # Delegate
     def page_for_index(index)
       return nil if !index || data.length == 0 || index < 0 || index >= data.size
-      @view_controllers ||= []
-      if @view_controllers[index]
-        @view_controllers[index]
-      else
-        controller = MotionPrime::Screen.new
-        controller.parent_screen = self.screen
-        section = data[index]
-        section.screen = controller.weak_ref
-        controller.set_section :main, instance: section
-        @view_controllers[index] = controller
-      end
+      @view_controllers.try(:[], index) || prepare_cell_section(data[index], index)
     end
 
     def index_for_page(view_controller)
       Array.wrap(@view_controllers).index(view_controller)
     end
+
+    private
+      def prepare_collection_cell_sections(sections)
+        Array.wrap(sections.flatten).each_with_index do |section, index|
+          prepare_cell_section(section, index)
+        end
+      end
+
+      def prepare_cell_section(section, index)
+        @view_controllers ||= []
+        controller = MotionPrime::Screen.new
+        controller.parent_screen = self.screen
+        section.screen = controller.weak_ref
+        controller.set_section :main, instance: section
+        @view_controllers[index] = controller
+      end
   end
 end
