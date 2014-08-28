@@ -254,7 +254,6 @@ module MotionPrime
       if should_save
         models_to_save = bags_options.inject([]) { |result, (key, bag_options)| result + bag_options[:save] }
         models_to_delete = bags_options.inject([]) { |result, (key, bag_options)| result + bag_options[:delete] }
-        self.store.save_interval = [models_to_save.count, 1].max
 
         models_to_save.each(&:save)
         models_to_delete.each(&:delete)
@@ -270,8 +269,6 @@ module MotionPrime
       end
 
       save if should_save && (bags_changed || has_changed?)
-
-      self.store.save_interval = 1
     end
 
     def fetch_has_many_with_attributes(key, data, sync_options = {})

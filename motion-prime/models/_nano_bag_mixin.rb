@@ -131,9 +131,11 @@ module MotionPrime
 
     def save!
       self.store ||= MotionPrime::Store.shared_store
+      self.store.save_interval = savedObjects.count + unsavedObjects.count
       error_ptr = Pointer.new(:id)
       result = self.saveAndReturnError(error_ptr)
       raise StoreError, error_ptr[0].description if error_ptr[0]
+      self.store.save_interval = 1
       result
     end
 

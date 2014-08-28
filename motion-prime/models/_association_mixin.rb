@@ -24,8 +24,7 @@ module MotionPrime
     # @return [Prime::Model] model
     def save!
       _bags.values.each do |bag|
-        bag.store = self.store
-        bag.save
+        bag.save# unless bag.store
       end
       super
     rescue StoreError => e
