@@ -1,3 +1,7 @@
+=== 1.0.6
+* Memory leak fixes
+* Fix pagination of page view section
+
 === 1.0.5
 * Bug fixes
 
