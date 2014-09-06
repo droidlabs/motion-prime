@@ -34,7 +34,8 @@ class MPButton < UIButton
   end
 
   def apply_padding?
-    super && !@custom_title_inset_drawn
+    ![padding_top, padding_left, padding_right, padding_bottom].all?(&:zero?) &&
+    !@custom_title_inset_drawn
   end
 
   def drawRect(rect)
