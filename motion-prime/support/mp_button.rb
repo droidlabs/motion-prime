@@ -34,6 +34,7 @@ class MPButton < UIButton
   end
 
   def apply_padding?
+    # TODO: we should run super method here, but for some reason it doesn't work in RM 2.32
     ![padding_top, padding_left, padding_right, padding_bottom].all?(&:zero?) &&
     !@custom_title_inset_drawn
   end
