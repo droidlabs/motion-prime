@@ -17,7 +17,7 @@ Motion::Project::App.setup do |app|
 
   app.pods do
     pod 'NanoStore', '~> 2.7.7'
-    pod 'SDWebImage'
+    pod 'SDWebImage', '~> 3.7.1'
     pod 'SVPullToRefresh', git: 'https://github.com/droidlabs/SVPullToRefresh.git'
     pod 'MBAlertView'
     pod 'MBProgressHUD', '~> 0.8'
