@@ -16,6 +16,7 @@ class ApiClient
       params.merge!(credentials: config.http_auth.to_hash)
     end
     if config.sign_request?
+      params.delete(:sign)
       signature = RmDigest::MD5.hexdigest(
         config.signature_secret + params.keys.map(&:to_s).sort.join
       )
@@ -72,14 +73,14 @@ class ApiClient
 
   def request!(method, path, data, files = nil, options = {}, &block)
     use_callback = block_given?
-    path = path_with_base(path, config.api_namespace)
+    path_with_base = path_with_base(path, config.api_namespace)
     client_method = files.present? ? :"multipart_#{method}" : method
-    AFMotion::Client.shared.send client_method, path, data do |response, form_data, progress|
+    AFMotion::Client.shared.send client_method, path_with_base, data do |response, form_data, progress|
       if form_data && files.present?
         append_files_to_data(files, form_data)
       elsif progress
         # handle progress
-      elsif !response.success? && allow_queue?(method, path, options)
+      elsif !response.success? && allow_queue?(method, path_with_base, options)
         queue(method: method, path: path, params: data)
       elsif response.operation.response.nil?
         block.call if use_callback
@@ -123,7 +124,9 @@ class ApiClient
   end
 
   def queue(item)
-    queue_list = MotionPrime::JSON.parse(user_defaults['api_client_queue']) || []
+    queue_json = user_defaults['api_client_queue']
+    queue_list = MotionPrime::JSON.parse(queues) if queue_list.present?
+    queue_list ||= []
     queue_list.push(item)
     user_defaults['api_client_queue'] = MotionPrime::JSON.generate(queue_list)
   end
@@ -154,8 +157,9 @@ class ApiClient
     end
 
     def process_queue
-      queue_list = user_defaults['api_client_queue']
-      user_defaults['api_client_queue'] = []
+      queue_json = user_defaults['api_client_queue']
+      queue_list = MotionPrime::JSON.parse(queue_json) if queue_json.present?
+      user_defaults['api_client_queue'] = nil
       Array.wrap(queue_list).each do |item|
         request(item[:method], item[:path], item[:params].clone.symbolize_keys)
       end

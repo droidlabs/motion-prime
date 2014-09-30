@@ -63,7 +63,7 @@ module MotionPrime
 
     def display
       @pending_display = false
-      container_view.setNeedsDisplay
+      container_view.try(:setNeedsDisplay)
     end
 
     def cell

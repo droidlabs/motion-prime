@@ -49,6 +49,8 @@ module MotionPrime
       end
       Prime.logger.dealloc_message :element, self, self.name
       super
+    rescue # "undefined `super` method" bug fix
+      Prime.logger.debug "Undefined `super` in `base_element`"
     end
 
     def add_target(target = nil, action = 'on_click:', event = :touch)

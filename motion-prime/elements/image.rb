@@ -11,24 +11,20 @@ module MotionPrime
       raise "You must set default image for `#{name}`" unless computed_options[:default]
 
       view.setImage(computed_options[:default].uiimage)
-      ref_key = allocate_strong_references
+      refs = strong_references
       BW::Reactor.schedule do
         manager = SDWebImageManager.sharedManager
         manager.downloadWithURL(computed_options[:url],
           options: 0,
           progress: lambda{ |r_size, e_size|  },
           completed: lambda{ |image, error, type, finished|
-            unless image
-              release_strong_references(ref_key)
-              return
-            end
+            return if !image || !refs.all?(&:weakref_alive?)
 
             if computed_options[:post_process].present?
               image = computed_options[:post_process][:method].to_proc.call(computed_options[:post_process][:target], image)
             end
 
             self.performSelectorOnMainThread :set_image, withObject: image, waitUntilDone: true
-            release_strong_references(ref_key)
           }
         )
       end
