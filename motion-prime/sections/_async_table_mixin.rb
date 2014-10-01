@@ -112,28 +112,28 @@ module Prime
       # TODO: we do we need to keep screen ref too?
       queue_id = @preloader_queue.count
 
-      # allocate_strong_references(queue_id)
-
       @preloader_queue[queue_id] = {
         state: :in_progress,
         target_index: service.sum_index(index, load_count-1),
         from_index: index
       }
 
+      cell_refs = data.map &:weak_ref
       refs = strong_references
       BW::Reactor.schedule(queue_id) do |queue_id|
         result = load_count.times do |offset|
-          if @preloader_queue[queue_id][:state] == :cancelled
-            # release_strong_references(queue_id)
-            break
-          end
+          break if @preloader_queue[queue_id][:state] == :cancelled
           unless refs.all?(&:weakref_alive?)
             @preloader_queue[queue_id][:state] = :dealloc
-            # release_strong_references(queue_id)
             break
           end
 
+
+          cell_refs_by_group = flat_data? ? cell_refs : cell_refs[index.section]
+          cell_ref = cell_refs_by_group[index.row]
+          return unless cell_ref.weakref_alive?
           if section = preload_section_by_index(index)
+            return unless section == cell_ref.strong_ref
             on_cell_section_preloaded(section, index)
           end
 
@@ -148,7 +148,6 @@ module Prime
           @preloader_queue[queue_id][:state] = :completed
           on_queue_preloaded(queue_id, index)
         end
-        # release_strong_references(queue_id)
       end
       queue_id
     end
