@@ -24,6 +24,7 @@ module MotionPrime
       @options = options
       @screen = options[:screen]
       @section = options[:section]
+      @_has_section = @section.present?
 
       @view_class = options[:view_class] || 'UIView'
       @name = options[:name]
@@ -96,7 +97,9 @@ module MotionPrime
       compute_style_options(raw_options)
       raw_options = Styles.for(styles).deep_merge(raw_options)
       @computed_options = raw_options
-      normalize_options(@computed_options, section.try(:elements_eval_object), %w[
+      return unless @_has_section
+      NSLog('ERRROR') unless section
+      normalize_options(@computed_options, section.send(:elements_eval_object), %w[
         font font_name font_size text placeholder title_label
         padding padding_left padding_right padding_top padding_bottom
         left right min_width min_outer_width max_width max_outer_width width

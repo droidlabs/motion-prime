@@ -82,6 +82,7 @@ module MotionPrime
 
       refs = strong_references
       BW::Reactor.schedule do
+        return unless refs.all?(&:weakref_alive?)
         manager = SDWebImageManager.sharedManager
         manager.downloadWithURL(computed_options[:url],
           options: 0,
@@ -90,6 +91,13 @@ module MotionPrime
             if !image || !refs.all?(&:weakref_alive?)
               @loading = false
               return
+            end
+
+            if Prime.env.development? && false
+              image_cache = SDImageCache.sharedImageCache
+              image_cache.clearMemory
+              image_cache.clearDisk
+              image_cache.cleanDisk
             end
 
             if computed_options[:post_process].present?
