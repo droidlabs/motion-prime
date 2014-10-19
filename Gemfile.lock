@@ -10,6 +10,7 @@ PATH
       motion-cocoapods
       motion-require
       motion-support (~> 0.2.6)
+      rake
       rm-digest
       sugarcube (~> 1.6.0)
       thor
@@ -51,7 +52,7 @@ GEM
     fuzzy_match (2.0.4)
     i18n (0.6.9)
     json_pure (1.8.1)
-    methadone (1.5.1)
+    methadone (1.7.0)
       bundler
     motion-cocoapods (1.4.1)
       cocoapods (>= 0.32.1)

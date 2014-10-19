@@ -1,3 +1,7 @@
+=== 1.0.7
+* Bug fixes
+* Only include bubble wrap core (not all modules)
+
 === 1.0.6
 * Memory leak fixes
 * Fix pagination of page view section

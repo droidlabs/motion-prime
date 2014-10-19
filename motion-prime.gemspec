@@ -16,7 +16,6 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "rake"
   spec.add_development_dependency("motion-stump")
   spec.add_development_dependency("motion-redgreen")
 
@@ -31,5 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "methadone"
   spec.add_dependency "rm-digest"
   spec.add_dependency "thor"
-  spec.add_dependency "activesupport"
+  spec.add_dependency "activesupport", "~> 3.2.19"
 end

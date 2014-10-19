@@ -2,8 +2,10 @@ require 'motion-require'
 require 'motion-support'
 require 'motion-support/core_ext/hash'
 require 'sugarcube-common'
-require 'bubble-wrap'
+
+require 'bubble-wrap/core'
 require 'bubble-wrap/reactor'
+
 require 'rm-digest'
 require 'afmotion'
 require File.expand_path('../../motion-prime/env.rb', __FILE__)
