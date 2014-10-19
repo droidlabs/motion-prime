@@ -1,4 +1,6 @@
 language: objective-c
 before_install:
-    - (ruby --version)
+  - (ruby --version)
+gemfile:
+  - Gemfile
 script: ./travis.sh

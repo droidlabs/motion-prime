@@ -7,7 +7,7 @@ class App
   include Methadone::Main
   include Methadone::CLILogging
   include Methadone::SH
-  
+
   main do |command, *opts|
     case command.to_sym
     when :new then create_base(*opts)
@@ -52,7 +52,7 @@ class App
     info "Command: pod setup"
     sh "cd ./#{name}; pod setup"
     info "Command: rake pod:install"
-    sh "cd ./#{name}; rake pod:install"
+    sh "cd ./#{name}; bundle exec rake pod:install"
   end
 
   def self.generate(resource, name)

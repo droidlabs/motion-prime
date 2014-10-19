@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
-
+sudo chown -R travis ~/Library/RubyMotion
+mkdir -p ~/Library/RubyMotion/build
 sudo motion update
-sudo gem install bundler
-sudo bundle install
+bundle install
 #sudo pod setup
-sudo bundle exec rake pod:install
-sudo bundle exec rake clean &&
-sudo bundle exec rake spec output=colorized
+bundle exec rake pod:install
+bundle exec rake clean
+bundle exec rake spec output=colorized

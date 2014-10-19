@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("motion-redgreen")
 
   spec.add_dependency "cocoapods"
+  spec.add_dependency "rake"
   spec.add_dependency "motion-cocoapods"
   spec.add_dependency "motion-require"
   spec.add_dependency "motion-support", '~> 0.2.6'
