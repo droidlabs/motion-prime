@@ -16,6 +16,7 @@ module MotionPrime
 
     attr_accessor :options, :section, :name,
                   :view_class, :view, :view_name, :styles, :screen
+    attr_reader :block
     delegate :observing_errors?, :has_errors?, :errors_observer_fields, :observing_errors_for, to: :section, allow_nil: true
     define_callbacks :render
 
@@ -24,7 +25,6 @@ module MotionPrime
       @options = options
       @screen = options[:screen]
       @section = options[:section]
-      @_has_section = @section.present?
 
       @view_class = options[:view_class] || 'UIView'
       @name = options[:name]
@@ -86,24 +86,18 @@ module MotionPrime
     end
 
     # Lazy-computing options
+    def preload_options
+      compute_options! if respond_to?(:computed_options) && !@computed_options
+      size_to_fit_if_needed if is_a?(LabelDrawElement)
+    end
+
     def computed_options
-      compute_options! unless @computed_options
-      @computed_options
+      @computed_options || compute_options!
     end
 
     def compute_options!
-      block_options = compute_block_options || {}
-      raw_options = self.options.except(:screen, :name, :block, :view_class).merge(block_options)
-      compute_style_options(raw_options)
-      raw_options = Styles.for(styles).deep_merge(raw_options)
-      @computed_options = raw_options
-      return unless @_has_section
-      NSLog('ERRROR') unless section
-      normalize_options(@computed_options, section.send(:elements_eval_object), %w[
-        font font_name font_size text placeholder title_label
-        padding padding_left padding_right padding_top padding_bottom
-        left right min_width min_outer_width max_width max_outer_width width
-        top bottom min_height min_outer_height max_height max_outer_height height])
+      @computed_options = ElementComputedOptions.new(self)
+      computed_options
     end
 
     def reload!
@@ -171,105 +165,7 @@ module MotionPrime
     end
 
     protected
-      def reset_computed_values
-        @content_height = nil
-        @content_width = nil
-      end
-
-      # Compute options sent inside block, e.g.
-      # element :button do
-      #   {name: model.name}
-      # end
-      def compute_block_options
-        normalize_value(@block, section) if @block
-      end
-
-      def compute_style_options(*style_sources)
-        @styles = []
-        if cell_section?
-          suffixes = section.style_suffixes if section.respond_to?(:style_suffixes)
-          @styles += compute_cell_style_options(style_sources, Array.wrap(suffixes))
-        end
-
-        mixins = []
-        custom_styles = []
-        style_sources.each do |source|
-          if source_mixins = source.delete(:mixins)
-            mixins += Array.wrap(normalize_object(source_mixins, section.try(:elements_eval_object)))
-          end
-          if source_styles = source.delete(:styles)
-            custom_styles += Array.wrap(normalize_object(source_styles, section.try(:elements_eval_object)))
-          end
-        end
-        # styles got from mixins option
-        @styles += mixins.map{ |m| :"_mixin_#{m}" }
-
-        # don't use present? here, it's slower, while this method should be very fast
-        if section && section.name && section.name != '' && name && name != ''
-          # using for base sections
-          @styles << [section.name, name].join('_').to_sym
-        end
-
-        # custom style (from options or block options), using for TableViews as well
-        @styles += custom_styles
-        # pp(@view_class.to_s + @styles.inspect); puts()
-        @styles
-      end
-
-      def compute_cell_style_options(style_sources, additional_suffixes)
-        base_styles = {common: [], specific: []}
-        suffixes = {common: [], specific: []}
-        all_styles = []
-
-        # following example in Prime::TableSection#cell_section_styles
-        # form element/cell: <base|user>_form_field, <base|user>_form_string_field, user_form_field_email
-        # table element/cell: <base|categories>_table_cell, categories_table_title
-        if section.section_styles
-          section.section_styles.each { |type, values| base_styles[type] += values }
-        end
-        if @view_name != 'base' && !cell_element?
-          # form element: _input
-          # table element: _image
-          suffixes[:common] << @view_name.to_sym
-          additional_suffixes.each do |additional_suffix|
-            suffixes[:common] << [@view_name, additional_suffix].join('_').to_sym
-          end
-        end
-        if name && name.to_s != @view_name
-          # form element: _input
-          # table element: _icon
-          suffixes[:specific] << name.to_sym
-          additional_suffixes.each do |additional_suffix|
-            suffixes[:specific] << [name, additional_suffix].join('_').to_sym
-          end
-        end
-        # form cell: base_form_field, base_form_string_field
-        # form element: base_form_field_string_field, base_form_string_field_text_field, base_form_string_field_input
-        # table cell: base_table_cell
-        # table element: base_table_cell_image
-        common_styles = if suffixes[:common].any?
-          build_styles_chain(base_styles[:common], suffixes.values.flatten)
-        elsif suffixes[:specific].any?
-          build_styles_chain(base_styles[:common], suffixes[:specific])
-        elsif cell_element?
-          base_styles[:common]
-        end
-        all_styles += Array.wrap(common_styles)
-        # form cell: user_form_field, user_form_string_field, user_form_field_email
-        # form element: user_form_field_text_field, user_form_string_field_text_field, user_form_field_email_text_field
-        # table cell: categories_table_cell, categories_table_title
-        # table element: categories_table_cell_image, categories_table_title_image
-        specific_base_common_suffix_styles = if suffixes[:common].any?
-          build_styles_chain(base_styles[:specific], suffixes[:common])
-        elsif suffixes[:specific].empty? && cell_element?
-          base_styles[:specific]
-        end
-        all_styles += Array.wrap(specific_base_common_suffix_styles)
-        # form element: user_form_field_input, user_form_string_field_input, user_form_field_email_input
-        # table element: categories_table_cell_icon, categories_table_title_icon
-        all_styles += build_styles_chain(base_styles[:specific], suffixes[:specific])
-        all_styles
-      end
+      def reset_computed_values; end
 
     class << self
       def factory(type, options = {})

@@ -52,6 +52,7 @@ module MotionPrime
     end
 
     def draw_with_layer
+      return unless view
       options = draw_options
       @layer.try(:removeFromSuperlayer)
       return unless image = options[:image]

@@ -27,7 +27,6 @@ module Prime
     def reset_collection_data
       super # must be before to update fixed_collection_data
       @async_loaded_data = async_data? ? fixed_collection_data : nil
-      Array.wrap(@preloader_queue).each { |queue| queue[:state] = :cancelled }
       @preloader_next_starts_from = nil
     end
 
@@ -37,7 +36,7 @@ module Prime
         Prime.logger.debug "could not find section with index #{index} for #{self.to_s}"
         return 0
       end
-      preload_section_by_index(index)
+      preload_section_by_index(index: index)
       section.container_height
     end
 
@@ -118,7 +117,6 @@ module Prime
         from_index: index
       }
 
-      cell_refs = data.map &:weak_ref
       refs = strong_references
       BW::Reactor.schedule(queue_id) do |queue_id|
         result = load_count.times do |offset|
@@ -128,14 +126,13 @@ module Prime
             break
           end
 
-
-          cell_refs_by_group = flat_data? ? cell_refs : cell_refs[index.section]
-          cell_ref = cell_refs_by_group[index.row]
-          return unless cell_ref.weakref_alive?
-          if section = preload_section_by_index(index)
-            return unless section == cell_ref.strong_ref
-            on_cell_section_preloaded(section, index)
-          end
+          self.performSelectorOnMainThread(:"preload_section_by_index:", withObject: {
+            index: index,
+            queue_id: queue_id,
+            success: proc { |section|
+              on_cell_section_preloaded(section, index)
+            }.weak!
+          }, waitUntilDone: true)
 
           @preloader_queue[queue_id][:to_index] = index
           unless offset == load_count - 1
@@ -160,7 +157,7 @@ module Prime
       def set_collection_data
         sections = load_sections_async
         prepare_collection_cell_sections(sections)
-        @data = sections
+        set_data!(sections)
         reset_data_stamps
         @data
       end
@@ -170,7 +167,7 @@ module Prime
           ref_key = allocate_strong_references
           BW::Reactor.schedule_on_main do
             @async_loaded_data = fixed_collection_data
-            @data = nil
+            set_data!(nil)
             reload_collection_data
             on_async_data_loaded
             release_strong_references(ref_key)
@@ -179,11 +176,18 @@ module Prime
         end
       end
 
-      def preload_section_by_index(index)
+      def preload_section_by_index(options)
+        index = options[:index]
+        if queue_id = options[:queue_id]
+          return unless @preloader_queue[queue_id][:state] == :in_progress
+        end
         section = cell_section_by_index(index)
-        if section.create_elements && !section.container_element && async_data? # perform only if just loaded
+        create_elements = section.create_elements
+        no_container = !section.container_element
+        must_load = create_elements && no_container && async_data?
+        if must_load # perform only if just loaded
           section.load_container_with_elements(container: container_element_options_for(index))
-          section
+          options[:success].call(section) if options[:success]
         end
       end
 

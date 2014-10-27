@@ -11,6 +11,11 @@ module MotionPrime
     end
 
     def init_container_element(options = {})
+      if @_creating_container
+        sleep 0.01
+        return @container_element ? @container_element : init_container_element(options)
+      end
+      @_creating_container = true
       @container_element ||= begin
         options.merge!({
           screen: screen,
@@ -22,12 +27,14 @@ module MotionPrime
         type = options.delete(:type)
         MotionPrime::BaseElement.factory(type, options)
       end
+      @_creating_container = false
+      @container_element
     end
 
     def load_container_with_elements(options = {})
       init_container_element(options[:container] || {})
       # FIXME: does not work for grid sections
-      @container_element.compute_options! unless @container_element.computed_options
+      @container_element.preload_options
       compute_element_options(options[:elements] || {})
 
       if respond_to?(:prerender_elements_for_state) && prerender_enabled?
@@ -38,8 +45,7 @@ module MotionPrime
     private
       def compute_element_options(options = {})
         self.elements.values.each do |element|
-          element.size_to_fit_if_needed if element.is_a?(LabelDrawElement)
-          element.compute_options! if element.respond_to?(:computed_options) && !element.computed_options
+          element.preload_options
         end
       end
 

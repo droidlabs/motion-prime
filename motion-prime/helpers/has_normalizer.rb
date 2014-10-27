@@ -8,10 +8,11 @@ module MotionPrime
       end
 
       filtered_options = keys.nil? ? options : options.slice(*keys)
-      filtered_options.each do |key, option|
-        @_key_chain = [key]
-        unordered_options[key] = normalize_object(option, receiver)
+      filtered_options.keys.each do |key|
+        @_key_chain = [key] if Prime.env.development?
+        unordered_options[key] = normalize_object(filtered_options[key], receiver)
       end
+      unordered_options
     end
 
     def normalize_object(object, receiver = nil)
@@ -20,9 +21,12 @@ module MotionPrime
         normalize_value(object, receiver)
       elsif object.is_a?(Hash)
         object.inject({}) do |result, (key, nested_object)|
-          @_key_chain ||= []
-          @_key_chain << key
-          result.merge(key => normalize_object(nested_object, receiver))
+          if Prime.env.development?
+            # FIXME: malloc
+            @_key_chain ||= []
+            @_key_chain << key
+          end
+          result.merge(key => normalize_object(object[key], receiver))
         end
       else
         object

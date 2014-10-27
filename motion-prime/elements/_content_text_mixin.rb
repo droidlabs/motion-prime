@@ -84,6 +84,13 @@ module MotionPrime
       computed_options.slice(:html, :line_spacing, :line_height, :underline, :fragment_color).any? || computed_options[:attributed_text_options]
     end
 
+    protected
+      def reset_computed_values
+        @content_height = nil
+        @content_width = nil
+        super
+      end
+
     private
       def get_content_rect(text, width)
         raise "Please set element width for content size calculation" unless width

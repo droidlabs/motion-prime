@@ -54,7 +54,7 @@ module MotionPrime
     end
 
     def strong_references
-      [screen, screen.try(:main_controller)].compact
+      [screen, screen.try(:main_controller)].uniq.compact
     end
 
     def container_bounds
@@ -69,8 +69,16 @@ module MotionPrime
     #
     # @return options [Hash] computed options
     def container_options
-      compute_container_options! unless @container_options
-      @container_options
+      @container_options ||= SectionComputedOptions.new(self)
+    end
+
+    def container_options_styles
+      @container_options_styles ||= begin
+        raw_options = self.class.container_options.try(:clone) || {}
+        raw_options.deep_merge!(options[:container] || {})
+        # allow to pass styles as proc
+        normalize_object(raw_options[:styles], elements_eval_object)
+      end
     end
 
     # Get computed container height
@@ -120,13 +128,13 @@ module MotionPrime
     #
     # @return result [Boolean] true if has been loaded by this thread.
     def create_elements
-      return if @section_loaded
+      return false if @section_loaded
       if @section_loading
-        sleep 0.1
+        sleep 0.01
         return @section_loaded ? false : create_elements
       end
-      @section_loading = true
 
+      @section_loading = true
       self.elements = {}
       elements_options.each do |key, opts|
         add_element(key, opts)
@@ -305,7 +313,7 @@ module MotionPrime
     end
 
     def current_input_view_height
-      App.shared.windows.last.subviews.first.try(:height) || KEYBOARD_HEIGHT_PORTRAIT
+      KEYBOARD_HEIGHT_PORTRAIT
     end
 
     def screen?
@@ -374,18 +382,8 @@ module MotionPrime
       end
 
       def compute_container_options!
-        raw_options = {}
-        raw_options.deep_merge!(self.class.container_options.try(:clone) || {})
-        raw_options.deep_merge!(options[:container] || {})
-        # allow to pass styles as proc
-        normalize_options(raw_options, elements_eval_object, nil, [:styles])
-        @container_options = raw_options # must be here because section_styles may use container_options for custom styles
-
-        container_options_from_styles = Styles.for(section_styles.values.flatten)[:container] if section_styles
-        if container_options_from_styles.present?
-          @container_options = container_options_from_styles.deep_merge(@container_options)
-        end
-        normalize_options(@container_options, elements_eval_object)
+        @container_options = nil
+        container_options
       end
 
     class << self

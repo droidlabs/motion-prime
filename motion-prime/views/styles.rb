@@ -70,7 +70,7 @@ module MotionPrime
 
       def extend_and_normalize_options(options = {})
         style_options = self.for(options.delete(:styles))
-        normalize_options(style_options.deep_merge(options))
+        normalize_options(options.deep_merge(style_options).deep_merge(options))
       end
     end
   end

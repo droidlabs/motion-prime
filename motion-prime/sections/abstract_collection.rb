@@ -92,12 +92,13 @@ module MotionPrime
     # @return [Boolean] true
     def reset_collection_data
       @did_appear = false
+      # FIXME: simetimes @data is a section
       Array.wrap(@data).flatten.each do |section|
         next unless element = section.container_element
         element.update_options(reuse_identifier: nil)
         element.view.try(:removeFromSuperview)
       end
-      @data = nil
+      set_data!(nil)
       @data_stamp = nil
       true
     end
@@ -149,11 +150,9 @@ module MotionPrime
       # form: <form_name>_form_<type>, <form_name>_form_<field_type>, user_form_<type>_email = `user_form_field`, `user_form_string_field`, `user_form_field_email`
       styles[:specific] = build_styles_chain(collection_styles[:specific], suffixes)
 
-      container_options_styles = section.container_options[:styles]
-      if container_options_styles.present?
-        styles[:specific] += Array.wrap(container_options_styles)
+      if section.container_options_styles.present?
+        styles[:specific] += Array.wrap(section.container_options_styles)
       end
-
       styles
     end
 
@@ -257,6 +256,11 @@ module MotionPrime
     end
 
     private
+      def set_data!(new_data)
+        Array.wrap(@preloader_queue).each { |queue| queue[:state] = :cancelled }
+        @data = new_data
+      end
+
       def cached_cell(index)
       end
 
@@ -271,7 +275,7 @@ module MotionPrime
       def set_collection_data
         sections = fixed_collection_data
         prepare_collection_cell_sections(sections)
-        @data = sections
+        set_data!(sections)
         reset_data_stamps
         create_section_elements
         @data

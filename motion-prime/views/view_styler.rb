@@ -218,6 +218,7 @@ module MotionPrime
           corner_consts = {top_left: UIRectCornerTopLeft, bottom_left: UIRectCornerBottomLeft, bottom_right: UIRectCornerBottomRight, top_right: UIRectCornerTopRight}
           corners = value[:corners].inject(0) { |result, corner| result|corner_consts[corner] }
           mask_path = UIBezierPath.bezierPathWithRoundedRect(layer_bounds, byRoundingCorners: corners, cornerRadii: CGSizeMake(radius, radius))
+
           mask_layer = CAShapeLayer.layer
 
           mask_layer.frame = layer_bounds
@@ -225,20 +226,22 @@ module MotionPrime
           view.mask = mask_layer
 
           if value[:border_color] && value[:border_width]
+            stroke_bounds = layer_bounds
+            stroke_path = UIBezierPath.bezierPathWithRoundedRect(stroke_bounds, byRoundingCorners: corners, cornerRadii: CGSizeMake(radius, radius))
             stroke_layer = CAShapeLayer.layer
             unless value[:sides]
-              stroke_layer.path = mask_path.CGPath
+              stroke_layer.path = stroke_path.CGPath
             else # suuport sides
-              stroke_layer.path = mask_path.CGPath
+              stroke_layer.path = stroke_path.CGPath
             end
             stroke_layer.fillColor = :clear.uicolor.cgcolor
             stroke_layer.strokeColor = value[:border_color].uicolor.cgcolor
-            stroke_layer.lineWidth = value[:border_width].to_f*2 # another half is hidden by the mask
+            stroke_layer.lineWidth = value[:border_width].to_f
 
             stroke_layer.lineDashPattern = value[:dashes] if value[:dashes].present?
 
             container_view = view.delegate
-            stroke_view = UIView.alloc.initWithFrame(layer_bounds)
+            stroke_view = UIView.alloc.initWithFrame(stroke_bounds)
             stroke_view.userInteractionEnabled = false
             stroke_view.layer.addSublayer(stroke_layer)
             container_view.addSubview(stroke_view)

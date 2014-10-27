@@ -13,6 +13,7 @@ module MotionPrime
       view.setImage(computed_options[:default].uiimage)
       refs = strong_references
       BW::Reactor.schedule do
+        return unless refs.all?(&:weakref_alive?)
         manager = SDWebImageManager.sharedManager
         manager.downloadWithURL(computed_options[:url],
           options: 0,
