@@ -21,7 +21,7 @@ module MotionPrime
       builder = ViewBuilder.new(klass, options.merge(parent_bounds: parent_bounds))
       options = builder.options.merge(calculate_frame: options.fetch(:calculate_frame, true), parent_bounds: parent_bounds)
       view = builder.view
-      insert_index = options.delete(:at_index)
+      insert_index = options[:at_index]
 
       set_options_for(view, options, &block)
       if superview = render_target || view_stack.last

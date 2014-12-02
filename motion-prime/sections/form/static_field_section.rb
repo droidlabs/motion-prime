@@ -6,6 +6,8 @@ module MotionPrime
       collection_section
     end
 
+    def clear_observers; end
+
     protected
       def elements_eval_object
         form

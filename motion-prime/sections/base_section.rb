@@ -12,6 +12,7 @@ module MotionPrime
     # end
     #
     KEYBOARD_HEIGHT_PORTRAIT = 216
+    SUGGESTIONS_HEIGHT = 44
     KEYBOARD_HEIGHT_LANDSCAPE = 162
     DEFAULT_CONTENT_HEIGHT = 65
     include ::MotionSupport::Callbacks
@@ -188,7 +189,7 @@ module MotionPrime
     def add_element(key, options = {})
       return unless render_element?(key)
       opts = options.clone
-      index = opts.delete(:at)
+      index = opts[:at_index]
       options = build_options_for_element(opts)
       options[:name] ||= key
       element = build_element(options)

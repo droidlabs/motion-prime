@@ -284,7 +284,7 @@ module MotionPrime
           max_width max_outer_width min_width min_outer_width
           max_height max_outer_height min_height min_outer_width
           font_name font_size placeholder_font_name placeholder_font_size placeholder_font
-          bounds post_process
+          bounds post_process at_index
         ].include?(key.to_s)
       end
 

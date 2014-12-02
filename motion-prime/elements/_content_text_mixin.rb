@@ -12,13 +12,7 @@ module MotionPrime
     end
 
     def current_attributed_text
-      if view.try(:is_a?, UITextView) && view.text.present?
-        text = view.attributedText
-        text += ' ' if text.to_s.end_with?("\n") # does not respect \n at the end by default
-        text
-      else
-        attributed_text_for_text(content_text)
-      end
+      attributed_text_for_text(content_text)
     end
 
     def attributed_text_for_text(text)

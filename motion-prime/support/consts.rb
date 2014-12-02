@@ -1,3 +1,4 @@
+IS_OS_8_OR_HIGHER = UIDevice.currentDevice.systemVersion.floatValue >= 8.0
 # this constants should be listed here to be accessible in constantize
 
 UIControlContentHorizontalAlignmentCenter

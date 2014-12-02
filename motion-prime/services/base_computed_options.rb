@@ -1,6 +1,5 @@
 module MotionPrime
   class BaseComputedOptions < ::Hash
-    @@max = 0
     def initialize
       super
       @_keys = {}

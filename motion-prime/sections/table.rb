@@ -139,6 +139,7 @@ module MotionPrime
       view = element.render do
         section.render
       end
+      @_cached_cells[element.computed_options[:reuse_identifier]] = view
 
       on_cell_render(view, index)
       view
@@ -210,7 +211,8 @@ module MotionPrime
       end
 
       def cached_cell(index)
-        collection_view.dequeueReusableCellWithIdentifier(cell_name(index)) || begin
+        identifier = cell_name(index)
+        collection_view.dequeueReusableCellWithIdentifier(identifier) || @_cached_cells[identifier] || begin
           section = cell_section_by_index(index)
           section.create_elements
           cell = section.try(:cell)

@@ -8,9 +8,10 @@ module MotionPrime
 
     def fetch_image
       return unless computed_options[:url]
-      raise "You must set default image for `#{name}`" unless computed_options[:default]
-
-      view.setImage(computed_options[:default].uiimage)
+      unless computed_options[:default] === false
+        raise "You must set default image for `#{name}`" unless computed_options[:default]
+        view.setImage(computed_options[:default].uiimage)
+      end
       refs = strong_references
       BW::Reactor.schedule do
         return unless refs.all?(&:weakref_alive?)

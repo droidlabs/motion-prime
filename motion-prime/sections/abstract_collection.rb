@@ -28,6 +28,11 @@ module MotionPrime
       end
     end
 
+    def initialize(*args)
+      super
+      @_cached_cells = {}
+    end
+
     # Return sections which will be used to render as collection cells.
     #
     # This method should be redefined in your collection section and must return array.
@@ -254,6 +259,7 @@ module MotionPrime
     def on_input_return(text_field)
       text_field.resignFirstResponder
     end
+    def on_input_did_change(text_field); end
 
     private
       def set_data!(new_data)
