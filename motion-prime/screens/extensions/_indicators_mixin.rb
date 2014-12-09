@@ -21,6 +21,7 @@ module MotionPrime
     end
 
     def show_progress_indicator(text = nil, options = {})
+      @_showing_indicator = true
       options[:styles] ||= []
       options[:styles] << :base_progress_indicator
       options[:styles] << :"#{self.class_name_without_kvo.underscore.gsub('_screen', '')}_indicator"
@@ -37,6 +38,7 @@ module MotionPrime
 
     def hide_progress_indicator(animated = true)
       @progress_indicator_view.try(:hide, animated)
+      @_showing_indicator = false
     end
 
     def show_notice(message, time = 1.0, type = :notice)

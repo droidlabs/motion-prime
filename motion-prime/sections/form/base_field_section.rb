@@ -39,6 +39,7 @@ module MotionPrime
       prepare_table_data
       return unless observing_errors?
       on_error_change = proc { |old_value, new_value|
+        next unless screen.weakref_alive?
         changes = observing_errors_for.errors.changes
         errors_observer_fields.each do |field|
           next unless changes.has_key?(field)
