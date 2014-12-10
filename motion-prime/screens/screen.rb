@@ -56,7 +56,7 @@ module MotionPrime
     end
 
     def strong_references
-      self.main_controller
+      [self.main_controller]
     end
 
     def visible?

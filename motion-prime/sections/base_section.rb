@@ -333,8 +333,9 @@ module MotionPrime
       def bind_keyboard_close
         bindings = self.class.keyboard_close_bindings
         return unless bindings.present?
-        bind_proc = bindings[:tap_on]
-        bind_views = instance_eval(&bind_proc)
+        if bind_proc = bindings[:tap_on]
+          bind_views = instance_eval(&bind_proc)
+        end
         Array.wrap(bind_views).each do |view|
           gesture_recognizer = UITapGestureRecognizer.alloc.initWithTarget(self, action: :hide_keyboard)
           view.addGestureRecognizer(gesture_recognizer)

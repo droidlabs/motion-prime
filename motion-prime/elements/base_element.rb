@@ -126,13 +126,19 @@ module MotionPrime
       options.deep_merge!(new_options)
       return unless view
 
-      required_options = if new_options.slice(:width, :height, :top, :left, :right, :bottom).any?
+      required_options = []
+      if new_options.slice(:width, :height, :top, :left, :right, :bottom).any?
         new_options[:calculate_frame] = true
-        [:width, :height, :top, :left, :right, :bottom]
-      elsif new_options.slice(:text, :title).any?
-        [:line_spacing, :line_height, :underline, :fragment_color, :text_alignment, :font, :font_name, :font_size, :line_break_mode, :number_of_lines]
+        required_options += [:width, :height, :top, :left, :right, :bottom]
       end
-      new_options = computed_options.slice(*Array.wrap(required_options)).merge(new_options)
+      if new_options.slice(:text, :title).any?
+        required_options += [:line_spacing, :line_height, :underline, :fragment_color, :text_alignment, :font, :font_name, :font_size, :line_break_mode, :number_of_lines]
+      end
+      if new_options.slice(:image).any?
+        required_options += [:tint_color]
+      end
+
+      new_options = computed_options.slice(*required_options).merge(new_options)
 
       ViewStyler.new(view, view.superview.try(:bounds), new_options).apply
     end
